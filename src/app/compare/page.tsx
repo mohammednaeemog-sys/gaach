@@ -12,6 +12,9 @@ import { taka } from "@/lib/format";
 
 export const metadata = { title: "Compare trees" };
 
+// Small fruit pictures for the quick-add chips
+const FRUIT: Record<string, string> = { "mango-amrapali": "/fruit/mango.jpg", jackfruit: "/fruit/jackfruit.jpg", guava: "/fruit/guava.jpg", lemon: "/fruit/lemon.jpg" };
+
 const LEVEL = { LOW: 1, MEDIUM: 2, HIGH: 3, SLOW: 1, FAST: 3 } as Record<string, number>;
 
 function Meter({ value }: { value: string }) {
@@ -50,14 +53,14 @@ export default async function ComparePage() {
   });
   const trees = slugs.map((s) => found.find((t) => t.slug === s)).filter((t): t is (typeof found)[number] => !!t);
   const suggestions = trees.length < 3
-    ? await db.tree.findMany({ where: { published: true, slug: { in: ["lemon", "guava", "mango-amrapali", "papaya", "hibiscus", "jackfruit"].filter((s) => !slugs.includes(s)) } }, take: 4, select: { slug: true, name: true, shape: true, color: true, imageUrl: true, products: { where: { active: true }, select: { imageUrl: true } } } })
+    ? await db.tree.findMany({ where: { published: true, slug: { in: ["mango-amrapali", "jackfruit", "guava", "lemon", "papaya", "hibiscus"].filter((s) => !slugs.includes(s)) } }, take: 4, select: { slug: true, name: true, shape: true, color: true, imageUrl: true, products: { where: { active: true }, select: { imageUrl: true } } } })
     : [];
 
   const header = (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="anim-rise">
-        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-lime-600"><Icon.scale className="h-4 w-4" /> Side by side</p>
-        <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl">Compare <span className="text-lime-600">trees</span></h1>
+        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2f7a45]"><Icon.scale className="h-4 w-4" /> Side by side</p>
+        <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl">Compare <span className="text-[#2f7a45]">trees</span></h1>
         <p className="mt-2 text-stone-600">Size, care and climate tolerance for up to three trees.</p>
       </div>
       {trees.length >= 2 && (
@@ -71,11 +74,11 @@ export default async function ComparePage() {
 
   const suggest = suggestions.length > 0 && (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm text-stone-500">Quick add:</span>
+      <span className="mr-2 text-[15px] text-stone-500">Quick add:</span>
       {suggestions.map((s) => (
         <form key={s.slug} action={toggleCompare}>
           <input type="hidden" name="slug" value={s.slug} />
-          <button className="type-chip"><span className="h-6 w-6 overflow-hidden rounded-full bg-mint-100"><TreeArt shape={s.shape} color={s.color} name={s.name} imageUrl={treePhoto(s)} animate={false} /></span>+ {s.name.split(" (")[0]}</button>
+          <button className="quick-add-chip"><span className="h-9 w-9 overflow-hidden rounded-full bg-mint-100">{FRUIT[s.slug] ? <img src={FRUIT[s.slug]} alt="" className="h-full w-full object-cover" /> : <TreeArt shape={s.shape} color={s.color} name={s.name} imageUrl={treePhoto(s)} animate={false} />}</span>+ {s.name.split(" (")[0]}</button>
         </form>
       ))}
     </div>
@@ -85,16 +88,17 @@ export default async function ComparePage() {
     return (
       <div>
         {header}
-        <div className="grid place-items-center rounded-3xl bg-white p-10 text-center ring-1 ring-stone-100">
-          <div className="recommend-empty text-5xl" aria-hidden>⚖️</div>
-          <h2 className="mt-3 text-lg font-semibold text-forest-900">Pick two or three trees to compare</h2>
-          <p className="mt-1 max-w-md text-sm text-stone-600">
-            Use the ⇄ button on any tree card, or add one below.{trees.length === 1 && <> You have chosen <b>{trees[0].name}</b> so far.</>}
+        <div className="compare-empty grid place-items-center rounded-3xl bg-[#fbfaf6] px-5 py-10 text-center ring-1 ring-stone-200/70 sm:px-10 sm:py-12">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/compare-trees.jpg" alt="" className="compare-empty-art w-full max-w-[440px]" />
+          <h2 className="font-display mt-4 text-2xl font-semibold text-forest-900 sm:text-3xl">Pick two or three trees to compare</h2>
+          <p className="mt-2 max-w-md text-[15px] text-stone-500">
+            Use the compare control on any tree card, or add trees below.{trees.length === 1 && <> You have chosen <b>{trees[0].name}</b> so far.</>}
           </p>
-          <div className="mt-5">{suggest}</div>
-          <div className="mt-5 flex justify-center gap-2">
-            <Link href="/recommend" className="btn-primary">Find trees for my place</Link>
-            <Link href="/trees" className="btn-secondary">Browse all trees</Link>
+          <div className="mt-7 flex justify-center">{suggest}</div>
+          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/recommend" className="hero-cta inline-flex items-center justify-center gap-3 rounded-lg bg-[#1d4a2f] px-7 py-3 text-sm font-semibold text-white hover:bg-[#1d5b33]">Find trees for my place <span aria-hidden>→</span></Link>
+            <Link href="/trees" className="inline-flex items-center justify-center rounded-lg border border-[#1d4a2f] bg-white px-7 py-3 text-sm font-semibold text-forest-900 hover:bg-mint-50">Browse all trees</Link>
           </div>
         </div>
       </div>

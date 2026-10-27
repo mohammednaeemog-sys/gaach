@@ -23,4 +23,11 @@ export const Icon = {
   warn: ({ className }: P) => <svg {...base(className)}><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17v.5" /></svg>,
   book: ({ className }: P) => <svg {...base(className)}><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" /><path d="M4 19V5" /></svg>,
   trash: ({ className }: P) => <svg {...base(className)}><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></svg>,
+  camera: ({ className }: P) => <svg {...base(className)}><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>,
+  doc: ({ className }: P) => <svg {...base(className)}><path d="M6 3h9l4 4v14H6z" /><path d="M9 11h7M9 15h7M9 7h3" /></svg>,
+  cart: ({ className }: P) => <svg {...base(className)}><path d="M3 4h2.5l2.2 11h10.6L20 8H7" /><circle cx="9" cy="19" r="1.4" /><circle cx="17" cy="19" r="1.4" /></svg>,
+  clip: ({ className }: P) => <svg {...base(className)}><path d="M20 11.5l-8.2 8.2a5 5 0 0 1-7.1-7.1l8.6-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9" /></svg>,
+  send: ({ className }: P) => <svg {...base(className)}><path d="M21 3L10 14" /><path d="M21 3l-7 18-4-7-7-4z" /></svg>,
+  bars: ({ className }: P) => <svg {...base(className)}><path d="M5 20V13M10 20V9M15 20V5M20 20V11M3 20h18" /></svg>,
+  plus: ({ className }: P) => <svg {...base(className)}><path d="M12 5v14M5 12h14" /></svg>,
 };

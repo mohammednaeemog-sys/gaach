@@ -17,6 +17,31 @@ type Props = {
 
 // Location and planting-conditions form (FR-2.1 to FR-2.3). Submits by GET so the
 // results URL keeps every input, which makes refining a search quick (FR-3.4).
+// Numbered step heading used for the two parts of the form
+function Step({ n, title, text }: { n: number; title: string; text: string }) {
+  return (
+    <legend className="mb-3 flex items-start gap-3">
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#1d5b33] text-sm font-semibold text-white">{n}</span>
+      <span>
+        <span className="block font-semibold text-forest-900">{title}</span>
+        <span className="block text-xs text-stone-500">{text}</span>
+      </span>
+    </legend>
+  );
+}
+
+const SunIcon = ({ kind }: { kind: string }) => (
+  <svg viewBox="0 0 24 24" className="mx-auto h-6 w-6 text-forest-900" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    {kind === "FULL" ? (
+      <><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" /></>
+    ) : kind === "PARTIAL" ? (
+      <><path d="M8 4v1.5M3.5 8.5H5M4.8 5.2l1 1M11.2 5.2l-1 1" /><path d="M5.6 11.3A3 3 0 1 1 10.9 8" /><path d="M8 19h10a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.5A2.8 2.8 0 0 0 8 19z" /></>
+    ) : (
+      <path d="M6.5 19h11a4 4 0 0 0 .4-8 6 6 0 0 0-11.5 1.6A3.2 3.2 0 0 0 6.5 19z" />
+    )}
+  </svg>
+);
+
 export function SiteForm({ divisions, savedSites, initial, errors, compact }: Props) {
   const [v, setV] = useState<SiteValues>(initial);
   const division = divisions.find((d) => String(d.id) === v.divisionId);
@@ -44,7 +69,7 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
       )}
 
       <fieldset className={`grid gap-4 ${compact ? "" : "sm:grid-cols-2"}`}>
-        <legend className="mb-2 text-sm font-semibold text-forest-700">1. Where will you plant?</legend>
+        <Step n={1} title="Where will you plant?" text="Choose your division and district to get trees that suit your local climate." />
         <div>
           <label htmlFor="divisionId" className="field-label">Division</label>
           <select id="divisionId" name="divisionId" className="input" value={v.divisionId ?? ""} onChange={set("divisionId")} aria-invalid={!!errors.districtId}>
@@ -62,8 +87,8 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
         </div>
       </fieldset>
 
-      <fieldset className="space-y-4">
-        <legend className="mb-2 text-sm font-semibold text-forest-700">2. What is the spot like?</legend>
+      <fieldset className="space-y-4 border-t border-stone-100 pt-5">
+        <Step n={2} title="What is the spot like?" text="Tell us about the available space and environment." />
         <div>
           <label htmlFor="spaceM" className="field-label">Available space (maximum canopy width, in metres)</label>
           <input id="spaceM" name="spaceM" type="number" inputMode="decimal" min="0.5" max="100" step="0.5" placeholder="e.g. 3" className="input" value={v.spaceM ?? ""} onChange={set("spaceM")} aria-invalid={!!errors.spaceM} />
@@ -75,9 +100,9 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
           <span className="field-label">Sunlight</span>
           <div className={`grid gap-2 ${compact ? "grid-cols-3" : "sm:grid-cols-3"}`}>
             {SUNLIGHT.map((s) => (
-              <label key={s} title={SUNLIGHT_HINTS[s]} className={`sun-card cursor-pointer rounded-2xl border p-3 text-center text-sm transition ${v.sunlight === s ? "border-lime-500 bg-mint-50 shadow-[0_8px_20px_-12px_rgb(53_199_89/0.8)]" : "border-stone-200 bg-white hover:border-lime-400"}`}>
+              <label key={s} title={SUNLIGHT_HINTS[s]} className={`sun-card cursor-pointer rounded-xl border p-3 text-center text-sm transition ${v.sunlight === s ? "border-lime-500 bg-mint-50 shadow-[0_8px_20px_-12px_rgb(53_199_89/0.8)]" : "border-stone-200 bg-white hover:border-lime-400"}`}>
                 <input type="radio" name="sunlight" value={s} checked={v.sunlight === s} onChange={set("sunlight")} className="sr-only" />
-                <span className="mx-auto block text-2xl" aria-hidden>{s === "FULL" ? "☀️" : s === "PARTIAL" ? "⛅" : "🌥️"}</span>
+                <SunIcon kind={s} />
                 <span className="mt-1 block font-medium text-forest-900">{label(s)}</span>
                 {!compact && <span className="mt-1 block text-xs text-stone-500">{SUNLIGHT_HINTS[s]}</span>}
               </label>
@@ -114,7 +139,7 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
         </div>
       </fieldset>
 
-      <button className="btn-primary btn-shine w-full py-3">Show recommended trees →</button>
+      <button className="btn-primary btn-shine w-full justify-center bg-[#1d4a2f] py-3 hover:bg-[#1d5b33]">Show recommended trees →</button>
     </form>
   );
 }

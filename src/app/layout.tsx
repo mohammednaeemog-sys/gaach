@@ -24,10 +24,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await getCurrentUser();
   return (
     <html lang="en" className={`${poppins.variable} ${cinzel.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen overflow-x-clip antialiased">
+      <body className="flex min-h-screen flex-col overflow-x-clip antialiased">
         <noscript><style>{`.reveal{opacity:1;transform:none;filter:none}.step-icon,.rise-word,.species-item,.hero-photo-card,.hero-eyebrow-line{opacity:1;transform:none;filter:none}`}</style></noscript>
         <Header />
-        <main className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 py-6 sm:py-10">{children}</main>
+        <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 sm:px-6 lg:px-10 py-6 sm:py-10">{children}</main>
         <Footer />
         <MenuCloser />
         <FallingLeaves />

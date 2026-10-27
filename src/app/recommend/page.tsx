@@ -85,8 +85,8 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
       {/* Header row with the site match card */}
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="anim-rise">
-          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]"><Icon.pin className="h-4 w-4" /> Tree recommendation</p>
-          <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl">Find trees for your place</h1>
+          <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]">Tree recommendation <span className="h-px w-10 bg-[#1d5b33]" aria-hidden /></p>
+          <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl lg:text-[3.4rem]">Find trees for <span className="text-[#2f7a45]">your place</span></h1>
           <p className="mt-2 text-stone-600">
             {outcome ? <>Matched to the climate of <b className="text-forest-900">{outcome.district.name}</b> and your spot.</> : "Tell us where and what the spot is like. We match every tree to your district's climate."}
           </p>
@@ -103,21 +103,15 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
       </div>
 
       {/* Section tabs */}
-      <nav className="find-tabs mt-6 grid grid-cols-3 gap-1 rounded-2xl bg-[#efede6] p-1 text-sm" aria-label="Sections">
+      <nav className="find-tabs mt-6 grid grid-cols-3 rounded-2xl bg-[#efede6]/80 text-sm" aria-label="Sections">
         <a href="#spot" className={`seg-tab ${outcome ? "" : "is-on"}`}><Icon.pin className="h-4 w-4" /> Your spot</a>
         <a href="#results" className={`seg-tab ${outcome ? "is-on" : ""}`}><Icon.leaf className="h-4 w-4" /> Matches {outcome ? <span className="rounded-full bg-lime-500 px-1.5 text-[11px] text-white">{outcome.results.length}</span> : null}</a>
-        <a href="#district" className="seg-tab"><Icon.pin className="h-4 w-4" /> District</a>
+        <a href="#district" className="seg-tab"><Icon.book className="h-4 w-4" /> District</a>
       </nav>
 
       <div className="relative mt-6 grid gap-6 lg:grid-cols-[360px_1fr]">
         <aside id="spot" className="h-fit scroll-mt-24 rounded-3xl bg-white p-5 shadow-[0_14px_40px_-28px_rgb(13_43_35/0.6)] ring-1 ring-stone-100 lg:sticky lg:top-20">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-[#1d5b33] text-white"><Icon.pin className="h-5 w-5" /></span>
-            <div>
-              <h2 className="font-semibold text-forest-900">Your spot</h2>
-              <p className="text-xs text-stone-500">Change anything and search again</p>
-            </div>
-          </div>
+          <h2 className="sr-only">Your spot</h2>
           <SiteForm divisions={divisions} savedSites={savedSites} initial={initial} errors={errors} compact />
         </aside>
 
@@ -144,12 +138,29 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
           )}
 
           {!outcome && (
-            <div className="find-empty flex flex-col items-center px-4 pb-6 text-center">
+            <div className="find-empty relative grid overflow-hidden rounded-3xl bg-[#f7f6f0] shadow-[0_14px_40px_-28px_rgb(13_43_35/0.6)] ring-1 ring-stone-100 md:min-h-[560px] md:grid-cols-[1.05fr_1fr]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/hero/find-tree.jpg" alt="" className="find-empty-tree w-full max-w-[560px]" />
-              <h2 className="font-display mt-2 text-3xl font-semibold text-forest-900">{Object.keys(errors).length ? "Please fix the highlighted fields" : "Your matches will appear here"}</h2>
-              <span className="mt-3 h-0.5 w-10 rounded-full bg-[#1d5b33]" aria-hidden />
-              <p className="mt-4 max-w-md text-[15px] text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
+              <img src="/hero/find-photo.jpg" alt="A young tree growing in open ground" className="find-photo h-64 w-full object-cover md:h-full" />
+              <div className="relative flex flex-col justify-center p-6 sm:p-10">
+                <span className="h-0.5 w-10 rounded-full bg-[#1d5b33]" aria-hidden />
+                <h2 className="font-display mt-4 text-3xl font-semibold leading-tight text-forest-900 lg:text-[2.4rem]">{Object.keys(errors).length ? "Please fix the highlighted fields" : <>Your matches<br className="hidden md:block" /> will appear here</>}</h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
+                <ul className="mt-7 space-y-5">
+                  {[
+                    { icon: Icon.pot, title: "Trees suited to your district", text: "Recommendations based on local climate and environment." },
+                    { icon: Icon.leaf, title: "Clear growing guidance", text: "Learn about space, sunlight, soil and care requirements." },
+                    { icon: Icon.doc, title: "Compare and choose", text: "See details, benefits and best matches for your place." },
+                  ].map((f, i) => (
+                    <li key={f.title} className="anim-rise flex items-start gap-4" style={{ animationDelay: `${150 + i * 90}ms` }}>
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#e3ecdf] text-[#1d5b33]"><f.icon className="h-6 w-6" /></span>
+                      <span>
+                        <span className="block font-semibold text-forest-900">{f.title}</span>
+                        <span className="block text-sm text-stone-500">{f.text}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
 

@@ -77,10 +77,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
       {denied && <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-800">That page is only for admins.</p>}
 
       {/* Hero */}
-      <section className="hero-light relative -mt-6 overflow-hidden bg-[#f5f3ec] sm:-mt-10 mx-[calc(50%-50vw)]">
+      <section className="hero-light relative -mt-6 overflow-hidden bg-[#f5f3ec] sm:-mt-10 mx-[calc(50%-50vw)] md:flex md:min-h-[calc(100svh-4rem)] md:flex-col">
         <div className="absolute inset-y-0 right-0 w-full md:w-[60%]" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/hero/home-tree.jpg" alt="" className="hero-tree-img h-full w-full object-cover object-[62%_50%]" />
+          <img src="/hero/home-tree.jpg" alt="" className="hero-tree-img h-full w-full object-cover object-[60%_75%]" />
         </div>
         <div className="hero-light-fade absolute inset-0" aria-hidden />
         {[["38%", "18%", 0], ["47%", "58%", 1.4], ["6%", "88%", 2.3]].map(([l, t, d], i) => (
@@ -89,7 +89,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           </svg>
         ))}
 
-        <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 pb-12 pt-12 sm:pt-16 md:pb-16">
+        <div className="hero-fit relative mx-auto flex w-full max-w-[1400px] items-center px-4 pb-12 pt-12 sm:px-6 sm:pt-16 md:flex-1 md:pb-12 lg:px-10">
           <div className="max-w-xl">
             <p className="hero-eyebrow flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-forest-900/80 sm:text-xs">
               <span>Greener cities<br />healthier people</span>
@@ -149,13 +149,14 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           </dl>
         </div>
 
-        {/* Popular species */}
-        <div className="relative border-t border-forest-900/10 bg-white">
-          <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 py-5">
-            <SpeciesRow items={species} tone="light" />
-          </div>
-        </div>
       </section>
+
+      {/* Popular species */}
+      <div className="relative -mt-20 border-b border-forest-900/10 bg-white mx-[calc(50%-50vw)]">
+        <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-10">
+          <SpeciesRow items={species} tone="light" />
+        </div>
+      </div>
       {/* Categories */}
       <section>
         <Reveal className="mb-6 text-center">

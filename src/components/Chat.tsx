@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icons";
 
 type Source = { kind: string; title: string; href: string; note?: string };
 type Msg = { role: "user" | "assistant"; content: string; refused?: boolean; sources?: Source[]; image?: string };
@@ -39,10 +40,10 @@ type Props = {
 };
 
 const QUICK = [
-  { emoji: "🌱", title: "Find a tree", text: "for my place", ask: "Which tree suits my place? I have a small rooftop with full sun." },
-  { emoji: "📷", title: "Check a photo", text: "spot the problem", ask: "" },
-  { emoji: "📅", title: "Care plan", text: "what to do next", ask: "What should I do next for my tree?" },
-  { emoji: "🛒", title: "Prices and stock", text: "sizes and offers", ask: "Is the Amrapali mango in stock and how much is it?" },
+  { icon: Icon.search, title: "Find a tree", text: "for my place", ask: "Which tree suits my place? I have a small rooftop with full sun." },
+  { icon: Icon.camera, title: "Check a photo", text: "spot the problem", ask: "" },
+  { icon: Icon.doc, title: "Care plan", text: "what to do next", ask: "What should I do next for my tree?" },
+  { icon: Icon.cart, title: "Prices and stock", text: "sizes and offers", ask: "Is the Amrapali mango in stock and how much is it?" },
 ];
 
 // Shown in turn while the advisor works, so the wait never looks frozen
@@ -186,44 +187,44 @@ export function Chat(p: Props) {
   }, []);
 
   return (
-    <div className={widget ? "flex h-full min-h-0 flex-col bg-white" : "card flex h-[75vh] min-h-[520px] flex-col overflow-hidden"}>
+    <div className={widget ? "flex h-full min-h-0 flex-col bg-white" : "card advisor-chat flex flex-col overflow-hidden"}>
       <div className={widget ? "hidden" : "flex items-center gap-3 border-b border-stone-200 px-5 py-3"}>
         <Avatar />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-forest-900">Gaach Tree Advisor <span className="ml-1 inline-flex items-center gap-1 align-middle text-[11px] font-medium text-lime-700"><span className="h-1.5 w-1.5 rounded-full bg-lime-500" />online</span></p>
+          <p className="font-display text-base text-forest-900">Gaach Tree Advisor <span className="ml-1.5 inline-flex items-center gap-1 align-middle font-sans text-[11px] font-medium text-forest-700"><span className="h-1.5 w-1.5 rounded-full bg-forest-700" />Online</span></p>
           <p className="truncate text-xs text-stone-500">{p.treeName ? `Talking about ${p.treeName}. ` : ""}Uses Gaach&apos;s catalogue, care guides and your own sites and trees. It cannot place orders.</p>
         </div>
         {messages.length > 0 && <Link href="/assistant" className="hidden rounded-full border border-stone-200 px-3 py-1.5 text-xs font-medium text-forest-700 hover:bg-mint-50 sm:block">+ New chat</Link>}
       </div>
       {notice && <p className="bg-amber-50 px-4 py-2 text-xs text-amber-900">{notice}</p>}
-      <div ref={listRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4" aria-live="polite">
+      <div ref={listRef} className={`min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain ${widget ? "p-4" : "p-4 sm:px-6"}`} aria-live="polite">
         {messages.length === 0 && (
-          <div className={`chat-welcome ${widget ? "space-y-4" : "mx-auto max-w-2xl space-y-6 py-4"}`}>
+          <div className={`chat-welcome ${widget ? "space-y-4" : "mx-auto flex max-w-4xl flex-col gap-7 py-4 sm:py-6"}`}>
             <div className={widget ? "flex items-start gap-2.5" : "text-center"}>
-              <span className={widget ? "" : "chat-hello-ring mx-auto mb-3 grid h-16 w-16 place-items-center"}><Avatar small={widget} /></span>
+              <span className={widget ? "" : "chat-hello-ring mx-auto mb-4 grid h-[72px] w-[72px] place-items-center"}><Avatar small={widget} /></span>
               <div>
-                <p className={`font-display text-forest-900 ${widget ? "text-lg" : "text-2xl sm:text-3xl"}`}>Hello{p.firstName ? ` ${p.firstName}` : ""}, I&apos;m here to help you every step of the way.</p>
-                <p className="mt-1 text-sm text-stone-500">{p.treeName ? `Ask me anything about ${p.treeName}.` : "How can I help with your trees today?"}</p>
+                <p className={`font-display text-forest-900 ${widget ? "text-lg" : "mx-auto max-w-xl text-2xl font-semibold leading-tight sm:text-[2rem]"}`}>Hello{p.firstName ? ` ${p.firstName}` : ""}, I&apos;m here to help you every step of the way.</p>
+                <p className={`text-stone-500 ${widget ? "mt-1 text-sm" : "mt-3 text-base"}`}>{p.treeName ? `Ask me anything about ${p.treeName}.` : "How can I help with your trees today?"}</p>
               </div>
             </div>
             {!p.treeName && (
-              <div className={`grid gap-2.5 ${widget ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-4"}`}>
+              <div className={`grid ${widget ? "grid-cols-2 gap-2.5" : "grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"}`}>
                 {QUICK.map((q, i) => (
                   <button key={q.title} type="button" onClick={() => (q.ask ? send(q.ask) : fileRef.current?.click())} className="quick-card" style={{ animationDelay: `${i * 80}ms` }}>
-                    <span className="quick-emoji" aria-hidden="true">{q.emoji}</span>
-                    <span className="block text-sm font-semibold text-forest-900">{q.title}</span>
-                    <span className="block text-xs text-stone-500">{q.text}</span>
+                    <q.icon className="quick-icon" />
+                    <span className="font-display block text-base font-semibold text-forest-900">{q.title}</span>
+                    <span className="block text-xs text-stone-500 sm:text-sm">{q.text}</span>
                   </button>
                 ))}
               </div>
             )}
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">Popular questions you can try</p>
+              <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">Popular questions you can try</p>
               <ul className="space-y-1.5">
                 {p.suggestions.slice(0, widget ? 3 : 6).map((s) => (
                   <li key={s}>
                     <button type="button" onClick={() => send(s)} className="popular-q">
-                      <span>{s}</span><span aria-hidden="true" className="text-lime-600">→</span>
+                      <span>{s}</span><span aria-hidden="true" className="text-lg leading-none text-forest-900">→</span>
                     </button>
                   </li>
                 ))}
@@ -261,15 +262,15 @@ export function Chat(p: Props) {
           <button type="button" onClick={() => setPhoto(null)} className="grid h-8 w-8 place-items-center rounded-full text-stone-500 hover:bg-stone-100" aria-label="Remove photo">×</button>
         </div>
       )}
-      <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="chat-input-bar flex items-center gap-2 border-t border-stone-200 p-3">
+      <form onSubmit={(e) => { e.preventDefault(); send(input); }} className={`chat-input-bar flex items-center gap-2 ${widget ? "border-t border-stone-200 p-3" : "px-4 pb-4 pt-2 sm:px-6"}`}>
         <input ref={fileRef} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => { pickPhoto(e.target.files?.[0]); e.target.value = ""; }} />
-        <button type="button" onClick={() => fileRef.current?.click()} disabled={busy} className="chat-photo" aria-label="Check a plant photo" title="Check a plant photo">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
+        <button type="button" onClick={() => fileRef.current?.click()} disabled={busy} className="chat-photo" aria-label="Attach a plant photo" title="Attach a plant photo">
+          <Icon.clip className="h-5 w-5" />
         </button>
         <label htmlFor={widget ? "widget-chat-input" : "chat-input"} className="sr-only">Your question</label>
-        <input id={widget ? "widget-chat-input" : "chat-input"} value={input} onChange={(e) => setInput(e.target.value)} maxLength={1500} placeholder={photo ? "Add a note (optional)…" : widget ? "Ask about any tree…" : "e.g. Which fruit tree suits my rooftop?"} className="input flex-1 rounded-full" disabled={busy} />
+        <input id={widget ? "widget-chat-input" : "chat-input"} value={input} onChange={(e) => setInput(e.target.value)} maxLength={1500} placeholder={photo ? "Add a note (optional)…" : widget ? "Ask about any tree…" : "e.g. Which fruit tree suits my rooftop?"} className="input chat-field flex-1 rounded-full" disabled={busy} />
         <button className="chat-send" disabled={busy || (!input.trim() && !photo)} aria-label="Send">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+          <Icon.send className="h-5 w-5" />
         </button>
       </form>
     </div>
