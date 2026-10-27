@@ -58,7 +58,7 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 
 | Feature | What it does |
 |---|---|
-| 🌳 **Tree finder** | Recommends trees for a district and planting conditions, with a match level and a plain-language reason for each tree. |
+| 🌳 **Tree finder** | Recommends trees for a district and planting conditions. Results are photo cards with a match score, a plain-language reason, and Buy and Compare buttons. |
 | 🔎 **Browse and search** | All trees with filters (purpose, size, sunlight, soil), search in English or by scientific name, and star ratings on each card. |
 | ⚖️ **Compare** | Puts 2 or 3 trees side by side (size, sunlight, water, soil, years to fruit, price). |
 | 🛒 **Cart and checkout** | Several sizes per tree, a cart with +/− steppers, a stock-safe checkout, and cash on delivery. |
@@ -70,7 +70,8 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 | 🔑 **Forgot password** | A free email reset link (Gmail), valid for 30 minutes. |
 | 📬 **Contact and newsletter** | A contact form and newsletter sign-up in the footer. |
 | 📄 **Info pages** | About, Contact, Privacy policy, Terms, Refund and return policy, Community guidelines. |
-| 📱 **Mobile first** | Works on phones, and can be installed as an app (PWA). |
+| 📱 **Mobile first** | Works on phones, fills wide screens up to 1400 px, and can be installed as an app (PWA). |
+| 🍃 **Living design** | Calm falling leaves across the site; tap one and it spins away with a small burst. Animations turn off for people who prefer reduced motion. |
 
 ### For the admin
 
