@@ -503,6 +503,23 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
   100% { transform: translate(var(--drift), calc(100vh + 80px)) rotate(320deg); opacity: 0; }
 }
 @keyframes leaf-sway { from { transform: translateX(-22px) rotate(-18deg); } to { transform: translateX(22px) rotate(22deg); } }
+/* tap a leaf: it spins up and away with a small burst */
+.fall-leaf { pointer-events: auto; cursor: pointer; padding: 12px; margin: -12px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.fall-leaf-svg { display: block; transition: transform .25s ease; }
+@media (hover: hover) { .fall-leaf:hover .fall-leaf-svg { transform: scale(1.35) rotate(-12deg); } }
+.fall-leaf.is-popping { animation-play-state: paused; }
+.fall-leaf.is-popping .fall-leaf-sway { animation-play-state: paused; }
+.fall-leaf.is-popping .fall-leaf-svg { animation: leaf-pop .9s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes leaf-pop {
+  0% { transform: scale(1) rotate(0); opacity: 1; }
+  30% { transform: scale(1.8) rotate(200deg) translateY(-14px); opacity: 1; }
+  100% { transform: scale(.4) rotate(620deg) translate(30px, -70px); opacity: 0; }
+}
+.leaf-spark { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; border-radius: 9999px 0; margin: -2.5px; opacity: 0; animation: leaf-spark .75s ease-out forwards; }
+@keyframes leaf-spark {
+  0% { transform: rotate(var(--a)) translateX(0) scale(1); opacity: .95; }
+  100% { transform: rotate(var(--a)) translateX(34px) scale(.3); opacity: 0; }
+}
 @media (max-width: 640px) { .fall-leaf-sm-hide { display: none; } }
 @media (prefers-reduced-motion: reduce) { .falling-leaves { display: none; } }
 
@@ -530,3 +547,46 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
 .prose-page p, .prose-page li { color: #57534e; font-size: .95rem; line-height: 1.7; margin-top: .6rem; }
 .prose-page ul { list-style: disc; padding-left: 1.25rem; }
 .prose-page a:not([class]) { color: var(--color-forest-700); text-decoration: underline; }
+
+/* ---------- Light home hero ---------- */
+.hero-light-fade { background: linear-gradient(90deg, #f5f3ec 0%, #f5f3ec 34%, rgb(245 243 236 / .82) 46%, rgb(245 243 236 / .15) 66%, transparent 80%); }
+@media (max-width: 767px) { .hero-light-fade { background: linear-gradient(180deg, rgb(245 243 236 / .93) 0%, rgb(245 243 236 / .86) 60%, rgb(245 243 236 / .55) 100%); } }
+.hero-tree-img { animation: tree-breathe 24s ease-in-out infinite alternate; transform-origin: 70% 60%; }
+@keyframes tree-breathe { from { transform: scale(1.02); } to { transform: scale(1.09) translate(-1%, -1%); } }
+.hero-green { background: linear-gradient(100deg, #1d5b33 0%, #1d5b33 40%, #3f9a5c 50%, #1d5b33 60%, #1d5b33 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: rise-word .8s cubic-bezier(.2,.7,.2,1) both, green-sheen 7s ease-in-out 2s infinite; }
+@keyframes green-sheen { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+.hero-cta { position: relative; overflow: hidden; }
+.hero-cta::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .22) 50%, transparent 70%); transform: translateX(-120%); animation: cta-sheen 4.5s ease-in-out 2.5s infinite; }
+@keyframes cta-sheen { 0%, 60% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+@media (prefers-reduced-motion: reduce) { .hero-tree-img, .hero-green, .hero-cta::after { animation: none; } .hero-green { color: #1d5b33; background: none; } }
+
+/* ---------- Browse header ---------- */
+.browse-hero-fade { background: linear-gradient(90deg, #f4efe2 0%, #f4efe2 36%, rgb(244 239 226 / .75) 46%, rgb(244 239 226 / 0) 62%); }
+@media (max-width: 767px) { .browse-hero-fade { background: linear-gradient(180deg, rgb(244 239 226 / .94), rgb(244 239 226 / .82)); } }
+.browse-hero-img { animation: tree-breathe 26s ease-in-out infinite alternate; transform-origin: 30% 60%; }
+.cat-chip { display: inline-flex; align-items: center; gap: .55rem; white-space: nowrap; padding: .7rem 1rem; font-size: .875rem; font-weight: 500; color: var(--color-forest-900); border-right: 1px solid #e7e5e0; transition: color .2s, background .2s; }
+.cat-chip:last-child { border-right: 0; }
+.cat-chip:hover { color: #1d5b33; background: #f3f7f0; }
+.cat-chip.is-on { background: var(--color-forest-900); color: #fff; border-radius: .7rem; border-right-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .browse-hero-img { animation: none; } }
+
+/* ---------- Find trees page ---------- */
+.find-page .seg-tab.is-on { background: #dfe9d8; color: #1d5b33; box-shadow: none; }
+.find-page #spot .btn-primary { background: #1d5b33; }
+.find-page #spot .btn-primary:hover { background: #174a29; }
+.blur-leaf { filter: blur(5px); opacity: .45; animation: blur-leaf-sway 9s ease-in-out infinite alternate; transform-origin: 20% 100%; }
+.blur-leaf-r { animation-duration: 11s; }
+@keyframes blur-leaf-sway { from { rotate: -3deg; } to { rotate: 4deg; } }
+.find-empty-tree { -webkit-mask-image: radial-gradient(ellipse 70% 72% at 50% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 70% 72% at 50% 50%, #000 58%, transparent 100%); mix-blend-mode: multiply; animation: tree-float 7s ease-in-out infinite; }
+@keyframes tree-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.match-card { transition: transform .25s ease, box-shadow .25s ease; }
+.match-card:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -24px rgb(13 43 35 / .55); }
+.match-photo img { transition: transform .5s ease; }
+.match-card:hover .match-photo img { transform: scale(1.06); }
+@media (prefers-reduced-motion: reduce) { .blur-leaf, .find-empty-tree { animation: none; } }
+@media (min-width: 640px) { .hero-feature + .hero-feature { border-left: 1px solid rgb(13 43 35 / .15); } }
+.hero-light-fade { background: linear-gradient(90deg, #f5f3ec 0%, #f5f3ec 30%, rgb(245 243 236 / .78) 42%, rgb(245 243 236 / .1) 60%, transparent 72%); }
+@media (max-width: 767px) { .hero-light-fade { background: linear-gradient(180deg, rgb(245 243 236 / .93) 0%, rgb(245 243 236 / .86) 60%, rgb(245 243 236 / .55) 100%); } }
+@media (min-width: 768px) {
+  .hero-tree-img, .browse-hero-img { -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 28%); mask-image: linear-gradient(90deg, transparent 0%, #000 28%); }
+}

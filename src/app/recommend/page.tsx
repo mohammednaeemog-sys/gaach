@@ -19,6 +19,24 @@ export const metadata = { title: "Find trees for your place" };
 
 type SP = Record<string, string | undefined>;
 
+// Soft, out-of-focus leaf sprigs at the page edges (decoration only)
+function BlurLeaves() {
+  const sprig = (flip: boolean) => (
+    <svg viewBox="0 0 120 260" className="h-full w-full" style={flip ? { transform: "scaleX(-1)" } : undefined}>
+      <path d="M20 255 C 30 190, 50 120, 100 20" stroke="#7fa37a" strokeWidth="3" fill="none" />
+      {[[34, 200, -30], [44, 160, 40], [56, 120, -35], [70, 86, 35], [86, 50, -25]].map(([x, y, r], i) => (
+        <path key={i} d="M0 0 C 12 -16, 40 -16, 52 0 C 40 16, 12 16, 0 0Z" transform={`translate(${x} ${y}) rotate(${r + (i % 2 ? 180 : 0)})`} fill={i % 2 ? "#6f9a6b" : "#5d8a5a"} />
+      ))}
+    </svg>
+  );
+  return (
+    <div className="pointer-events-none absolute inset-0 -z-0 hidden overflow-visible lg:block" aria-hidden>
+      <div className="blur-leaf absolute -left-10 top-56 h-[420px] w-40">{sprig(false)}</div>
+      <div className="blur-leaf blur-leaf-r absolute -right-8 top-72 h-[300px] w-32">{sprig(true)}</div>
+    </div>
+  );
+}
+
 export default async function RecommendPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const user = await getCurrentUser();
@@ -62,38 +80,39 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
     : [];
 
   return (
-    <div>
+    <div className="find-page relative mx-[calc(50%-50vw)] overflow-x-clip px-[calc(50vw-50%)]">
+      <BlurLeaves />
       {/* Header row with the site match card */}
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="anim-rise">
-          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-lime-600"><Icon.pin className="h-4 w-4" /> Tree recommendation</p>
+          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]"><Icon.pin className="h-4 w-4" /> Tree recommendation</p>
           <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl">Find trees for your place</h1>
           <p className="mt-2 text-stone-600">
             {outcome ? <>Matched to the climate of <b className="text-forest-900">{outcome.district.name}</b> and your spot.</> : "Tell us where and what the spot is like. We match every tree to your district's climate."}
           </p>
         </div>
-        <div className="anim-rise w-full rounded-2xl bg-white p-4 shadow-[0_14px_34px_-20px_rgb(13_43_35/0.5)] ring-1 ring-stone-100 sm:w-64" style={{ animationDelay: "120ms" }}>
+        <div className="anim-rise relative z-10 w-full rounded-2xl bg-white p-4 shadow-[0_14px_34px_-20px_rgb(13_43_35/0.5)] ring-1 ring-stone-100 sm:w-64" style={{ animationDelay: "120ms" }}>
           <div className="flex items-center justify-between text-sm text-stone-500">
             Best match
             {best && <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${best.score >= 75 ? "bg-mint-100 text-forest-700" : "bg-amber-50 text-amber-800"}`}>{level(best.score)}</span>}
           </div>
-          <p className="mt-1 text-3xl font-bold text-forest-900">{best ? best.score : "–"}<span className="text-base font-medium text-stone-400"> /100</span></p>
+          <p className="mt-1 text-right text-2xl font-semibold text-forest-900">{best ? best.score : 0}<span className="text-base font-medium text-stone-400"> / 100</span></p>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-stone-100"><div className={`score-bar h-full rounded-full ${best ? barColor(best.score) : ""}`} style={{ width: `${best?.score ?? 0}%` }} /></div>
           <p className="mt-2 truncate text-xs text-stone-500">{best ? best.tree.name : "Run a search to see your best tree"}</p>
         </div>
       </div>
 
       {/* Section tabs */}
-      <nav className="mt-6 grid grid-cols-3 gap-1 rounded-2xl bg-stone-100/80 p-1 text-sm" aria-label="Sections">
-        <a href="#spot" className={`seg-tab ${outcome ? "" : "is-on"}`}><Icon.pot className="h-4 w-4" /> Your spot</a>
+      <nav className="find-tabs mt-6 grid grid-cols-3 gap-1 rounded-2xl bg-[#efede6] p-1 text-sm" aria-label="Sections">
+        <a href="#spot" className={`seg-tab ${outcome ? "" : "is-on"}`}><Icon.pin className="h-4 w-4" /> Your spot</a>
         <a href="#results" className={`seg-tab ${outcome ? "is-on" : ""}`}><Icon.leaf className="h-4 w-4" /> Matches {outcome ? <span className="rounded-full bg-lime-500 px-1.5 text-[11px] text-white">{outcome.results.length}</span> : null}</a>
         <a href="#district" className="seg-tab"><Icon.pin className="h-4 w-4" /> District</a>
       </nav>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[370px_1fr]">
+      <div className="relative mt-6 grid gap-6 lg:grid-cols-[360px_1fr]">
         <aside id="spot" className="h-fit scroll-mt-24 rounded-3xl bg-white p-5 shadow-[0_14px_40px_-28px_rgb(13_43_35/0.6)] ring-1 ring-stone-100 lg:sticky lg:top-20">
           <div className="mb-4 flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-lime-500 text-white"><Icon.pin className="h-5 w-5" /></span>
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-[#1d5b33] text-white"><Icon.pin className="h-5 w-5" /></span>
             <div>
               <h2 className="font-semibold text-forest-900">Your spot</h2>
               <p className="text-xs text-stone-500">Change anything and search again</p>
@@ -125,10 +144,12 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
           )}
 
           {!outcome && (
-            <div className="grid place-items-center rounded-3xl bg-white p-10 text-center ring-1 ring-stone-100">
-              <div className="recommend-empty text-5xl" aria-hidden>🌱</div>
-              <h2 className="mt-3 text-lg font-semibold text-forest-900">{Object.keys(errors).length ? "Please fix the highlighted fields" : "Your matches will appear here"}</h2>
-              <p className="mt-1 max-w-md text-sm text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
+            <div className="find-empty flex flex-col items-center px-4 pb-6 text-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/hero/find-tree.jpg" alt="" className="find-empty-tree w-full max-w-[560px]" />
+              <h2 className="font-display mt-2 text-3xl font-semibold text-forest-900">{Object.keys(errors).length ? "Please fix the highlighted fields" : "Your matches will appear here"}</h2>
+              <span className="mt-3 h-0.5 w-10 rounded-full bg-[#1d5b33]" aria-hidden />
+              <p className="mt-4 max-w-md text-[15px] text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
             </div>
           )}
 
@@ -147,46 +168,38 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
                 </div>
               )}
 
-              <ol className="space-y-4">
+              <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {outcome.results.map((r, i) => {
                   const product = r.tree.products[0];
                   return (
-                    <li key={r.tree.id} className="anim-rise overflow-hidden rounded-3xl bg-white shadow-[0_10px_30px_-24px_rgb(13_43_35/0.6)] ring-1 ring-stone-100 transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-24px_rgb(13_43_35/0.5)] sm:flex" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
-                      <Link href={`/trees/${r.tree.slug}`} className="relative block h-44 bg-gradient-to-b from-mint-50 to-mint-100 sm:h-auto sm:w-48 sm:shrink-0" tabIndex={-1} aria-hidden>
+                    <li key={r.tree.id} className="match-card anim-rise flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_10px_30px_-24px_rgb(13_43_35/0.6)] ring-1 ring-stone-100" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
+                      <Link href={`/trees/${r.tree.slug}`} className="match-photo relative block h-48 overflow-hidden bg-gradient-to-b from-mint-50 to-mint-100" tabIndex={-1} aria-hidden>
                         <TreeArt shape={r.tree.shape} color={r.tree.color} name={r.tree.name} imageUrl={treePhoto(r.tree)} />
-                        <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-forest-900 text-sm font-bold text-white">{i + 1}</span>
+                        <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-forest-900 text-sm font-bold text-white shadow">{i + 1}</span>
+                        <span className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold shadow ${r.score >= 75 ? "bg-white text-forest-700" : "bg-white text-amber-800"}`}>{r.matchLevel} · {r.score}%</span>
                       </Link>
-                      <div className="flex-1 p-5">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-forest-900"><Link href={`/trees/${r.tree.slug}`} className="hover:text-lime-600">{r.tree.name}</Link></h3>
-                            <p className="text-sm text-stone-500">{r.tree.banglaName}</p>
-                          </div>
-                          <div className="w-44 text-right">
-                            <p className="text-sm font-semibold text-forest-900">{r.matchLevel} <span className="text-stone-400">{r.score}%</span></p>
-                            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-stone-100"><div className={`score-bar h-full rounded-full ${barColor(r.score)}`} style={{ width: `${r.score}%`, animationDelay: `${0.2 + Math.min(i, 8) * 0.07}s` }} /></div>
-                          </div>
-                        </div>
+                      <div className="flex flex-1 flex-col p-4">
+                        <h3 className="text-lg font-semibold leading-snug text-forest-900"><Link href={`/trees/${r.tree.slug}`} className="hover:text-lime-700">{r.tree.name}</Link></h3>
+                        <p className="text-sm text-stone-500">{r.tree.banglaName}</p>
+                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-stone-100"><div className={`score-bar h-full rounded-full ${barColor(r.score)}`} style={{ width: `${r.score}%`, animationDelay: `${0.2 + Math.min(i, 8) * 0.07}s` }} /></div>
                         <ul className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-stone-600" aria-label="Tree facts">
                           <li className="rounded-full bg-stone-100 px-2 py-0.5">{r.tree.matureHeightM} m tall</li>
                           <li className="rounded-full bg-stone-100 px-2 py-0.5">{r.tree.canopySpreadM} m wide</li>
-                          <li className="rounded-full bg-stone-100 px-2 py-0.5">{label(r.tree.growthRate)} growth</li>
                           <li className="rounded-full bg-sky-50 px-2 py-0.5 text-sky-800">{label(r.tree.waterNeed)} water</li>
-                          <li className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-800">{r.tree.fruitingSeason.split(/[(,]/)[0].trim()}</li>
                         </ul>
-                        <ul className="mt-3 space-y-1">
-                          {r.reasons.slice(0, 2).map((x) => <li key={x} className="flex gap-2 text-sm text-stone-700"><Icon.check className="mt-0.5 h-4 w-4 shrink-0 text-lime-600" />{x}</li>)}
-                          {r.notes.map((n) => <li key={n} className="flex gap-2 text-xs text-amber-800"><Icon.warn className="h-4 w-4 shrink-0" />{n}</li>)}
+                        <ul className="mt-3 flex-1 space-y-1">
+                          {r.reasons.slice(0, 2).map((x) => <li key={x} className="flex gap-2 text-[13px] leading-snug text-stone-700"><Icon.check className="mt-0.5 h-4 w-4 shrink-0 text-lime-600" />{x}</li>)}
+                          {r.notes.slice(0, 1).map((n) => <li key={n} className="flex gap-2 text-xs text-amber-800"><Icon.warn className="h-4 w-4 shrink-0" />{n}</li>)}
                         </ul>
-                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                        <div className="mt-4 flex items-center gap-2">
                           {product ? (
-                            <Link href={`/trees/${r.tree.slug}`} className="btn-primary px-4 py-2 text-xs">Buy from {taka(product.priceBdt)}</Link>
+                            <Link href={`/trees/${r.tree.slug}`} className="btn-primary flex-1 justify-center px-3 py-2 text-xs">Buy from {taka(product.priceBdt)}</Link>
                           ) : (
-                            <Link href={`/trees/${r.tree.slug}`} className="btn-secondary px-4 py-2 text-xs">Details</Link>
+                            <Link href={`/trees/${r.tree.slug}`} className="btn-secondary flex-1 justify-center px-3 py-2 text-xs">Details</Link>
                           )}
                           <CompareButton slug={r.tree.slug} active={compare.includes(r.tree.slug)} small />
-                          <Link href={`/assistant?tree=${r.tree.slug}&q=${encodeURIComponent(`Why was ${r.tree.name} recommended for ${outcome.district.name}, ${sp.spaceM} m space, ${label(sp.sunlight!).toLowerCase()}, ${label(sp.soil!).toLowerCase()} soil, for ${label(sp.purpose!).toLowerCase()}?`)}`} className="btn-ghost px-3 py-2 text-xs"><Icon.chat className="h-4 w-4" /> Why this tree?</Link>
                         </div>
+                        <Link href={`/assistant?tree=${r.tree.slug}&q=${encodeURIComponent(`Why was ${r.tree.name} recommended for ${outcome.district.name}, ${sp.spaceM} m space, ${label(sp.sunlight!).toLowerCase()}, ${label(sp.soil!).toLowerCase()} soil, for ${label(sp.purpose!).toLowerCase()}?`)}`} className="mt-2 flex items-center justify-center gap-1.5 rounded-xl py-1.5 text-xs font-medium text-forest-700 hover:bg-mint-50"><Icon.chat className="h-4 w-4" /> Why this tree?</Link>
                       </div>
                     </li>
                   );

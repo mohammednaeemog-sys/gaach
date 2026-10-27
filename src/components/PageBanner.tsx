@@ -18,7 +18,7 @@ export function PageBanner({ eyebrow, title, accent, text, features = [], photo 
           <path d="M4 20 C 4 9, 11 4, 21 4 C 21 14, 15 20, 4 20Z" fill="currentColor" />
         </svg>
       ))}
-      <div className="relative mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-[1.1fr_1fr] md:py-14">
+      <div className="relative mx-auto grid max-w-[1400px] gap-6 px-4 sm:px-6 lg:px-10 py-10 md:grid-cols-[1.1fr_1fr] md:py-14">
         <div>
           <p className="hero-eyebrow flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-lime-600"><LeafIcon className="h-4 w-4 text-lime-500" /> {eyebrow}</p>
           <h1 className="font-display mt-3 text-4xl font-semibold leading-[1.08] text-forest-900 sm:text-5xl">

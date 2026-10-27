@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import { readCompare } from "@/modules/catalogue/compare-list";
 import { TreeCard } from "@/components/TreeCard";
 import { ratingsFor } from "@/modules/reviews/queries";
-import { HeroPhoto } from "@/components/HeroPhoto";
 import { SpeciesRow, LeafIcon } from "@/components/SpeciesRow";
 import { RiseWords } from "@/components/Headline";
 import { ScrollVine } from "@/components/ScrollVine";
@@ -37,10 +36,18 @@ function Branch({ className = "" }: { className?: string }) {
 const SPECIES_THUMBS = ["coconut", "date-palm", "guava", "hibiscus", "hijal", "amloki", "jackfruit", "jarul"];
 
 function StatIcon({ kind }: { kind: "leaf" | "pin" | "pot" }) {
-  const common = { viewBox: "0 0 24 24", className: "stat-icon h-5 w-5 text-lime-400", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+  const common = { viewBox: "0 0 24 24", className: "stat-icon h-6 w-6 shrink-0 text-[#1d5b33] sm:h-7 sm:w-7", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
   if (kind === "leaf") return <svg {...common}><path d="M5 19 C 5 10, 11 5, 20 5 C 20 13, 14 19, 5 19Z" /><path d="M6 18 L 14 10" /></svg>;
   if (kind === "pin") return <svg {...common}><path d="M12 21 s-6-5.5-6-11 a6 6 0 0 1 12 0 c0 5.5-6 11-6 11z" /><circle cx="12" cy="10" r="2.2" /></svg>;
   return <svg {...common}><path d="M6 13 h12 l-1.6 7 h-8.8z" /><path d="M12 13 V 8" /><path d="M12 9 c-3 0-4.5-2-4.5-4 c2.5 0 4.5 1.5 4.5 4z M12 10 c2.5 0 4-1.6 4-3.5 c-2.2 0-4 1.3-4 3.5z" /></svg>;
+}
+
+function FeatureIcon({ kind }: { kind: "leaf" | "shield" | "truck" | "person" }) {
+  const p = { viewBox: "0 0 24 24", className: "h-7 w-7 shrink-0 text-[#1d5b33]", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+  if (kind === "leaf") return <svg {...p}><path d="M5 19 C 5 10, 11 5, 20 5 C 20 13, 14 19, 5 19Z" /><path d="M6 18 L 14 10" /></svg>;
+  if (kind === "shield") return <svg {...p}><path d="M12 3 l7 3 v5 c0 4.5-3 8-7 10 c-4-2-7-5.5-7-10 V6z" /><path d="M9 12 l2 2 l4-4" /></svg>;
+  if (kind === "truck") return <svg {...p}><path d="M3 7 h11 v9 H3z M14 10 h4 l3 3 v3 h-7z" /><circle cx="7" cy="17.5" r="1.6" /><circle cx="17" cy="17.5" r="1.6" /></svg>;
+  return <svg {...p}><circle cx="12" cy="8" r="3.6" /><path d="M4.5 20 c1.2-4 4.2-6 7.5-6 s6.3 2 7.5 6" /></svg>;
 }
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
@@ -70,74 +77,84 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
       {denied && <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-800">That page is only for admins.</p>}
 
       {/* Hero */}
-      <section className="hero relative -mt-6 overflow-hidden bg-forest-900 text-white sm:-mt-10 mx-[calc(50%-50vw)]">
-        <div className="hero-glow" aria-hidden />
-        {/* big leaves at the left edge, swaying a little */}
-        <svg className="hero-leaves pointer-events-none absolute -left-10 top-0 hidden h-full w-56 md:block" viewBox="0 0 220 700" preserveAspectRatio="xMinYMid slice" aria-hidden>
-          {[[20, 40, 30, "#174535"], [-10, 210, 10, "#123b2e"], [30, 380, 40, "#174535"], [-20, 560, 15, "#123b2e"], [60, 120, 55, "#1a4a3b"]].map(([x, y, r, c], i) => (
-            <g key={i} transform={`translate(${x} ${y}) rotate(${r})`}>
-              <g className="hero-leaf" style={{ animationDelay: `${i * 0.9}s`, animationDuration: `${7 + i}s` }}>
-                <path d="M0 0 C 40 -55, 130 -60, 190 -8 C 130 30, 45 40, 0 0Z" fill={c as string} />
-                <path d="M4 -1 C 60 -14, 120 -16, 186 -8" stroke="#0d2b23" strokeOpacity=".5" strokeWidth="2" fill="none" />
-              </g>
-            </g>
-          ))}
-        </svg>
-        {/* small leaves floating near the text */}
-        {[["2%", "78%", 0], ["40%", "12%", 1.3], ["41%", "63%", 2.4], ["30%", "92%", 0.7]].map(([l, t, d], i) => (
-          <svg key={i} viewBox="0 0 24 24" className="hero-mini-leaf absolute hidden h-4 w-4 text-mint-200/70 md:block" style={{ left: l as string, top: t as string, animationDelay: `${d}s` }} aria-hidden>
+      <section className="hero-light relative -mt-6 overflow-hidden bg-[#f5f3ec] sm:-mt-10 mx-[calc(50%-50vw)]">
+        <div className="absolute inset-y-0 right-0 w-full md:w-[60%]" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/home-tree.jpg" alt="" className="hero-tree-img h-full w-full object-cover object-[62%_50%]" />
+        </div>
+        <div className="hero-light-fade absolute inset-0" aria-hidden />
+        {[["38%", "18%", 0], ["47%", "58%", 1.4], ["6%", "88%", 2.3]].map(([l, t, d], i) => (
+          <svg key={i} viewBox="0 0 24 24" className="hero-mini-leaf absolute hidden h-4 w-4 text-lime-600/50 md:block" style={{ left: l as string, top: t as string, animationDelay: `${d}s` }} aria-hidden>
             <path d="M4 20 C 4 9, 11 4, 21 4 C 21 14, 15 20, 4 20Z" fill="currentColor" />
           </svg>
         ))}
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-10 pt-10 sm:pt-14 lg:grid-cols-[1fr_1.08fr] lg:gap-12">
-          <div>
-            <p className="hero-eyebrow flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-lime-400 sm:text-xs sm:tracking-[0.18em]">
-              <LeafIcon /> Grow better, right where you live <span className="hero-eyebrow-line ml-2 hidden h-px w-12 bg-lime-400/60 sm:block" />
+        <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 pb-12 pt-12 sm:pt-16 md:pb-16">
+          <div className="max-w-xl">
+            <p className="hero-eyebrow flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-forest-900/80 sm:text-xs">
+              <span>Greener cities<br />healthier people</span>
+              <span className="hero-eyebrow-line mt-4 h-px w-12 bg-forest-700/60" />
             </p>
-            <h1 className="font-display mt-5 text-[2.7rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.1rem]">
+            <h1 className="font-display mt-5 text-[2.8rem] font-semibold leading-[1.04] tracking-tight text-forest-900 sm:text-6xl lg:text-[4.4rem]">
               <span className="block"><RiseWords text="The right tree." start={150} step={110} /></span>
               <span className="block">
                 <RiseWords text="The" start={480} step={110} />
-                <span className="rise-word hero-shimmer text-lime-400" style={{ animationDelay: "600ms" }}>right place.</span>
+                <span className="rise-word hero-green" style={{ animationDelay: "600ms" }}>right place.</span>
               </span>
             </h1>
-            <p className="anim-rise mt-6 max-w-md text-[15px] leading-relaxed text-mint-100/85" style={{ animationDelay: "750ms" }}>
+            <p className="anim-rise mt-6 max-w-md text-base leading-relaxed text-stone-700 sm:text-[17px]" style={{ animationDelay: "750ms" }}>
               Discover trees that suit your district, soil, sunlight and available space. Buy healthy saplings and get expert guidance to help them thrive.
             </p>
-            <div className="anim-rise mt-8 flex flex-wrap gap-3" style={{ animationDelay: "880ms" }}>
-              <Link href="/recommend" className="btn btn-shine rounded-full bg-gradient-to-r from-lime-400 to-lime-500 px-6 py-3 font-semibold text-forest-900 shadow-[0_10px_30px_-10px_rgb(94_224_122/0.8)] hover:-translate-y-0.5">Find trees for my place →</Link>
-              <Link href="/trees" className="btn rounded-full border border-white/35 px-6 py-3 text-white hover:-translate-y-0.5 hover:bg-white/10">Explore saplings</Link>
+            <div className="anim-rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "880ms" }}>
+              <Link href="/recommend" className="hero-cta group flex items-center justify-center gap-3 rounded-xl bg-[#1d5b33] px-7 py-4 font-semibold text-white shadow-[0_14px_30px_-14px_rgb(29_91_51/0.9)] transition hover:-translate-y-0.5 hover:bg-[#174a29]">
+                Find trees for my place <span className="transition group-hover:translate-x-1">→</span>
+              </Link>
+              <Link href="/trees" className="flex items-center justify-center rounded-xl border border-forest-900/25 bg-white/75 px-6 py-4 font-semibold text-forest-900 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white">
+                Explore saplings
+              </Link>
             </div>
-            <dl className="anim-rise mt-10 grid max-w-lg grid-cols-3 divide-x divide-white/15" style={{ animationDelay: "1000ms" }}>
+            <ul className="anim-rise mt-8 grid max-w-xl grid-cols-2 gap-y-4 sm:grid-cols-4" style={{ animationDelay: "1000ms" }}>
               {([
-                [treeCount, "Tree species", "Native and suited for Bangladesh", "leaf"],
-                [64, "District profiles", "Location-based recommendations", "pin"],
-                [productCount, "Sapling variants", "Different sizes and plant types", "pot"],
-              ] as const).map(([n, l, sub, icon], i) => (
-                <div key={l} className={i ? "pl-4 sm:pl-6" : "pr-4"}>
-                  <dt className="sr-only">{l}</dt>
-                  <dd className="flex items-center gap-2 text-3xl font-semibold text-white"><CountUp to={n} /><StatIcon kind={icon} /></dd>
-                  <dd className="mt-1 text-sm font-medium text-mint-100">{l}</dd>
-                  <dd className="mt-0.5 hidden text-[11px] leading-snug text-mint-200/60 sm:block">{sub}</dd>
-                </div>
+                ["leaf", "Verified", "nurseries"],
+                ["shield", "Healthy", "saplings"],
+                ["truck", "Safe", "delivery"],
+                ["person", "Expert", "guidance"],
+              ] as const).map(([icon, a, b]) => (
+                <li key={a} className="hero-feature flex items-center gap-2.5 text-[13px] leading-tight text-forest-900 sm:px-3 sm:first:pl-0">
+                  <FeatureIcon kind={icon} />
+                  <span>{a}<br />{b}</span>
+                </li>
               ))}
-            </dl>
-          </div>
-          <div className="anim-rise" style={{ animationDelay: "350ms" }}>
-            <HeroPhoto src="/hero/nursery.jpg" />
+            </ul>
           </div>
         </div>
 
+        {/* Numbers */}
+        <div className="relative border-t border-forest-900/10 bg-[#eef3ec]/92 backdrop-blur-sm">
+          <dl className="mx-auto grid max-w-[1400px] grid-cols-3 divide-x divide-forest-900/10 px-4 sm:px-6 lg:px-10 py-6">
+            {([
+              [treeCount, "Tree species", "leaf"],
+              [64, "District profiles", "pin"],
+              [productCount, "Sapling variants", "pot"],
+            ] as const).map(([n, l, icon]) => (
+              <div key={l} className="flex flex-col items-center justify-center gap-2 px-2 sm:flex-row sm:gap-5">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#dfe9d8] sm:h-14 sm:w-14"><StatIcon kind={icon} /></span>
+                <div className="text-center sm:text-left">
+                  <dt className="sr-only">{l}</dt>
+                  <dd className="font-display text-3xl font-semibold text-forest-900 sm:text-4xl"><CountUp to={n} /></dd>
+                  <dd className="text-xs text-stone-600 sm:text-sm">{l}</dd>
+                </div>
+              </div>
+            ))}
+          </dl>
+        </div>
+
         {/* Popular species */}
-        <div className="relative border-t border-white/10">
-          <div className="mx-auto max-w-7xl px-4 py-5">
-            <SpeciesRow items={species} />
+        <div className="relative border-t border-forest-900/10 bg-white">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 py-5">
+            <SpeciesRow items={species} tone="light" />
           </div>
         </div>
-        <svg className="hero-wave relative block text-[var(--color-cream)]" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden>
-          <path d="M0 48 V30 C 240 6, 480 4, 720 22 S 1200 44, 1440 18 V48 Z" fill="currentColor" />
-        </svg>
       </section>
       {/* Categories */}
       <section>

@@ -5,7 +5,6 @@ import { readCompare } from "@/modules/catalogue/compare-list";
 import { Reveal } from "@/components/Reveal";
 import { TreeCard } from "@/components/TreeCard";
 import { ratingsFor } from "@/modules/reviews/queries";
-import { PageBanner } from "@/components/PageBanner";
 import { AutoSubmitForm } from "@/components/AutoSubmit";
 import { Icon } from "@/components/icons";
 import { PURPOSES, SOILS, SUNLIGHT, label, splitList } from "@/lib/constants";
@@ -14,7 +13,16 @@ export const metadata = { title: "Browse trees" };
 
 const PER_PAGE = 12;
 const TYPES: Record<string, string> = { FRUIT: "Fruit trees", ORNAMENTAL: "Flowering trees", SHADE: "Shade trees", PRIVACY: "Hedges and screens", TIMBER: "Timber trees" };
-const CHIP_PHOTO: Record<string, string> = { FRUIT: "/species/guava.jpg", ORNAMENTAL: "/species/jarul.jpg", SHADE: "/species/hijal.jpg", PRIVACY: "/species/hibiscus.jpg", TIMBER: "/species/jackfruit.jpg" };
+
+// Line icons for the category chips
+function CatIcon({ kind }: { kind: string }) {
+  const p = { viewBox: "0 0 24 24", className: "h-5 w-5 shrink-0", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+  if (kind === "FRUIT") return <svg {...p}><path d="M12 8 c-4-2-8 0-8 5 c0 5 4 8 6 8 c1 0 1.5-.5 2-.5 s1 .5 2 .5 c2 0 6-3 6-8 c0-5-4-7-8-5z" /><path d="M12 8 c0-2 1-4 3-5" /></svg>;
+  if (kind === "SHADE") return <svg {...p}><path d="M12 21 v-7 M12 16 l-3-2 M12 15 l3-2" /><path d="M7 14 c-3 0-4-2-4-4 c0-2 2-3 3-3 c0-2 2-4 4-4 c1 0 2 .5 2.5 1 c.5-.5 1.5-1 2.5-1 c2 0 4 2 4 4 c1 0 3 1 3 3 c0 2-1 4-4 4z" /></svg>;
+  if (kind === "ORNAMENTAL") return <svg {...p}><circle cx="12" cy="12" r="2.2" /><path d="M12 9.8 c-1.5-3-1.5-5 0-6.5 c1.5 1.5 1.5 3.5 0 6.5z M14.2 12 c3-1.5 5-1.5 6.5 0 c-1.5 1.5-3.5 1.5-6.5 0z M12 14.2 c1.5 3 1.5 5 0 6.5 c-1.5-1.5-1.5-3.5 0-6.5z M9.8 12 c-3 1.5-5 1.5-6.5 0 c1.5-1.5 3.5-1.5 6.5 0z" /></svg>;
+  if (kind === "PRIVACY") return <svg {...p}><path d="M5 19 C 5 10, 11 5, 20 5 C 20 13, 14 19, 5 19Z" /><path d="M6 18 L 14 10" /></svg>;
+  return <svg {...p}><ellipse cx="12" cy="5.5" rx="5" ry="2.2" /><path d="M7 5.5 v13 c0 1.2 2.2 2.2 5 2.2 s5-1 5-2.2 v-13" /><path d="M10 9 v6 M14 11 v6" /></svg>;
+}
 
 export default async function TreesPage({ searchParams }: { searchParams: Promise<CatalogueFilters> }) {
   const f = await searchParams;
@@ -58,36 +66,56 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
 
   return (
     <div>
-      <PageBanner
-        eyebrow="Trees for a greener tomorrow"
-        title="Find trees for a"
-        accent="greener tomorrow"
-        text="Explore fruit, flowering, shade and timber trees suited to Bangladesh. Healthy saplings, guidance on care and delivery to your door."
-        features={[
-          { icon: <Icon.leaf className="h-6 w-6" />, text: "Suited to Bangladesh" },
-          { icon: <Icon.shield className="h-6 w-6" />, text: "Healthy saplings" },
-          { icon: <Icon.truck className="h-6 w-6" />, text: "Delivery to all 64 districts" },
-        ]}
-      />
+      {/* Header: text on cream, nursery photo on the right */}
+      <section className="browse-hero relative -mt-6 overflow-hidden bg-[#f4efe2] sm:-mt-10 mx-[calc(50%-50vw)]">
+        <div className="absolute inset-y-0 right-0 w-full md:w-[60%]" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/browse.jpg" alt="" className="browse-hero-img h-full w-full object-cover object-[35%_50%]" />
+        </div>
+        <div className="browse-hero-fade absolute inset-0" aria-hidden />
+        <div className="relative mx-auto max-w-[1400px] px-4 pb-10 pt-12 sm:px-6 sm:pt-14 lg:px-10 md:pb-14">
+          <div className="max-w-xl">
+            <p className="hero-eyebrow flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.24em] text-forest-900/80">
+              Trees for a greener tomorrow <span className="hero-eyebrow-line h-px w-14 bg-forest-900/50" />
+            </p>
+            <h1 className="font-display mt-4 text-4xl font-semibold leading-[1.06] text-forest-900 sm:text-5xl lg:text-6xl">
+              <span className="anim-rise block" style={{ animationDelay: "80ms" }}>Find trees for a</span>
+              <span className="anim-rise hero-green block" style={{ animationDelay: "200ms" }}>greener tomorrow</span>
+            </h1>
+            <p className="anim-rise mt-4 max-w-lg text-[15px] leading-relaxed text-stone-700 sm:text-base" style={{ animationDelay: "320ms" }}>
+              Explore fruit, flowering, shade and timber trees suited to Bangladesh. Healthy saplings, guidance on care and delivery to your door.
+            </p>
+            <ul className="anim-rise mt-7 flex flex-wrap items-center gap-y-3" style={{ animationDelay: "440ms" }}>
+              {([[<Icon.leaf key="l" className="h-5 w-5" />, "Suited to", "Bangladesh"], [<Icon.shield key="s" className="h-5 w-5" />, "Healthy", "saplings"], [<Icon.truck key="t" className="h-5 w-5" />, "Delivery to all", "64 districts"]] as const).map(([icon, a1, b1], i) => (
+                <li key={a1} className={`flex items-center gap-3 pr-5 text-sm leading-tight text-forest-900 ${i ? "border-l border-forest-900/15 pl-5" : ""}`}>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#e5ebd9] text-[#1d5b33]">{icon}</span>
+                  <span>{a1}<br />{b1}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
 
       {/* Search and type chips */}
-      <div className="relative z-10 -mt-6 flex flex-col gap-3 lg:flex-row lg:items-center">
-        <form method="get" action="/trees" className="flex w-full items-center gap-2 rounded-2xl bg-white p-1.5 pl-4 shadow-[0_12px_30px_-16px_rgb(13_43_35/0.4)] ring-1 ring-stone-100 lg:max-w-sm">
-          <Icon.search className="h-5 w-5 shrink-0 text-stone-400" />
-          <label htmlFor="q" className="sr-only">Search trees</label>
-          <input id="q" name="q" type="search" defaultValue={f.q} placeholder="Search trees (mango, আম, neem…)" className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none" />
-          {picked.purpose.map((p) => <input key={p} type="hidden" name="purpose" value={p} />)}
-          <button className="rounded-xl bg-lime-500 px-4 py-2 text-sm font-semibold text-white hover:bg-lime-600">Search</button>
-        </form>
-        <div className="chip-row flex gap-2 overflow-x-auto pb-1 lg:pb-0">
-          <Link href={params({ purpose: null, page: null })} className={`type-chip ${!picked.purpose.length ? "is-on" : ""}`}><Icon.grid className="h-4 w-4" /> All</Link>
-          {PURPOSES.map((p) => (
-            <Link key={p} href={params({ purpose: singleType === p ? null : p, page: null })} className={`type-chip ${singleType === p ? "is-on" : ""}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={CHIP_PHOTO[p]} alt="" className="h-6 w-6 rounded-full object-cover" />
-              {TYPES[p]}
-            </Link>
-          ))}
+      <div className="browse-bar relative mx-[calc(50%-50vw)] border-y border-stone-200/80 bg-white">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-10">
+          <form method="get" action="/trees" className="flex w-full items-stretch overflow-hidden rounded-xl border border-stone-200 bg-white lg:max-w-md">
+            <span className="grid place-items-center pl-4"><Icon.search className="h-5 w-5 text-stone-500" /></span>
+            <label htmlFor="q" className="sr-only">Search trees</label>
+            <input id="q" name="q" type="search" defaultValue={f.q} placeholder="Search trees (mango, আম, neem, etc.)" className="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm outline-none" />
+            {picked.purpose.map((p) => <input key={p} type="hidden" name="purpose" value={p} />)}
+            <button className="bg-forest-900 px-6 text-sm font-semibold text-white transition hover:bg-forest-800">Search</button>
+          </form>
+          <div className="chip-row flex items-center overflow-x-auto lg:border-l lg:border-stone-200 lg:pl-3">
+            <Link href={params({ purpose: null, page: null })} className={`cat-chip ${!picked.purpose.length ? "is-on" : ""}`}><Icon.grid className="h-5 w-5" /> All</Link>
+            {PURPOSES.map((p) => (
+              <Link key={p} href={params({ purpose: singleType === p ? null : p, page: null })} className={`cat-chip ${singleType === p ? "is-on" : ""}`}>
+                <CatIcon kind={p} />
+                {TYPES[p]}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -151,7 +179,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
               <Link href="/trees" className="btn-secondary mt-4">Clear filters</Link>
             </div>
           ) : (
-            <div className={list ? "space-y-3" : "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4"}>
+            <div className={list ? "space-y-3" : "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"}>
               {shown.map((t, i) => (
                 <Reveal key={t.id} delay={(i % 4) * 60} className="h-full">
                   <TreeCard tree={t} comparing={compare.includes(t.slug)} back={back} layout={list ? "list" : "grid"} rating={ratings[t.id]} />

@@ -37,7 +37,7 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-30 bg-forest-900/95 text-white backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-4 px-4 sm:px-6 lg:px-10">
         <Link href="/" aria-label="Gaach home" className="logo-hover flex items-center text-base">
           <Logo size={40} />
         </Link>

@@ -66,7 +66,7 @@ export async function Footer() {
       <svg className="foot-leaf pointer-events-none absolute -right-10 -top-10 h-56 w-56 text-white/[0.04]" viewBox="0 0 24 24" aria-hidden>
         <path d="M4 20 C 4 9, 11 4, 21 4 C 21 14, 15 20, 4 20Z" fill="currentColor" />
       </svg>
-      <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-12 lg:grid-cols-[1.45fr_1fr_1fr_1.3fr]">
+      <div className="relative mx-auto grid max-w-[1400px] grid-cols-2 gap-x-6 gap-y-10 px-4 sm:px-6 lg:px-10 py-12 lg:grid-cols-[1.45fr_1fr_1fr_1.3fr]">
         {/* Brand and contact */}
         <div className="col-span-2 space-y-5 lg:col-span-1">
           <LogoBadge size={112} className="logo-hover-tilt" />
@@ -143,13 +143,8 @@ export async function Footer() {
       </div>
 
       <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-mint-200/70 sm:flex-row">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-center px-4 sm:px-6 lg:px-10 py-5 text-xs text-mint-200/70">
           <p>© {new Date().getFullYear()} Gaach. Trees for Bangladesh.</p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="rounded-full border border-white/15 px-3 py-1">Cash on delivery</span>
-            <span className="rounded-full border border-white/15 px-3 py-1">All 64 districts</span>
-            <Link href="/credits" className="foot-link px-1">Photo credits</Link>
-          </div>
         </div>
       </div>
     </footer>

@@ -1,8 +1,10 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-// A few small leaves drifting down the page, slow and quiet. Pure CSS, no clicks blocked.
+// A few small leaves drifting down the page, slow and quiet. Tapping one makes it
+// spin away with a little burst, then a fresh leaf starts falling from the top.
 // Turned off for people who prefer less motion, and on admin, checkout and payment pages.
 const LEAVES = [
   { left: 6, size: 18, dur: 26, delay: -3, drift: 60, color: "#7cc68f", shape: 0 },
@@ -15,19 +17,39 @@ const LEAVES = [
 ];
 const HIDDEN_ON = ["/admin", "/checkout", "/pay"];
 
+const SPARKS = [0, 72, 144, 216, 288];
+
 export function FallingLeaves() {
   const path = usePathname() ?? "/";
+  const [popping, setPopping] = useState<Record<number, boolean>>({});
+  const [round, setRound] = useState<Record<number, number>>({});
+  const timers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
   if (HIDDEN_ON.some((p) => path.startsWith(p))) return null;
+
+  const pop = (i: number) => {
+    if (popping[i]) return;
+    setPopping((p) => ({ ...p, [i]: true }));
+    clearTimeout(timers.current[i]);
+    timers.current[i] = setTimeout(() => {
+      setPopping((p) => ({ ...p, [i]: false }));
+      setRound((r) => ({ ...r, [i]: (r[i] ?? 0) + 1 })); // remount: falls again from the top
+    }, 950);
+  };
+
   return (
     <div className="falling-leaves" aria-hidden="true">
       {LEAVES.map((l, i) => (
         <span
-          key={i}
-          className={`fall-leaf ${i % 2 ? "fall-leaf-sm-hide" : ""}`}
-          style={{ left: `${l.left}%`, animationDuration: `${l.dur}s`, animationDelay: `${l.delay}s`, ["--drift" as string]: `${l.drift}px` }}
+          key={`${i}-${round[i] ?? 0}`}
+          className={`fall-leaf ${i % 2 ? "fall-leaf-sm-hide" : ""} ${popping[i] ? "is-popping" : ""}`}
+          style={{ left: `${l.left}%`, animationDuration: `${l.dur}s`, animationDelay: `${round[i] ? 0 : l.delay}s`, ["--drift" as string]: `${l.drift}px` }}
+          onPointerDown={() => pop(i)}
         >
+          {popping[i] && SPARKS.map((a) => (
+            <span key={a} className="leaf-spark" style={{ ["--a" as string]: `${a + i * 11}deg`, background: l.color }} />
+          ))}
           <span className="fall-leaf-sway" style={{ animationDuration: `${(l.dur / 6).toFixed(1)}s`, animationDelay: `${l.delay / 3}s` }}>
-            <svg viewBox="0 0 24 24" width={l.size} height={l.size} fill={l.color}>
+            <svg className="fall-leaf-svg" viewBox="0 0 24 24" width={l.size} height={l.size} fill={l.color}>
               {l.shape === 0 ? (
                 <path d="M4 20 C 4 10, 10 4, 20 4 C 20 14, 14 20, 4 20Z M5.5 18.5 L 15 9" stroke="#ffffff" strokeOpacity="0.45" strokeWidth="0.9" />
               ) : (
