@@ -1,0 +1,346 @@
+// Gaach data model.
+// SQLite has no enums or arrays, so controlled values are stored as strings
+// and validated against the lists in src/lib/constants.ts (NFR-7.1).
+// Multi-value fields (sunlight, soils, purposes, rainfall) are comma-separated.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Accounts (FR-1) ----------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("USER") // USER | ADMIN
+  phone        String?
+  address      String?
+  createdAt    DateTime @default(now())
+
+  sessions      Session[]
+  sites         Site[]
+  cartItems     CartItem[]
+  orders        Order[]
+  ownedTrees    OwnedTree[]
+  conversations Conversation[]
+  refusals      RefusedQuestion[]
+  resets        PasswordReset[]
+  reviews       Review[]
+}
+
+model Session {
+  id         String   @id // sha256 of the cookie token
+  userId     String
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ---------- Location reference data (FR-2, FR-8.4) ----------
+
+model Division {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  districts District[]
+}
+
+model Region {
+  id           Int        @id @default(autoincrement())
+  name         String     @unique
+  description  String     @default("")
+  rainfall     String // LOW | MEDIUM | HIGH
+  floodProne   Boolean    @default(false)
+  droughtProne Boolean    @default(false)
+  saline       Boolean    @default(false)
+  districts    District[]
+}
+
+model District {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  divisionId Int
+  regionId   Int
+  division   Division @relation(fields: [divisionId], references: [id])
+  region     Region   @relation(fields: [regionId], references: [id])
+  sites      Site[]
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+
+// ---------- Saved sites (FR-2.5) ----------
+
+model Site {
+  id         String   @id @default(cuid())
+  userId     String
+  name       String
+  districtId Int
+  spaceM     Float
+  sunlight   String
+  soil       String
+  purpose    String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  district   District @relation(fields: [districtId], references: [id])
+
+  @@index([userId])
+}
+
+// ---------- Catalogue (FR-4, FR-8.1) ----------
+
+model Tree {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  name              String
+  banglaName        String   @default("")
+  scientificName    String   @default("")
+  description       String   @default("")
+  imageUrl          String? // photo; without one an illustration is drawn
+  imageCredit       String   @default("") // e.g. "Photo: Jane Doe, CC BY-SA 4.0"
+  imageSourceUrl    String   @default("") // page where the photo and its license can be checked
+  shape             String   @default("round") // illustration: round | tall | spreading | palm | shrub | columnar
+  color             String   @default("#2f7d32")
+  matureHeightM     Float    @default(0)
+  canopySpreadM     Float    @default(0)
+  growthRate        String   @default("") // SLOW | MEDIUM | FAST
+  sunlight          String   @default("") // tolerated sunlight levels
+  soils             String   @default("") // suitable soils
+  purposes          String   @default("") // purposes it serves, strongest first
+  waterNeed         String   @default("") // LOW | MEDIUM | HIGH
+  rainfall          String   @default("") // rainfall levels it survives
+  floodTolerance    String   @default("") // LOW | MEDIUM | HIGH
+  droughtTolerance  String   @default("")
+  salinityTolerance String   @default("")
+  fruitingSeason    String   @default("")
+  cautions          String   @default("")
+  published         Boolean  @default(false)
+  // Provenance of the tree facts (where they come from and whether a competent person checked them)
+  sourceTitle       String   @default("")
+  sourceUrl         String   @default("")
+  reviewStatus      String   @default("UNREVIEWED") // UNREVIEWED | REVIEWED
+  reviewedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  products   Product[]
+  careStages CareStage[]
+  ownedBy    OwnedTree[]
+  reviews    Review[]
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  treeId    String
+  title     String
+  sizeLabel String // e.g. "2 ft sapling"
+  ageMonths Int
+  priceBdt  Int
+  stock     Int      @default(0)
+  imageUrl  String? // photo of this size; without one the tree photo is shown
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  tree      Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+// ---------- Care content (FR-6, FR-8.3) ----------
+
+model CareStage {
+  id          String @id @default(cuid())
+  treeId      String
+  stage       String // PLANTING_DAY | FIRST_WEEK | FIRST_SEASON | ONGOING
+  planting    String @default("")
+  watering    String @default("")
+  fertilizing String @default("")
+  protection  String @default("")
+  tree        Tree   @relation(fields: [treeId], references: [id], onDelete: Cascade)
+
+  @@unique([treeId, stage])
+}
+
+// ---------- Shop (FR-5) ----------
+
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  status        String      @default("PLACED") // PLACED | SHIPPED | DELIVERED | CANCELLED
+  paymentMethod String // COD | ONLINE_TEST
+  paymentStatus String      @default("PENDING") // PENDING | PAID | FAILED
+  paymentRef    String?
+  recipientName String
+  phone         String
+  address       String
+  subtotalBdt   Int
+  deliveryFee   Int
+  totalBdt      Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  ownedTrees    OwnedTree[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  productId    String
+  titleSnapshot String
+  unitPriceBdt Int
+  quantity     Int
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product @relation(fields: [productId], references: [id])
+}
+
+// A purchased tree in the user's account, linked to its care plan (FR-6.1)
+model OwnedTree {
+  id        String    @id @default(cuid())
+  userId    String
+  treeId    String
+  orderId   String
+  quantity  Int       @default(1)
+  nickname  String    @default("")
+  plantedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tree      Tree      @relation(fields: [treeId], references: [id])
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ---------- AI Assistant (FR-7, FR-8.6) ----------
+
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String    @default("New chat")
+  treeId    String? // tree the chat was opened from, if any
+  summary   String    @default("") // short session summary of what has been established
+  state     String    @default("{}") // JSON: focus tree, site, troubleshooting details
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@index([userId])
+}
+
+model ChatMessage {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           String // user | assistant
+  content        String
+  intent         String       @default("") // routed intent of the user message
+  tools          String       @default("") // tools used for the answer, comma-separated
+  sources        String       @default("[]") // JSON list of sources shown with the answer
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model RefusedQuestion {
+  id        String   @id @default(cuid())
+  userId    String?
+  question  String
+  reason    String   @default("") // why it was refused, e.g. off-topic or tried to change the rules
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// ---------- Care knowledge base for the assistant (FR-7.3) ----------
+
+model CareGuide {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  topic       String // planting | watering | feeding | troubleshooting | pests | disease | site | safety | species
+  species     String    @default("") // comma-separated tree slugs; empty means general
+  stage       String    @default("") // care stage it applies to, if any
+  symptoms    String    @default("") // comma-separated symptom keys
+  sections    String // JSON: [{ heading, text }]
+  sourceTitle String
+  sourceUrl   String
+  status      String    @default("UNREVIEWED") // UNREVIEWED | REVIEWED
+  reviewNote  String    @default("")
+  reviewedAt  DateTime?
+  published   Boolean   @default(true)
+  updatedAt   DateTime  @updatedAt
+}
+
+// One-time "forgot password" links. Only a hash of the token is stored.
+model PasswordReset {
+  id        String    @id // sha256 of the token in the emailed link
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Star ratings and comments from logged-in users, one per user per tree
+model Review {
+  id        String   @id @default(cuid())
+  treeId    String
+  userId    String
+  rating    Int // 1 to 5
+  comment   String   @default("")
+  verified  Boolean  @default(false) // the user has ordered this tree from Gaach
+  hidden    Boolean  @default(false) // hidden by an admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tree      Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([treeId, userId])
+  @@index([treeId, hidden])
+}
+
+// ---------- Footer: newsletter and contact form ----------
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  topic     String   @default("General")
+  message   String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+}
