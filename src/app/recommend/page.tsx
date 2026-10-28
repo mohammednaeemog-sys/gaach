@@ -31,8 +31,8 @@ function BlurLeaves() {
   );
   return (
     <div className="pointer-events-none absolute inset-0 -z-0 hidden overflow-visible lg:block" aria-hidden>
-      <div className="blur-leaf absolute -left-10 top-56 h-[420px] w-40">{sprig(false)}</div>
-      <div className="blur-leaf blur-leaf-r absolute -right-8 top-72 h-[300px] w-32">{sprig(true)}</div>
+      <div className="blur-leaf absolute -left-10 top-56 h-[26.25rem] w-40">{sprig(false)}</div>
+      <div className="blur-leaf blur-leaf-r absolute -right-8 top-72 h-[18.75rem] w-32">{sprig(true)}</div>
     </div>
   );
 }
@@ -85,13 +85,13 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
       {/* Header row with the site match card */}
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="anim-rise">
-          <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]">Tree recommendation <span className="h-px w-10 bg-[#1d5b33]" aria-hidden /></p>
+          <p className="flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]">Tree recommendation <span className="h-px w-10 bg-[#1d5b33]" aria-hidden /></p>
           <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl lg:text-[3.4rem]">Find trees for <span className="text-[#2f7a45]">your place</span></h1>
           <p className="mt-2 text-stone-600">
             {outcome ? <>Matched to the climate of <b className="text-forest-900">{outcome.district.name}</b> and your spot.</> : "Tell us where and what the spot is like. We match every tree to your district's climate."}
           </p>
         </div>
-        <div className="anim-rise relative z-10 w-full rounded-2xl bg-white p-4 shadow-[0_14px_34px_-20px_rgb(13_43_35/0.5)] ring-1 ring-stone-100 sm:w-64" style={{ animationDelay: "120ms" }}>
+        <div className="anim-rise relative z-10 w-full rounded-2xl bg-white p-4 shadow-[0_0.875rem_2.125rem_-1.25rem_rgb(13_43_35/0.5)] ring-1 ring-stone-100 sm:w-64" style={{ animationDelay: "120ms" }}>
           <div className="flex items-center justify-between text-sm text-stone-500">
             Best match
             {best && <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${best.score >= 75 ? "bg-mint-100 text-forest-700" : "bg-amber-50 text-amber-800"}`}>{level(best.score)}</span>}
@@ -105,19 +105,19 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
       {/* Section tabs */}
       <nav className="find-tabs mt-6 grid grid-cols-3 rounded-2xl bg-[#efede6]/80 text-sm" aria-label="Sections">
         <a href="#spot" className={`seg-tab ${outcome ? "" : "is-on"}`}><Icon.pin className="h-4 w-4" /> Your spot</a>
-        <a href="#results" className={`seg-tab ${outcome ? "is-on" : ""}`}><Icon.leaf className="h-4 w-4" /> Matches {outcome ? <span className="rounded-full bg-lime-500 px-1.5 text-[11px] text-white">{outcome.results.length}</span> : null}</a>
+        <a href="#results" className={`seg-tab ${outcome ? "is-on" : ""}`}><Icon.leaf className="h-4 w-4" /> Matches {outcome ? <span className="rounded-full bg-lime-500 px-1.5 text-[0.6875rem] text-white">{outcome.results.length}</span> : null}</a>
         <a href="#district" className="seg-tab"><Icon.book className="h-4 w-4" /> District</a>
       </nav>
 
-      <div className="relative mt-6 grid gap-6 lg:grid-cols-[360px_1fr]">
-        <aside id="spot" className="h-fit scroll-mt-24 rounded-3xl bg-white p-5 shadow-[0_14px_40px_-28px_rgb(13_43_35/0.6)] ring-1 ring-stone-100 lg:sticky lg:top-20">
+      <div className="relative mt-6 grid gap-6 lg:grid-cols-[22.5rem_1fr]">
+        <aside id="spot" className="h-fit scroll-mt-24 rounded-3xl bg-white p-5 shadow-[0_0.875rem_2.5rem_-1.75rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100 lg:sticky lg:top-20">
           <h2 className="sr-only">Your spot</h2>
           <SiteForm divisions={divisions} savedSites={savedSites} initial={initial} errors={errors} compact />
         </aside>
 
         <section aria-live="polite" className="min-w-0 space-y-6">
           {region && outcome && (
-            <div id="district" className="scroll-mt-24 overflow-hidden rounded-3xl bg-white shadow-[0_14px_40px_-28px_rgb(13_43_35/0.6)] ring-1 ring-stone-100">
+            <div id="district" className="scroll-mt-24 overflow-hidden rounded-3xl bg-white shadow-[0_0.875rem_2.5rem_-1.75rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100">
               <div className="flex flex-wrap items-center gap-3 border-b border-stone-100 bg-gradient-to-r from-mint-50 to-white p-5">
                 <span className="grid h-10 w-10 place-items-center rounded-2xl bg-forest-900 text-white"><Icon.pin className="h-5 w-5" /></span>
                 <div className="flex-1">
@@ -138,13 +138,13 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
           )}
 
           {!outcome && (
-            <div className="find-empty relative grid overflow-hidden rounded-3xl bg-[#f7f6f0] shadow-[0_14px_40px_-28px_rgb(13_43_35/0.6)] ring-1 ring-stone-100 md:min-h-[560px] md:grid-cols-[1.05fr_1fr]">
+            <div className="find-empty relative grid overflow-hidden rounded-3xl bg-[#f7f6f0] shadow-[0_0.875rem_2.5rem_-1.75rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100 md:min-h-[35rem] md:grid-cols-[1.05fr_1fr]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/hero/find-photo.jpg" alt="A young tree growing in open ground" className="find-photo h-64 w-full object-cover md:h-full" />
               <div className="relative flex flex-col justify-center p-6 sm:p-10">
                 <span className="h-0.5 w-10 rounded-full bg-[#1d5b33]" aria-hidden />
                 <h2 className="font-display mt-4 text-3xl font-semibold leading-tight text-forest-900 lg:text-[2.4rem]">{Object.keys(errors).length ? "Please fix the highlighted fields" : <>Your matches<br className="hidden md:block" /> will appear here</>}</h2>
-                <p className="mt-4 text-[15px] leading-relaxed text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
+                <p className="mt-4 text-[0.9375rem] leading-relaxed text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
                 <ul className="mt-7 space-y-5">
                   {[
                     { icon: Icon.pot, title: "Trees suited to your district", text: "Recommendations based on local climate and environment." },
@@ -183,7 +183,7 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
                 {outcome.results.map((r, i) => {
                   const product = r.tree.products[0];
                   return (
-                    <li key={r.tree.id} className="match-card anim-rise flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_10px_30px_-24px_rgb(13_43_35/0.6)] ring-1 ring-stone-100" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
+                    <li key={r.tree.id} className="match-card anim-rise flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_0.625rem_1.875rem_-1.5rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
                       <Link href={`/trees/${r.tree.slug}`} className="match-photo relative block h-48 overflow-hidden bg-gradient-to-b from-mint-50 to-mint-100" tabIndex={-1} aria-hidden>
                         <TreeArt shape={r.tree.shape} color={r.tree.color} name={r.tree.name} imageUrl={treePhoto(r.tree)} />
                         <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-forest-900 text-sm font-bold text-white shadow">{i + 1}</span>
@@ -193,13 +193,13 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
                         <h3 className="text-lg font-semibold leading-snug text-forest-900"><Link href={`/trees/${r.tree.slug}`} className="hover:text-lime-700">{r.tree.name}</Link></h3>
                         <p className="text-sm text-stone-500">{r.tree.banglaName}</p>
                         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-stone-100"><div className={`score-bar h-full rounded-full ${barColor(r.score)}`} style={{ width: `${r.score}%`, animationDelay: `${0.2 + Math.min(i, 8) * 0.07}s` }} /></div>
-                        <ul className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-stone-600" aria-label="Tree facts">
+                        <ul className="mt-3 flex flex-wrap gap-1.5 text-[0.6875rem] text-stone-600" aria-label="Tree facts">
                           <li className="rounded-full bg-stone-100 px-2 py-0.5">{r.tree.matureHeightM} m tall</li>
                           <li className="rounded-full bg-stone-100 px-2 py-0.5">{r.tree.canopySpreadM} m wide</li>
                           <li className="rounded-full bg-sky-50 px-2 py-0.5 text-sky-800">{label(r.tree.waterNeed)} water</li>
                         </ul>
                         <ul className="mt-3 flex-1 space-y-1">
-                          {r.reasons.slice(0, 2).map((x) => <li key={x} className="flex gap-2 text-[13px] leading-snug text-stone-700"><Icon.check className="mt-0.5 h-4 w-4 shrink-0 text-lime-600" />{x}</li>)}
+                          {r.reasons.slice(0, 2).map((x) => <li key={x} className="flex gap-2 text-[0.8125rem] leading-snug text-stone-700"><Icon.check className="mt-0.5 h-4 w-4 shrink-0 text-lime-600" />{x}</li>)}
                           {r.notes.slice(0, 1).map((n) => <li key={n} className="flex gap-2 text-xs text-amber-800"><Icon.warn className="h-4 w-4 shrink-0" />{n}</li>)}
                         </ul>
                         <div className="mt-4 flex items-center gap-2">

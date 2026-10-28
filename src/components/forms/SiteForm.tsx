@@ -100,7 +100,7 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
           <span className="field-label">Sunlight</span>
           <div className={`grid gap-2 ${compact ? "grid-cols-3" : "sm:grid-cols-3"}`}>
             {SUNLIGHT.map((s) => (
-              <label key={s} title={SUNLIGHT_HINTS[s]} className={`sun-card cursor-pointer rounded-xl border p-3 text-center text-sm transition ${v.sunlight === s ? "border-lime-500 bg-mint-50 shadow-[0_8px_20px_-12px_rgb(53_199_89/0.8)]" : "border-stone-200 bg-white hover:border-lime-400"}`}>
+              <label key={s} title={SUNLIGHT_HINTS[s]} className={`sun-card cursor-pointer rounded-xl border p-3 text-center text-sm transition ${v.sunlight === s ? "border-lime-500 bg-mint-50 shadow-[0_8px_1.25rem_-0.75rem_rgb(53_199_89/0.8)]" : "border-stone-200 bg-white hover:border-lime-400"}`}>
                 <input type="radio" name="sunlight" value={s} checked={v.sunlight === s} onChange={set("sunlight")} className="sr-only" />
                 <SunIcon kind={s} />
                 <span className="mt-1 block font-medium text-forest-900">{label(s)}</span>

@@ -107,7 +107,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
             {tree.imageUrl && tree.imageCredit && (
               <p className="-mt-2 text-xs text-stone-500">Photo: {tree.imageSourceUrl ? <a href={tree.imageSourceUrl} target="_blank" rel="noopener noreferrer" className="hover:text-lime-600 hover:underline">{tree.imageCredit}</a> : tree.imageCredit}</p>
             )}
-            <div className="divide-y divide-stone-100 rounded-2xl bg-white px-4 shadow-[0_10px_30px_-20px_rgb(13_43_35/0.4)] ring-1 ring-stone-100">
+            <div className="divide-y divide-stone-100 rounded-2xl bg-white px-4 shadow-[0_0.625rem_1.875rem_-1.25rem_rgb(13_43_35/0.4)] ring-1 ring-stone-100">
               {care.map((c, i) => (
                 <details key={c.title} className="care-item group py-1" open={i === 0}>
                   <summary className="flex cursor-pointer list-none items-center gap-3 py-2.5 text-sm font-medium text-forest-900">
@@ -157,7 +157,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
 
       <section id="reviews" className="scroll-mt-24">
         <h2 className="font-display text-2xl font-semibold text-forest-900">Ratings and reviews</h2>
-        <div className="mt-5 grid gap-6 lg:grid-cols-[300px_1fr]">
+        <div className="mt-5 grid gap-6 lg:grid-cols-[18.75rem_1fr]">
           <div className="space-y-5">
             <div className="rounded-3xl bg-white p-5 ring-1 ring-stone-100">
               <p className="font-display text-5xl text-forest-900">{rv.count ? rv.avg.toFixed(1) : "–"}<span className="text-lg text-stone-400"> / 5</span></p>
@@ -201,7 +201,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="grid h-9 w-9 place-items-center rounded-full bg-mint-100 text-sm font-semibold text-forest-700">{r.user.name.trim()[0]?.toUpperCase()}</span>
                       <span className="font-medium text-forest-900">{shortName(r.user.name)}</span>
-                      {r.verified && <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2 py-0.5 text-[11px] font-medium text-forest-700"><Icon.check className="h-3 w-3" /> Bought from Gaach</span>}
+                      {r.verified && <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2 py-0.5 text-[0.6875rem] font-medium text-forest-700"><Icon.check className="h-3 w-3" /> Bought from Gaach</span>}
                       <span className="ml-auto text-xs text-stone-400">{dateText(r.createdAt)}</span>
                     </div>
                     <Stars value={r.rating} className="mt-2" />

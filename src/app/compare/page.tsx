@@ -59,7 +59,7 @@ export default async function ComparePage() {
   const header = (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="anim-rise">
-        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2f7a45]"><Icon.scale className="h-4 w-4" /> Side by side</p>
+        <p className="flex items-center gap-2 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#2f7a45]"><Icon.scale className="h-4 w-4" /> Side by side</p>
         <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl">Compare <span className="text-[#2f7a45]">trees</span></h1>
         <p className="mt-2 text-stone-600">Size, care and climate tolerance for up to three trees.</p>
       </div>
@@ -74,7 +74,7 @@ export default async function ComparePage() {
 
   const suggest = suggestions.length > 0 && (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="mr-2 text-[15px] text-stone-500">Quick add:</span>
+      <span className="mr-2 text-[0.9375rem] text-stone-500">Quick add:</span>
       {suggestions.map((s) => (
         <form key={s.slug} action={toggleCompare}>
           <input type="hidden" name="slug" value={s.slug} />
@@ -90,9 +90,9 @@ export default async function ComparePage() {
         {header}
         <div className="compare-empty grid place-items-center rounded-3xl bg-[#fbfaf6] px-5 py-10 text-center ring-1 ring-stone-200/70 sm:px-10 sm:py-12">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/hero/compare-trees.jpg" alt="" className="compare-empty-art w-full max-w-[440px]" />
+          <img src="/hero/compare-trees.jpg" alt="" className="compare-empty-art w-full max-w-[27.5rem]" />
           <h2 className="font-display mt-4 text-2xl font-semibold text-forest-900 sm:text-3xl">Pick two or three trees to compare</h2>
-          <p className="mt-2 max-w-md text-[15px] text-stone-500">
+          <p className="mt-2 max-w-md text-[0.9375rem] text-stone-500">
             Use the compare control on any tree card, or add trees below.{trees.length === 1 && <> You have chosen <b>{trees[0].name}</b> so far.</>}
           </p>
           <div className="mt-7 flex justify-center">{suggest}</div>
@@ -137,12 +137,12 @@ export default async function ComparePage() {
       {header}
       {suggest && <div className="mb-5">{suggest}</div>}
       <div className="overflow-x-auto pb-2">
-        <div className="min-w-[560px]">
+        <div className="min-w-[35rem]">
           {/* Tree cards */}
           <div className="grid gap-3" style={{ gridTemplateColumns: cols }}>
             <div />
             {trees.map((t, i) => (
-              <Reveal key={t.id} delay={i * 80} className="relative overflow-hidden rounded-3xl bg-white p-2.5 shadow-[0_10px_30px_-22px_rgb(13_43_35/0.6)] ring-1 ring-stone-100">
+              <Reveal key={t.id} delay={i * 80} className="relative overflow-hidden rounded-3xl bg-white p-2.5 shadow-[0_0.625rem_1.875rem_-1.375rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100">
                 <RemoveButton slug={t.slug} name={t.name} />
                 <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-b from-mint-50 to-mint-100"><TreeArt shape={t.shape} color={t.color} name={t.name} imageUrl={treePhoto(t)} /></div>
                 <div className="px-1 pt-3">

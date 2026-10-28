@@ -73,16 +73,16 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
           <img src="/hero/browse.jpg" alt="" className="browse-hero-img h-full w-full object-cover object-[35%_50%]" />
         </div>
         <div className="browse-hero-fade absolute inset-0" aria-hidden />
-        <div className="relative mx-auto max-w-[1400px] px-4 pb-10 pt-12 sm:px-6 sm:pt-14 lg:px-10 md:pb-14">
+        <div className="relative mx-auto max-w-[87.5rem] px-4 pb-10 pt-12 sm:px-6 sm:pt-14 lg:px-10 md:pb-14">
           <div className="max-w-xl">
-            <p className="hero-eyebrow flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.24em] text-forest-900/80">
+            <p className="hero-eyebrow flex items-center gap-3 text-[0.6875rem] font-medium uppercase tracking-[0.24em] text-forest-900/80">
               Trees for a greener tomorrow <span className="hero-eyebrow-line h-px w-14 bg-forest-900/50" />
             </p>
             <h1 className="font-display mt-4 text-4xl font-semibold leading-[1.06] text-forest-900 sm:text-5xl lg:text-6xl">
               <span className="anim-rise block" style={{ animationDelay: "80ms" }}>Find trees for a</span>
               <span className="anim-rise hero-green block" style={{ animationDelay: "200ms" }}>greener tomorrow</span>
             </h1>
-            <p className="anim-rise mt-4 max-w-lg text-[15px] leading-relaxed text-stone-700 sm:text-base" style={{ animationDelay: "320ms" }}>
+            <p className="anim-rise mt-4 max-w-lg text-[0.9375rem] leading-relaxed text-stone-700 sm:text-base" style={{ animationDelay: "320ms" }}>
               Explore fruit, flowering, shade and timber trees suited to Bangladesh. Healthy saplings, guidance on care and delivery to your door.
             </p>
             <ul className="anim-rise mt-7 flex flex-wrap items-center gap-y-3" style={{ animationDelay: "440ms" }}>
@@ -99,7 +99,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
 
       {/* Search and type chips */}
       <div className="browse-bar relative mx-[calc(50%-50vw)] border-y border-stone-200/80 bg-white">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-10">
+        <div className="mx-auto flex max-w-[87.5rem] flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-10">
           <form method="get" action="/trees" className="flex w-full items-stretch overflow-hidden rounded-xl border border-stone-200 bg-white lg:max-w-md">
             <span className="grid place-items-center pl-4"><Icon.search className="h-5 w-5 text-stone-500" /></span>
             <label htmlFor="q" className="sr-only">Search trees</label>
@@ -119,7 +119,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
         </div>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[250px_1fr]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[15.625rem_1fr]">
         {/* Filters */}
         <aside>
           <input id="filters-toggle" type="checkbox" className="peer sr-only" />

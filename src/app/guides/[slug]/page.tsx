@@ -30,7 +30,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/hero/nursery.jpg" alt="" className="banner-photo absolute inset-0 h-full w-full object-cover opacity-25" aria-hidden />
         <div className="absolute inset-0 bg-gradient-to-r from-forest-950/90 to-forest-900/40" aria-hidden />
-        <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 py-12 sm:py-16">
+        <div className="relative mx-auto max-w-[87.5rem] px-4 sm:px-6 lg:px-10 py-12 sm:py-16">
           <Link href="/guides" className="text-sm text-mint-200 hover:text-lime-400">← All care guides</Link>
           <p className="mt-4 flex flex-wrap gap-2 text-xs">
             {g.stage && <span className="rounded-full bg-white/10 px-2.5 py-1">{label(g.stage) === g.stage ? g.stage.toLowerCase().replace(/_/g, " ") : label(g.stage)}</span>}
@@ -41,7 +41,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         </div>
       </header>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_300px]">
+      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_18.75rem]">
         <ol className="guide-steps relative space-y-5">
           {sections.map((s, i) => (
             <Reveal as="li" key={s.heading} delay={i * 80} className="relative pl-14">

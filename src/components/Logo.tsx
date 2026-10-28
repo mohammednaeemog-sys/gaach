@@ -4,12 +4,12 @@
 type Props = { size?: number; className?: string; withWord?: boolean; tone?: "light" | "dark" };
 
 export function LogoMark({ size = 40, className = "" }: { size?: number; className?: string }) {
-  return <img src="/brand/gaach-mark.svg" width={size} height={size} alt="" aria-hidden className={`logo-mark shrink-0 ${className}`} />;
+  return <img src="/brand/gaach-mark.svg" width={size} height={size} alt="" aria-hidden style={{ width: `${size / 16}rem`, height: `${size / 16}rem` }} className={`logo-mark shrink-0 ${className}`} />;
 }
 
 // The full badge with the ribbon and lettering
 export function LogoBadge({ size = 140, className = "" }: { size?: number; className?: string }) {
-  return <img src="/brand/gaach-badge.svg" width={size} height={size} alt="Gaach, trees for Bangladesh" className={`logo-badge ${className}`} />;
+  return <img src="/brand/gaach-badge.svg" width={size} height={size} alt="Gaach, trees for Bangladesh" style={{ width: `${size / 16}rem`, height: `${size / 16}rem` }} className={`logo-badge ${className}`} />;
 }
 
 export function Logo({ size = 40, className = "", withWord = true, tone = "light" }: Props) {

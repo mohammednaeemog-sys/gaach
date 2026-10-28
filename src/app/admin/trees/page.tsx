@@ -16,7 +16,7 @@ export default async function AdminTrees({ searchParams }: { searchParams: Promi
       </div>
       {deleted && <p className="mb-3 rounded-lg bg-mint-50 p-3 text-sm text-forest-700">Tree deleted.</p>}
       <div className="card overflow-x-auto">
-        <table className="table min-w-[640px]">
+        <table className="table min-w-[40rem]">
           <thead><tr><th>Tree</th><th>Status</th><th>Products</th><th>Stock</th><th>Care stages</th><th></th></tr></thead>
           <tbody>
             {trees.map((t) => {

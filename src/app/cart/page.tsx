@@ -49,9 +49,9 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
           </div>
         </div>
       ) : (
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_21.25rem]">
           <div>
-            <div className="hidden grid-cols-[1fr_140px_110px_40px] gap-4 border-b border-stone-200 px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-stone-500 sm:grid">
+            <div className="hidden grid-cols-[1fr_8.75rem_6.875rem_2.5rem] gap-4 border-b border-stone-200 px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-stone-500 sm:grid">
               <span>Product</span><span className="text-center">Quantity</span><span className="text-right">Price</span><span />
             </div>
             <ul className="divide-y divide-stone-100">
@@ -59,7 +59,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
                 const p = i.product;
                 const short = !p.active ? "No longer sold. Remove it to continue." : p.stock < i.quantity ? `Only ${p.stock} left. Lower the quantity.` : null;
                 return (
-                  <li key={i.id} className="cart-row grid grid-cols-[auto_1fr] items-center gap-4 px-2 py-4 sm:grid-cols-[1fr_140px_110px_40px] sm:px-4" style={{ animationDelay: `${n * 70}ms` }}>
+                  <li key={i.id} className="cart-row grid grid-cols-[auto_1fr] items-center gap-4 px-2 py-4 sm:grid-cols-[1fr_8.75rem_6.875rem_2.5rem] sm:px-4" style={{ animationDelay: `${n * 70}ms` }}>
                     <div className="col-span-2 flex min-w-0 items-center gap-4 sm:col-span-1">
                       <Link href={`/trees/${p.tree.slug}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-mint-100">
                         <TreeArt shape={p.tree.shape} color={p.tree.color} name={p.tree.name} imageUrl={p.imageUrl ?? p.tree.imageUrl} animate={false} />

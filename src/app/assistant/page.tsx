@@ -40,7 +40,7 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
   return (
     <div>
       <h1 className="sr-only">Gaach Tree Advisor</h1>
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[17.5rem_1fr]">
         <aside className="order-2 min-w-0 space-y-4 lg:order-1">
           <div className="card p-3">
             <div className="mb-1 flex items-center justify-between gap-2 px-2 pt-1">

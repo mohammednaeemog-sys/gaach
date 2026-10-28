@@ -67,7 +67,7 @@ export function ChatWidget({ loggedIn, firstName, offline }: { loggedIn: boolean
         role="dialog"
         aria-label="Gaach Tree Advisor"
         aria-hidden={!open}
-        className={`advisor-panel fixed inset-x-2 bottom-2 top-16 z-50 flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_30px_80px_-20px_rgb(8_32_26/0.55)] ring-1 ring-black/5 sm:inset-auto sm:bottom-24 sm:right-5 sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[390px] ${open ? "is-open" : ""}`}
+        className={`advisor-panel fixed inset-x-2 bottom-2 top-16 z-50 flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_1.875rem_5rem_-1.25rem_rgb(8_32_26/0.55)] ring-1 ring-black/5 sm:inset-auto sm:bottom-24 sm:right-5 sm:h-[37.5rem] sm:max-h-[calc(100vh-8rem)] sm:w-[24.375rem] ${open ? "is-open" : ""}`}
       >
         <div className="flex items-center gap-3 bg-forest-900 px-4 py-3 text-white">
           <span className="relative">
@@ -76,10 +76,10 @@ export function ChatWidget({ loggedIn, firstName, offline }: { loggedIn: boolean
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold">Gaach Tree Advisor</span>
-            <span className="block truncate text-[11px] text-mint-200/75">{treeSlug ? `Ask me about the ${treeName}` : offline ? "Answers from Gaach's tree and care data" : "Online · answers in a few seconds"}</span>
+            <span className="block truncate text-[0.6875rem] text-mint-200/75">{treeSlug ? `Ask me about the ${treeName}` : offline ? "Answers from Gaach's tree and care data" : "Online · answers in a few seconds"}</span>
           </span>
           {loggedIn && (
-            <button type="button" onClick={() => { setConversationId(null); setChatKey((k) => k + 1); }} className="rounded-full px-2 py-1 text-[11px] text-mint-100 hover:bg-white/10" title="Start a new chat">New</button>
+            <button type="button" onClick={() => { setConversationId(null); setChatKey((k) => k + 1); }} className="rounded-full px-2 py-1 text-[0.6875rem] text-mint-100 hover:bg-white/10" title="Start a new chat">New</button>
           )}
           <Link href={conversationId ? `/assistant?c=${conversationId}` : "/assistant"} onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10" title="Open the full chat page" aria-label="Open the full chat page">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 4h6v6M20 4l-8 8M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>
@@ -121,7 +121,7 @@ export function ChatWidget({ loggedIn, firstName, offline }: { loggedIn: boolean
 
       {/* Greeting bubble pointing at the button */}
       {greet && !open && (
-        <div className="advisor-greet fixed bottom-24 right-5 z-50 w-64 rounded-2xl rounded-br-md bg-white p-4 pr-8 text-sm text-forest-900 shadow-[0_20px_50px_-15px_rgb(8_32_26/0.45)] ring-1 ring-black/5">
+        <div className="advisor-greet fixed bottom-24 right-5 z-50 w-64 rounded-2xl rounded-br-md bg-white p-4 pr-8 text-sm text-forest-900 shadow-[0_1.25rem_3.125rem_-0.9375rem_rgb(8_32_26/0.45)] ring-1 ring-black/5">
           <button type="button" onClick={() => setGreet(false)} className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full text-stone-400 hover:bg-stone-100" aria-label="Dismiss">×</button>
           <p className="font-semibold">Hi{firstName ? ` ${firstName}` : ""}! 🌱</p>
           <p className="mt-1 text-stone-600">Not sure which tree fits your space, or why the leaves are yellow? Ask me.</p>
@@ -139,7 +139,7 @@ export function ChatWidget({ loggedIn, firstName, offline }: { loggedIn: boolean
       >
         <span className="relative">
           {!open && <span className="advisor-ping absolute inset-0 rounded-full" aria-hidden />}
-          <Avatar className="h-14 w-14 shadow-[0_12px_30px_-8px_rgb(8_32_26/0.6)] sm:h-16 sm:w-16" />
+          <Avatar className="h-14 w-14 shadow-[0_0.75rem_1.875rem_-8px_rgb(8_32_26/0.6)] sm:h-16 sm:w-16" />
           <span className="absolute right-0.5 top-0.5 h-3.5 w-3.5 rounded-full bg-lime-400 ring-2 ring-white" />
         </span>
         <span className={`relative z-10 -ml-3 grid h-8 w-8 place-items-center rounded-full bg-forest-950 text-white shadow-md ring-2 ring-white transition-transform duration-300 ${open ? "rotate-90" : ""}`} aria-hidden>

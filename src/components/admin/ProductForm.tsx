@@ -36,7 +36,7 @@ export function ProductForm({ treeId, p: initial, treeImage }: { treeId: string;
             {initial?.imageUrl ? "Replace the photo of this size" : "Photo of this size (optional)"}
           </label>
           <input id={`img-${initial?.id ?? "new"}`} name="image" type="file" accept="image/jpeg,image/png,image/webp" className="block w-full text-xs file:mr-2 file:rounded-full file:border-0 file:bg-mint-100 file:px-3 file:py-1.5 file:text-forest-800" />
-          <p className="mt-0.5 text-[11px] text-stone-500">{initial?.imageUrl ? "This size has its own photo." : "Without one, the tree's main photo is shown."} JPG, PNG or WebP, under 2 MB.</p>
+          <p className="mt-0.5 text-[0.6875rem] text-stone-500">{initial?.imageUrl ? "This size has its own photo." : "Without one, the tree's main photo is shown."} JPG, PNG or WebP, under 2 MB.</p>
           {e.image && <p className="field-error">{e.image}</p>}
         </div>
         {initial?.imageUrl && <label className="flex items-center gap-1.5 text-xs"><input type="checkbox" name="removeImage" /> Remove this photo</label>}

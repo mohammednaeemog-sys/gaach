@@ -63,8 +63,8 @@ function HeroLeaves() {
   );
   return (
     <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden>
-      <div className="hero-blur-leaf absolute -bottom-10 -left-12 h-[300px] w-36 rotate-[20deg]">{sprig}</div>
-      <div className="hero-blur-leaf hero-blur-leaf-r absolute -right-10 -top-16 h-[280px] w-32 rotate-[200deg]">{sprig}</div>
+      <div className="hero-blur-leaf absolute -bottom-10 -left-12 h-[18.75rem] w-36 rotate-[20deg]">{sprig}</div>
+      <div className="hero-blur-leaf hero-blur-leaf-r absolute -right-10 -top-16 h-[17.5rem] w-32 rotate-[200deg]">{sprig}</div>
     </div>
   );
 }
@@ -97,7 +97,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
 
       {/* Hero */}
       <section className="hero-light relative -mt-6 overflow-hidden bg-[#f6f6f1] sm:-mt-10 mx-[calc(50%-50vw)] lg:flex lg:min-h-[calc(100svh-4rem)] lg:flex-col">
-        <div className="hero-photo absolute inset-x-0 top-0 h-[300px] sm:h-[440px] lg:inset-y-0 lg:bottom-16 lg:left-auto lg:h-auto lg:w-[62%]" aria-hidden>
+        <div className="hero-photo absolute inset-x-0 top-0 h-[18.75rem] sm:h-[27.5rem] lg:inset-y-0 lg:bottom-16 lg:left-auto lg:h-auto lg:w-[62%]" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/hero/home-tree.jpg" alt="" className="hero-tree-img h-full w-full object-cover object-[55%_bottom]" fetchPriority="high" />
           <span className="hero-sunbeam" />
@@ -106,9 +106,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
         <div className="hero-light-fade absolute inset-0 hidden lg:block" aria-hidden />
         <HeroLeaves />
 
-        <div className="hero-fit relative mx-auto flex w-full max-w-[1400px] items-center px-4 pb-8 pt-[240px] sm:px-6 sm:pt-[380px] lg:flex-1 lg:px-10 lg:pb-8 lg:pt-10">
-          <div className="max-w-[820px]">
-            <p className="hero-eyebrow flex items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1d5b33] sm:text-xs">
+        <div className="hero-fit relative mx-auto flex w-full max-w-[87.5rem] items-center px-4 pb-8 pt-[15rem] sm:px-6 sm:pt-[23.75rem] lg:flex-1 lg:px-10 lg:pb-8 lg:pt-10">
+          <div className="max-w-[51.25rem]">
+            <p className="hero-eyebrow flex items-center gap-4 text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-[#1d5b33] sm:text-xs">
               Greener cities. Healthier lives.
               <span className="hero-eyebrow-line h-px w-16 bg-[#1d5b33]/70" />
             </p>
@@ -123,14 +123,14 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
               Get personalised tree recommendations for your location, available space and climate. Plant with confidence, grow healthier surroundings, and make your place greener.
             </p>
             <div className="anim-rise mt-7 flex flex-col gap-3 sm:flex-row sm:gap-4" style={{ animationDelay: "920ms" }}>
-              <Link href="/recommend" className="hero-cta group flex items-center justify-center gap-3 rounded-lg bg-[#145a32] px-8 py-4 font-semibold text-white shadow-[0_14px_30px_-14px_rgb(20_90_50/0.9)] transition hover:-translate-y-0.5 hover:bg-[#0f4826]">
+              <Link href="/recommend" className="hero-cta group flex items-center justify-center gap-3 rounded-lg bg-[#145a32] px-8 py-4 font-semibold text-white shadow-[0_0.875rem_1.875rem_-0.875rem_rgb(20_90_50/0.9)] transition hover:-translate-y-0.5 hover:bg-[#0f4826]">
                 Find trees for my place <span className="transition group-hover:translate-x-1">→</span>
               </Link>
               <Link href="/trees" className="flex items-center justify-center rounded-lg border-[1.5px] border-[#145a32] bg-white/80 px-10 py-4 font-semibold text-[#145a32] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white">
                 Explore all trees
               </Link>
             </div>
-            <ul className="mt-8 grid max-w-[720px] grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-0">
+            <ul className="mt-8 grid max-w-[45rem] grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-0">
               {([
                 ["leaf", "Verified nurseries", "Reliable sources"],
                 ["shield", "Healthy saplings", "Better survival rate"],
@@ -140,8 +140,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
                 <li key={a} className="hero-feature hero-pop flex items-start gap-3 text-forest-900 sm:px-3 sm:first:pl-0" style={{ animationDelay: `${1050 + i * 110}ms` }}>
                   <span className="hero-feature-icon grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#e6eee3] sm:h-12 sm:w-12"><FeatureIcon kind={icon} /></span>
                   <span className="min-w-0 pt-0.5">
-                    <span className="block text-[13px] font-medium leading-tight sm:text-sm">{a}</span>
-                    <span className="mt-1 block text-[11px] leading-tight text-stone-500 sm:text-xs">{b}</span>
+                    <span className="block text-[0.8125rem] font-medium leading-tight sm:text-sm">{a}</span>
+                    <span className="mt-1 block text-[0.6875rem] leading-tight text-stone-500 sm:text-xs">{b}</span>
                   </span>
                 </li>
               ))}
@@ -150,8 +150,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
         </div>
 
         {/* Numbers: a floating card over the bottom of the photo */}
-        <div className="relative mx-auto w-full max-w-[1400px] px-4 pb-6 sm:px-6 lg:px-10">
-          <dl className="hero-stats grid grid-cols-3 rounded-2xl bg-[#eef3ec]/95 py-5 shadow-[0_20px_50px_-30px_rgb(13_43_35/0.55)] ring-1 ring-white/70 backdrop-blur-md sm:py-6">
+        <div className="relative mx-auto w-full max-w-[87.5rem] px-4 pb-6 sm:px-6 lg:px-10">
+          <dl className="hero-stats grid grid-cols-3 rounded-2xl bg-[#eef3ec]/95 py-5 shadow-[0_1.25rem_3.125rem_-1.875rem_rgb(13_43_35/0.55)] ring-1 ring-white/70 backdrop-blur-md sm:py-6">
             {([
               [treeCount, "Tree species", "Fruits, flowering, shade and timber", "leaf"],
               [64, "District profiles", "Location-based recommendations", "pin"],
@@ -173,7 +173,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
 
       {/* Popular species */}
       <div className="relative -mt-20 border-b border-forest-900/10 bg-white mx-[calc(50%-50vw)]">
-        <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[87.5rem] px-4 py-5 sm:px-6 lg:px-10">
           <SpeciesRow items={species} tone="light" />
         </div>
       </div>
@@ -190,12 +190,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
               <Reveal key={c.purpose} delay={i * 80} className={i === 0 ? "col-span-2 md:col-span-1" : ""}>
                 <Link href={`/trees?purpose=${c.purpose}`} className={`lift group flex h-full flex-col overflow-hidden rounded-3xl bg-gradient-to-br ${c.bg} p-3 text-center`}>
                   <div className="relative mx-auto mt-2">
-                    <div className="cat-photo relative h-28 w-28 overflow-hidden rounded-full bg-forest-800 shadow-[0_12px_24px_-10px_rgb(13_43_35/0.6)] ring-4 ring-white/90 sm:h-32 sm:w-32" style={{ animationDelay: `${i * 0.5}s` }}>
+                    <div className="cat-photo relative h-28 w-28 overflow-hidden rounded-full bg-forest-800 shadow-[0_0.75rem_1.5rem_-0.625rem_rgb(13_43_35/0.6)] ring-4 ring-white/90 sm:h-32 sm:w-32" style={{ animationDelay: `${i * 0.5}s` }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={art?.imageUrl ?? c.photo} alt={`${c.title}: ${art?.name ?? ""}`} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-115" />
                       <span className="cat-shine" aria-hidden />
                     </div>
-                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[11px] font-semibold text-forest-900 shadow-md">{counts(c.purpose)} trees</span>
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[0.6875rem] font-semibold text-forest-900 shadow-md">{counts(c.purpose)} trees</span>
                   </div>
                   <div className="px-1.5 pb-1.5 pt-3">
                     <p className="font-semibold text-forest-900">{c.title}</p>
@@ -229,8 +229,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
 
       {/* How it works */}
       <section className="how-wrap relative overflow-hidden rounded-[2.5rem] px-5 py-14 sm:px-10">
-        <Branch className="how-branch left-[-10px] top-6 h-40 w-28 sm:h-52 sm:w-36" />
-        <Branch className="how-branch how-branch-r right-[-10px] top-10 h-40 w-28 sm:h-56 sm:w-40" />
+        <Branch className="how-branch left-[-0.625rem] top-6 h-40 w-28 sm:h-52 sm:w-36" />
+        <Branch className="how-branch how-branch-r right-[-0.625rem] top-10 h-40 w-28 sm:h-56 sm:w-40" />
         <Branch className="how-branch how-branch-b bottom-2 left-6 hidden h-32 w-24 sm:block" />
         <Reveal className="relative mb-10 text-center">
           <h2 className="font-display text-3xl font-semibold tracking-tight text-forest-900 sm:text-[2.6rem]">From your rooftop to <span className="text-lime-600">a growing tree</span></h2>
@@ -238,7 +238,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           <span className="how-underline mx-auto mt-4 block h-[3px] w-16 rounded-full bg-lime-600" />
         </Reveal>
         <div className="relative">
-        <Reveal className="pointer-events-none absolute inset-x-0 top-[52px] z-0 hidden lg:block">
+        <Reveal className="pointer-events-none absolute inset-x-0 top-[3.25rem] z-0 hidden lg:block">
           <svg className="steps-vine h-14 w-full" viewBox="0 0 1000 56" preserveAspectRatio="none" aria-hidden="true">
             <path pathLength={1} d="M125 28 C 165 0, 210 56, 250 28 S 335 0, 375 28 S 460 56, 500 28 S 585 0, 625 28 S 710 56, 750 28 S 835 0, 875 28" stroke="#3aa65a" strokeWidth="2.5" strokeDasharray="1" fill="none" strokeLinecap="round" />
           </svg>
@@ -259,7 +259,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
               <Link href={href} className="flex h-full flex-col items-center text-center">
                 <span className="how-photo relative z-10 block h-36 w-36 sm:h-40 sm:w-40" style={{ animationDelay: `${i * 0.6}s` }}>
                   <span className="how-ring absolute -inset-2 rounded-full" aria-hidden="true" />
-                  <span className="block h-full w-full overflow-hidden rounded-full bg-mint-100 ring-[6px] ring-white shadow-[0_18px_40px_-18px_rgb(13_43_35/0.55)]">
+                  <span className="block h-full w-full overflow-hidden rounded-full bg-mint-100 ring-[6px] ring-white shadow-[0_1.125rem_2.5rem_-1.125rem_rgb(13_43_35/0.55)]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={`/steps/${i + 1}.jpg`} alt="" loading="lazy" className="how-img h-full w-full object-cover" />
                   </span>
@@ -267,7 +267,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </span>
-                <span className="how-card -mt-20 flex w-full flex-1 flex-col rounded-[2rem] bg-white/90 px-5 pb-6 pt-24 shadow-[0_20px_50px_-30px_rgb(13_43_35/0.45)] ring-1 ring-white backdrop-blur-sm">
+                <span className="how-card -mt-20 flex w-full flex-1 flex-col rounded-[2rem] bg-white/90 px-5 pb-6 pt-24 shadow-[0_1.25rem_3.125rem_-1.875rem_rgb(13_43_35/0.45)] ring-1 ring-white backdrop-blur-sm">
                   <span className="font-display text-xl font-semibold text-forest-900">{title}</span>
                   <span className="mt-2 text-sm leading-relaxed text-stone-600">{text}</span>
                 </span>
@@ -277,7 +277,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
         </ol>
         </div>
         <div className="relative mt-12 text-center">
-          <Link href="/recommend" className="how-cta group inline-flex items-center gap-4 rounded-full bg-gradient-to-r from-forest-700 to-lime-600 py-2.5 pl-8 pr-2.5 text-lg font-semibold text-white shadow-[0_16px_32px_-14px_rgb(26_74_59/0.8)]">
+          <Link href="/recommend" className="how-cta group inline-flex items-center gap-4 rounded-full bg-gradient-to-r from-forest-700 to-lime-600 py-2.5 pl-8 pr-2.5 text-lg font-semibold text-white shadow-[0_1rem_2rem_-0.875rem_rgb(26_74_59/0.8)]">
             <span className="font-display">Start now, it takes a minute</span>
             <span className="grid h-11 w-11 place-items-center rounded-full border-2 border-white/80 transition-transform duration-300 group-hover:translate-x-1">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>

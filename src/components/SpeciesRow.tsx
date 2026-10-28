@@ -29,7 +29,7 @@ export function SpeciesRow({ items, tone = "dark" }: { items: Item[]; tone?: "da
 
   return (
     <div className="flex items-center gap-3 sm:gap-6" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={() => setPaused(true)} onFocus={() => setPaused(true)}>
-      <p className={`species-label hidden shrink-0 items-center gap-2.5 text-[15px] font-semibold md:flex ${light ? "text-forest-900" : "text-white"}`}>
+      <p className={`species-label hidden shrink-0 items-center gap-2.5 text-[0.9375rem] font-semibold md:flex ${light ? "text-forest-900" : "text-white"}`}>
         <LeafIcon className={`species-label-leaf h-5 w-5 ${light ? "text-lime-600" : "text-lime-400"}`} /> Popular species <span className={`species-label-line ml-1 h-px w-10 ${light ? "bg-forest-900/20" : "bg-mint-200/40"}`} />
       </p>
       <div ref={track} className="species-track flex flex-1 snap-x overflow-x-auto scroll-smooth py-1">
@@ -49,7 +49,7 @@ export function SpeciesRow({ items, tone = "dark" }: { items: Item[]; tone?: "da
               </span>
               <span className="leading-tight">
                 <span className={`block text-sm font-semibold transition ${light ? "text-forest-900 group-hover:text-lime-700" : "text-white group-hover:text-lime-400"}`}>{t.name.split(" (")[0]}</span>
-                <span className={`mt-0.5 block text-[13px] ${light ? "text-stone-500" : "text-mint-100/80"}`}>{t.banglaName.split(" (")[0]}</span>
+                <span className={`mt-0.5 block text-[0.8125rem] ${light ? "text-stone-500" : "text-mint-100/80"}`}>{t.banglaName.split(" (")[0]}</span>
               </span>
             </Link>
           );

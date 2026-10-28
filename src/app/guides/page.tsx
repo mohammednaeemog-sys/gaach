@@ -46,7 +46,7 @@ export default async function GuidesPage({ searchParams }: { searchParams: Promi
           { icon: <Icon.shield className="h-6 w-6" />, text: "Sources named" },
         ]}
       >
-        <form method="get" className="anim-rise mt-6 flex max-w-md items-center gap-2 rounded-2xl bg-white p-1.5 pl-4 shadow-[0_12px_30px_-16px_rgb(13_43_35/0.4)] ring-1 ring-stone-100" style={{ animationDelay: "400ms" }}>
+        <form method="get" className="anim-rise mt-6 flex max-w-md items-center gap-2 rounded-2xl bg-white p-1.5 pl-4 shadow-[0_0.75rem_1.875rem_-1rem_rgb(13_43_35/0.4)] ring-1 ring-stone-100" style={{ animationDelay: "400ms" }}>
           <Icon.search className="h-5 w-5 shrink-0 text-stone-400" />
           <label htmlFor="gq" className="sr-only">Search guides</label>
           <input id="gq" name="q" type="search" defaultValue={q} placeholder="Search: yellow leaves, mango, rooftop…" className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none" />
@@ -62,7 +62,7 @@ export default async function GuidesPage({ searchParams }: { searchParams: Promi
             <p className="mt-2 text-sm text-stone-500">Four habits that keep a young tree strong. Tap a step to read the guide.</p>
           </Reveal>
           <div className="relative mt-10 grid items-center gap-8 md:grid-cols-[0.9fr_1.1fr]">
-            <Reveal className="relative mx-[calc(50%-50vw)] h-64 overflow-hidden md:mx-0 md:-ml-[calc((100vw-100%)/2)] md:h-[420px] md:rounded-r-full">
+            <Reveal className="relative mx-[calc(50%-50vw)] h-64 overflow-hidden md:mx-0 md:-ml-[calc((100vw-100%)/2)] md:h-[26.25rem] md:rounded-r-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/hero/nursery.jpg" alt="Young saplings growing in a nursery" className="banner-photo h-full w-full object-cover" />
             </Reveal>
@@ -103,10 +103,10 @@ export default async function GuidesPage({ searchParams }: { searchParams: Promi
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {g.items.map((x, i) => (
                   <Reveal key={x.slug} delay={(i % 3) * 70}>
-                    <Link href={`/guides/${x.slug}`} className="group flex h-full items-start gap-3 rounded-2xl bg-white p-4 ring-1 ring-stone-100 transition hover:-translate-y-1 hover:shadow-[0_18px_36px_-22px_rgb(13_43_35/0.5)]">
+                    <Link href={`/guides/${x.slug}`} className="group flex h-full items-start gap-3 rounded-2xl bg-white p-4 ring-1 ring-stone-100 transition hover:-translate-y-1 hover:shadow-[0_1.125rem_2.25rem_-1.375rem_rgb(13_43_35/0.5)]">
                       <span className="flex-1">
                         <span className="block font-medium text-forest-900 group-hover:text-lime-700">{x.title}</span>
-                        <span className="mt-1.5 flex flex-wrap gap-1.5 text-[11px]">
+                        <span className="mt-1.5 flex flex-wrap gap-1.5 text-[0.6875rem]">
                           <span className="rounded-full bg-stone-100 px-2 py-0.5 text-stone-600">{sectionCount(x.sections)} steps</span>
                           <span className={`rounded-full px-2 py-0.5 ${x.status === "REVIEWED" ? "bg-mint-100 text-forest-700" : "bg-amber-50 text-amber-800"}`}>{x.status === "REVIEWED" ? "✓ Expert-reviewed" : "Not reviewed yet"}</span>
                         </span>
@@ -122,7 +122,7 @@ export default async function GuidesPage({ searchParams }: { searchParams: Promi
       </section>
 
       {/* Call to action over a photo */}
-      <Reveal as="section" className="relative overflow-hidden rounded-[2rem] bg-forest-900 px-6 py-14 text-center text-white shadow-[0_30px_60px_-30px_rgb(8_32_26/0.8)]">
+      <Reveal as="section" className="relative overflow-hidden rounded-[2rem] bg-forest-900 px-6 py-14 text-center text-white shadow-[0_1.875rem_3.75rem_-1.875rem_rgb(8_32_26/0.8)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/hero/nursery.jpg" alt="" className="banner-photo absolute inset-0 h-full w-full object-cover opacity-30" aria-hidden />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 to-forest-900/40" aria-hidden />

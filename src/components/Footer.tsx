@@ -66,7 +66,7 @@ export async function Footer() {
       <svg className="foot-leaf pointer-events-none absolute -right-10 -top-10 h-56 w-56 text-white/[0.04]" viewBox="0 0 24 24" aria-hidden>
         <path d="M4 20 C 4 9, 11 4, 21 4 C 21 14, 15 20, 4 20Z" fill="currentColor" />
       </svg>
-      <div className="relative mx-auto grid max-w-[1400px] grid-cols-2 gap-x-6 gap-y-10 px-4 sm:px-6 lg:px-10 py-12 lg:grid-cols-[1.45fr_1fr_1fr_1.3fr]">
+      <div className="relative mx-auto grid max-w-[87.5rem] grid-cols-2 gap-x-6 gap-y-10 px-4 sm:px-6 lg:px-10 py-12 lg:grid-cols-[1.45fr_1fr_1fr_1.3fr]">
         {/* Brand and contact */}
         <div className="col-span-2 space-y-5 lg:col-span-1">
           <LogoBadge size={112} className="logo-hover-tilt" />
@@ -135,7 +135,7 @@ export async function Footer() {
                   <span className="text-xl font-bold">{rating.average.toFixed(1)}</span>
                   <Stars value={rating.average} />
                 </span>
-                <span className="block text-[11px] text-stone-500">from {rating.count} customer {rating.count === 1 ? "review" : "reviews"}</span>
+                <span className="block text-[0.6875rem] text-stone-500">from {rating.count} customer {rating.count === 1 ? "review" : "reviews"}</span>
               </span>
             </Link>
           )}
@@ -143,7 +143,7 @@ export async function Footer() {
       </div>
 
       <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-center px-4 sm:px-6 lg:px-10 py-5 text-xs text-mint-200/70">
+        <div className="mx-auto flex max-w-[87.5rem] items-center justify-center px-4 sm:px-6 lg:px-10 py-5 text-xs text-mint-200/70">
           <p>© {new Date().getFullYear()} Gaach. Trees for Bangladesh.</p>
         </div>
       </div>

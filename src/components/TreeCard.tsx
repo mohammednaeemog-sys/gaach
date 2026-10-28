@@ -55,7 +55,7 @@ export function TreeCard({ tree, comparing = false, back = "/trees", layout = "g
     <form action={addToCart} className={list ? "" : "mt-3"}>
       <input type="hidden" name="productId" value={buyable.id} />
       <input type="hidden" name="back" value={back} />
-      <button aria-label={`Add ${tree.name} to cart`} className="flex w-full items-center justify-center gap-2 rounded-xl bg-lime-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_18px_-8px_rgb(53_199_89/0.9)] transition hover:bg-lime-600 active:scale-[0.97]">
+      <button aria-label={`Add ${tree.name} to cart`} className="flex w-full items-center justify-center gap-2 rounded-xl bg-lime-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_1.125rem_-8px_rgb(53_199_89/0.9)] transition hover:bg-lime-600 active:scale-[0.97]">
         <CartIcon /> Add to cart
       </button>
     </form>
@@ -66,26 +66,26 @@ export function TreeCard({ tree, comparing = false, back = "/trees", layout = "g
   );
 
   return (
-    <div className={`tree-card group relative flex overflow-hidden rounded-2xl bg-white p-2.5 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(13_43_35/0.18)] ring-1 ring-stone-100 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-16px_rgb(13_43_35/0.35)] ${list ? "flex-row gap-4" : "h-full flex-col"}`}>
+    <div className={`tree-card group relative flex overflow-hidden rounded-2xl bg-white p-2.5 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_1.5rem_-0.75rem_rgb(13_43_35/0.18)] ring-1 ring-stone-100 transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1rem_rgb(13_43_35/0.35)] ${list ? "flex-row gap-4" : "h-full flex-col"}`}>
       <div className={`relative shrink-0 ${list ? "w-36 sm:w-44" : ""}`}>
         {compare}
         <Link href={`/trees/${tree.slug}`} className={`block overflow-hidden rounded-xl bg-gradient-to-b from-mint-50 to-mint-100 ${list ? "h-full min-h-36" : "aspect-[4/3.4]"}`} tabIndex={-1} aria-hidden>
           <TreeArt shape={tree.shape} color={tree.color} name={tree.name} imageUrl={treePhoto({ imageUrl: tree.imageUrl, products: tree.products.map((p) => ({ imageUrl: p.imageUrl ?? null })) })} className="transition duration-500 group-hover:scale-105" />
         </Link>
-        {buyable && stockLeft <= 5 && <span className="absolute left-2.5 top-2.5 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow">Only {stockLeft} left</span>}
+        {buyable && stockLeft <= 5 && <span className="absolute left-2.5 top-2.5 rounded-full bg-red-500 px-2 py-0.5 text-[0.625rem] font-semibold text-white shadow">Only {stockLeft} left</span>}
       </div>
       <div className={`flex flex-1 flex-col ${list ? "py-1 pr-2" : "px-1 pt-3"}`}>
         <Link href={`/trees/${tree.slug}`} className="block">
-          <h3 className="text-[15px] font-semibold leading-snug text-forest-900 group-hover:text-lime-600">{tree.name}</h3>
+          <h3 className="text-[0.9375rem] font-semibold leading-snug text-forest-900 group-hover:text-lime-600">{tree.name}</h3>
           <p className="text-xs text-stone-500">{tree.banglaName}</p>
         </Link>
         {rating && rating.count > 0 && (
-          <p className="mt-1 flex items-center gap-1 text-[11px] text-stone-500"><Stars value={rating.avg} size="h-3 w-3" /> <b className="text-forest-900">{rating.avg.toFixed(1)}</b> ({rating.count})</p>
+          <p className="mt-1 flex items-center gap-1 text-[0.6875rem] text-stone-500"><Stars value={rating.avg} size="h-3 w-3" /> <b className="text-forest-900">{rating.avg.toFixed(1)}</b> ({rating.count})</p>
         )}
         <p className="mt-2 text-lg font-bold text-forest-900">
           {cheapest ? <>{sorted.length > 1 && <span className="mr-1 text-xs font-normal text-stone-500">from</span>}{taka(cheapest.priceBdt)}</> : <span className="text-sm font-normal text-stone-500">Not on sale yet</span>}
         </p>
-        <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-stone-600">
+        <div className="mt-2 flex flex-wrap gap-1.5 text-[0.6875rem] text-stone-600">
           {sun && <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-amber-800"><SunIcon />{label(sun)}</span>}
           <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2 py-0.5 text-forest-700"><HomeIcon />{spaceTag(tree.canopySpreadM)}</span>
           {list && <span className="inline-flex items-center rounded-full bg-stone-100 px-2 py-0.5">{tree.matureHeightM} m tall</span>}

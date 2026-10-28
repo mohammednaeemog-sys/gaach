@@ -22,7 +22,7 @@ export default async function CheckoutPage() {
         <li className="now" aria-current="step">Delivery and payment</li>
         <li>Order placed</li>
       </ol>
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_21.25rem]">
         <div className="card p-5 sm:p-7">
           <h1 className="font-display text-3xl text-forest-900">Checkout</h1>
           <p className="mb-5 mt-1 text-sm text-stone-500">Tell us where to bring your plants and how you&apos;d like to pay.</p>

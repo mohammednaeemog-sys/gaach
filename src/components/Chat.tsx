@@ -15,9 +15,9 @@ function Sources({ items }: { items: Source[] }) {
   if (!items.length) return null;
   return (
     <div className="mt-2 flex flex-wrap gap-1.5 border-t border-mint-200/70 pt-2">
-      <span className="text-[11px] font-medium text-stone-500">Based on:</span>
+      <span className="text-[0.6875rem] font-medium text-stone-500">Based on:</span>
       {items.map((s) => (
-        <Link key={s.href} href={s.href} className="rounded-full bg-white px-2 py-0.5 text-[11px] text-forest-700 ring-1 ring-mint-200 hover:bg-mint-100" title={s.note ?? s.title}>
+        <Link key={s.href} href={s.href} className="rounded-full bg-white px-2 py-0.5 text-[0.6875rem] text-forest-700 ring-1 ring-mint-200 hover:bg-mint-100" title={s.note ?? s.title}>
           {ICON[s.kind] ?? "•"} {s.title}{s.note ? " *" : ""}
         </Link>
       ))}
@@ -191,7 +191,7 @@ export function Chat(p: Props) {
       <div className={widget ? "hidden" : "flex items-center gap-3 border-b border-stone-200 px-5 py-3"}>
         <Avatar />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-base text-forest-900">Gaach Tree Advisor <span className="ml-1.5 inline-flex items-center gap-1 align-middle font-sans text-[11px] font-medium text-forest-700"><span className="h-1.5 w-1.5 rounded-full bg-forest-700" />Online</span></p>
+          <p className="font-display text-base text-forest-900">Gaach Tree Advisor <span className="ml-1.5 inline-flex items-center gap-1 align-middle font-sans text-[0.6875rem] font-medium text-forest-700"><span className="h-1.5 w-1.5 rounded-full bg-forest-700" />Online</span></p>
           <p className="truncate text-xs text-stone-500">{p.treeName ? `Talking about ${p.treeName}. ` : ""}Uses Gaach&apos;s catalogue, care guides and your own sites and trees. It cannot place orders.</p>
         </div>
         {messages.length > 0 && <Link href="/assistant" className="hidden rounded-full border border-stone-200 px-3 py-1.5 text-xs font-medium text-forest-700 hover:bg-mint-50 sm:block">+ New chat</Link>}
@@ -201,7 +201,7 @@ export function Chat(p: Props) {
         {messages.length === 0 && (
           <div className={`chat-welcome ${widget ? "space-y-4" : "mx-auto flex max-w-4xl flex-col gap-7 py-4 sm:py-6"}`}>
             <div className={widget ? "flex items-start gap-2.5" : "text-center"}>
-              <span className={widget ? "" : "chat-hello-ring mx-auto mb-4 grid h-[72px] w-[72px] place-items-center"}><Avatar small={widget} /></span>
+              <span className={widget ? "" : "chat-hello-ring mx-auto mb-4 grid h-[4.5rem] w-[4.5rem] place-items-center"}><Avatar small={widget} /></span>
               <div>
                 <p className={`font-display text-forest-900 ${widget ? "text-lg" : "mx-auto max-w-xl text-2xl font-semibold leading-tight sm:text-[2rem]"}`}>Hello{p.firstName ? ` ${p.firstName}` : ""}, I&apos;m here to help you every step of the way.</p>
                 <p className={`text-stone-500 ${widget ? "mt-1 text-sm" : "mt-3 text-base"}`}>{p.treeName ? `Ask me anything about ${p.treeName}.` : "How can I help with your trees today?"}</p>
