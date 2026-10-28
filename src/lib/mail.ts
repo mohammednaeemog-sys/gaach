@@ -1,5 +1,6 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import { db } from "@/lib/db";
 
 // Free email sending through a Gmail account (or any SMTP server).
 // Gmail: turn on 2-Step Verification, create an App password, then set
@@ -41,22 +42,39 @@ export function mailProblem(e: unknown): string {
   return msg;
 }
 
+// Saves the result for the admin's "Recent emails" list (never blocks sending)
+async function logMail(to: string, subject: string, ok: boolean, error?: string) {
+  try {
+    await db.emailLog.create({ data: { to, subject, ok, error: error?.slice(0, 500) } });
+  } catch (e) {
+    console.error("[email] could not save the email log:", e);
+  }
+}
+
 export async function sendMail(to: string, subject: string, text: string, html: string) {
   const { user, pass, host, port } = settings();
   if (!user || !pass) {
     // Without email set up, the message goes to the server console so you can still test locally.
     console.log(`\n[email not set up: add SMTP_USER and SMTP_PASS to .env] To: ${to}\nSubject: ${subject}\n${text}\n`);
+    await logMail(to, subject, false, "Email sending is not set up (SMTP_USER and SMTP_PASS are missing).");
     return { sent: false as const };
   }
-  const mail = { from: clean(process.env.MAIL_FROM) || `Gaach <${user}>`, to, subject, text, html };
+  const from = clean(process.env.MAIL_FROM) || `Gaach <${user}>`;
+  const mail = { from, to, replyTo: from, subject, text, html };
   try {
-    await transport(host, port, user, pass).sendMail(mail);
+    try {
+      await transport(host, port, user, pass).sendMail(mail);
+    } catch (e) {
+      // Some networks block port 465; Gmail also accepts 587
+      if (port === 465 && /ETIMEDOUT|ECONNREFUSED|ECONNRESET|timeout/i.test(String(e))) {
+        await transport(host, 587, user, pass).sendMail(mail);
+      } else throw e;
+    }
   } catch (e) {
-    // Some networks block port 465; Gmail also accepts 587
-    if (port === 465 && /ETIMEDOUT|ECONNREFUSED|ECONNRESET|timeout/i.test(String(e))) {
-      await transport(host, 587, user, pass).sendMail(mail);
-    } else throw e;
+    await logMail(to, subject, false, mailProblem(e));
+    throw e;
   }
   console.log(`[email] sent "${subject}" to ${to}`);
+  await logMail(to, subject, true);
   return { sent: true as const };
 }

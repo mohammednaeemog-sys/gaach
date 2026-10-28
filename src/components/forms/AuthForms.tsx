@@ -121,13 +121,12 @@ export function AdminResetForm() {
       <div className="flex flex-wrap gap-2">
         <label htmlFor="reset-email" className="sr-only">User&apos;s email</label>
         <input id="reset-email" name="email" type="email" placeholder="user@example.com" className="input min-w-0 flex-1" defaultValue={state.values?.email} />
-        <button className="btn-primary" disabled={pending}>{pending ? "Making..." : "Make reset link"}</button>
+        <button className="btn-primary" disabled={pending}>{pending ? "Sending..." : "Send reset email"}</button>
       </div>
-      {state.message && !state.ok && <p role="alert" className="field-error">{state.message}</p>}
-      {state.ok && state.message && (
-        <div className="rounded-xl bg-mint-50 p-3 text-sm">
-          <p className="font-medium text-forest-900">Send this link to {state.values?.email}. It works once, for 30 minutes.</p>
-          <input readOnly value={state.message} onFocus={(ev) => ev.currentTarget.select()} className="input mt-2 font-mono text-xs" aria-label="Reset link" />
+      {state.message && (
+        <div role="status" className={`rounded-xl p-3 text-sm ${state.ok ? "bg-mint-50 text-forest-700" : "bg-amber-50 text-amber-900"}`}>
+          <p className="font-medium">{state.message}</p>
+          {state.values?.link && <input readOnly value={state.values.link} onFocus={(ev) => ev.currentTarget.select()} className="input mt-2 font-mono text-xs" aria-label="Reset link" />}
         </div>
       )}
     </form>

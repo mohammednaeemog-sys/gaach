@@ -9,7 +9,7 @@ import { hashPassword, passwordProblem, verifyPassword } from "./password";
 import { createSession, destroySession, requireAdmin, requireUser } from "./session";
 import { createResetToken, RESET_MINUTES, redeemResetToken } from "./reset";
 import { siteUrl } from "@/lib/site-url";
-import { mailProblem, sendMail } from "@/lib/mail";
+import { mailConfigured, mailProblem, sendMail } from "@/lib/mail";
 import { siteSchema } from "./schemas";
 
 const registerSchema = z.object({
@@ -106,22 +106,30 @@ export async function deleteSite(fd: FormData) {
 
 const SENT = "If an account uses that email, we've sent a link to reset the password. Check your inbox and spam folder. The link works for 30 minutes.";
 
+// Emails a reset link straight to the user. Returns the link too (the admin page shows it if sending fails).
+async function sendResetEmail(user: { email: string; name: string }, token: string) {
+  const link = `${await siteUrl()}/reset-password?token=${token}`;
+  const r = await sendMail(
+    user.email,
+    "Reset your Gaach password",
+    `Hi ${user.name},\n\nSomeone asked to reset the password for your Gaach account. Open this link to choose a new one:\n\n${link}\n\nThe link works once and expires in ${RESET_MINUTES} minutes. If this wasn't you, you can ignore this email.\n\nGaach`,
+    `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#0d2b23"><h2 style="margin:0 0 12px">Reset your password</h2><p>Hi ${escapeHtml(user.name)},</p><p>Someone asked to reset the password for your Gaach account. Tap the button to choose a new one.</p><p style="margin:24px 0"><a href="${link}" style="background:#1d5b33;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none;font-weight:bold">Choose a new password</a></p><p style="font-size:13px;color:#57534e">Or copy this link into your browser:<br>${link}</p><p style="font-size:13px;color:#57534e">The link works once and expires in ${RESET_MINUTES} minutes. If this wasn't you, you can ignore this email.</p></div>`,
+  );
+  return { sent: r.sent, link };
+}
+
 export async function requestPasswordReset(_: FormState, fd: FormData): Promise<FormState> {
   const email = String(fd.get("email") ?? "").trim().toLowerCase();
   if (!z.string().email().safeParse(email).success) return { errors: { email: "Enter a valid email, like name@example.com." }, values: { email } };
+  // Say so plainly when the site can't send email at all, instead of pretending it did
+  if (!mailConfigured()) return { message: "Password reset emails are not working right now. Please contact us from the Contact page and we'll help you.", values: { email } };
   const user = await db.user.findUnique({ where: { email } });
   // Same answer whether or not the account exists, so nobody can test which emails are registered
   if (user) {
     const token = await createResetToken(user.id);
     if (token) {
-      const link = `${await siteUrl()}/reset-password?token=${token}`;
       try {
-        await sendMail(
-          user.email,
-          "Reset your Gaach password",
-          `Hi ${user.name},\n\nSomeone asked to reset the password for your Gaach account. Open this link to choose a new one:\n\n${link}\n\nThe link works once and expires in ${RESET_MINUTES} minutes. If this wasn't you, you can ignore this email.\n\nGaach`,
-          `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#0d2b23"><h2 style="margin:0 0 12px">Reset your password</h2><p>Hi ${escapeHtml(user.name)},</p><p>Someone asked to reset the password for your Gaach account. Tap the button to choose a new one.</p><p style="margin:24px 0"><a href="${link}" style="background:#35c759;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none;font-weight:bold">Choose a new password</a></p><p style="font-size:13px;color:#57534e">The link works once and expires in ${RESET_MINUTES} minutes. If this wasn't you, you can ignore this email.</p></div>`,
-        );
+        await sendResetEmail(user, token);
       } catch (e) {
         console.error("[email] reset email failed:", mailProblem(e), e);
         return { message: "We couldn't send the email right now. Please try again in a few minutes.", values: { email } };
@@ -148,14 +156,22 @@ export async function resetPassword(_: FormState, fd: FormData): Promise<FormSta
   redirect("/account?reset=1");
 }
 
-// Admin backup: make a reset link to send the user yourself (e.g. on WhatsApp).
+// Admin: email a reset link straight to the user. Only if sending fails is the link shown to pass on by hand.
 export async function adminResetLink(_: FormState, fd: FormData): Promise<FormState> {
   await requireAdmin();
   const email = String(fd.get("email") ?? "").trim().toLowerCase();
   const user = await db.user.findUnique({ where: { email } });
   if (!user) return { message: "No account uses that email.", values: { email } };
   const token = await createResetToken(user.id, { skipLimit: true });
-  return { ok: true, message: `${await siteUrl()}/reset-password?token=${token}`, values: { email } };
+  if (!token) return { message: "Couldn't make a reset link. Try again.", values: { email } };
+  try {
+    const r = await sendResetEmail(user, token);
+    if (r.sent) return { ok: true, message: `Reset email sent to ${user.email}. Ask them to check Inbox and Spam.`, values: { email } };
+    return { ok: false, message: "Email sending is not set up, so here is the link to send yourself:", values: { email, link: r.link } };
+  } catch (e) {
+    const link = `${await siteUrl()}/reset-password?token=${token}`;
+    return { ok: false, message: `The email failed: ${mailProblem(e)} Here is the link to send yourself:`, values: { email, link } };
+  }
 }
 
 // Admin: send a test email to check the Gmail settings, with a plain reason if it fails.

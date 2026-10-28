@@ -42,12 +42,31 @@ function StatIcon({ kind }: { kind: "leaf" | "pin" | "pot" }) {
   return <svg {...common}><path d="M6 13 h12 l-1.6 7 h-8.8z" /><path d="M12 13 V 8" /><path d="M12 9 c-3 0-4.5-2-4.5-4 c2.5 0 4.5 1.5 4.5 4z M12 10 c2.5 0 4-1.6 4-3.5 c-2.2 0-4 1.3-4 3.5z" /></svg>;
 }
 
-function FeatureIcon({ kind }: { kind: "leaf" | "shield" | "truck" | "person" }) {
-  const p = { viewBox: "0 0 24 24", className: "h-7 w-7 shrink-0 text-[#1d5b33]", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+function FeatureIcon({ kind }: { kind: "leaf" | "shield" | "truck" | "person" | "book" }) {
+  const p = { viewBox: "0 0 24 24", className: "h-6 w-6 shrink-0 text-[#1d5b33] sm:h-7 sm:w-7", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
   if (kind === "leaf") return <svg {...p}><path d="M5 19 C 5 10, 11 5, 20 5 C 20 13, 14 19, 5 19Z" /><path d="M6 18 L 14 10" /></svg>;
   if (kind === "shield") return <svg {...p}><path d="M12 3 l7 3 v5 c0 4.5-3 8-7 10 c-4-2-7-5.5-7-10 V6z" /><path d="M9 12 l2 2 l4-4" /></svg>;
   if (kind === "truck") return <svg {...p}><path d="M3 7 h11 v9 H3z M14 10 h4 l3 3 v3 h-7z" /><circle cx="7" cy="17.5" r="1.6" /><circle cx="17" cy="17.5" r="1.6" /></svg>;
+  if (kind === "book") return <svg {...p}><path d="M3 5.5 c3-1.2 6-1.2 9 .8 c3-2 6-2 9-.8 V19 c-3-1.2-6-1.2-9 .8 c-3-2-6-2-9-.8z" /><path d="M12 6.3 V19.8" /></svg>;
   return <svg {...p}><circle cx="12" cy="8" r="3.6" /><path d="M4.5 20 c1.2-4 4.2-6 7.5-6 s6.3 2 7.5 6" /></svg>;
+}
+
+// Soft, out-of-focus leaves at the hero's corners; they sway slowly (decoration only)
+function HeroLeaves() {
+  const sprig = (
+    <svg viewBox="0 0 120 260" className="h-full w-full">
+      <path d="M20 255 C 30 190, 50 120, 100 20" stroke="#6f9a52" strokeWidth="3" fill="none" />
+      {[[34, 200, -30], [44, 160, 40], [56, 120, -35], [70, 86, 35], [86, 50, -25]].map(([x, y, r], i) => (
+        <path key={i} d="M0 0 C 12 -16, 40 -16, 52 0 C 40 16, 12 16, 0 0Z" transform={`translate(${x} ${y}) rotate(${r + (i % 2 ? 180 : 0)})`} fill={i % 2 ? "#7fb24a" : "#5f9a3c"} />
+      ))}
+    </svg>
+  );
+  return (
+    <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden>
+      <div className="hero-blur-leaf absolute -bottom-10 -left-12 h-[300px] w-36 rotate-[20deg]">{sprig}</div>
+      <div className="hero-blur-leaf hero-blur-leaf-r absolute -right-10 -top-16 h-[280px] w-32 rotate-[200deg]">{sprig}</div>
+    </div>
+  );
 }
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
@@ -77,78 +96,79 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
       {denied && <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-800">That page is only for admins.</p>}
 
       {/* Hero */}
-      <section className="hero-light relative -mt-6 overflow-hidden bg-[#f5f3ec] sm:-mt-10 mx-[calc(50%-50vw)] md:flex md:min-h-[calc(100svh-4rem)] md:flex-col">
-        <div className="absolute inset-y-0 right-0 w-full md:w-[60%]" aria-hidden>
+      <section className="hero-light relative -mt-6 overflow-hidden bg-[#f6f6f1] sm:-mt-10 mx-[calc(50%-50vw)] lg:flex lg:min-h-[calc(100svh-4rem)] lg:flex-col">
+        <div className="hero-photo absolute inset-x-0 top-0 h-[300px] sm:h-[440px] lg:inset-y-0 lg:bottom-16 lg:left-auto lg:h-auto lg:w-[62%]" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/hero/home-tree.jpg" alt="" className="hero-tree-img h-full w-full object-cover object-[60%_75%]" />
+          <img src="/hero/home-tree.jpg" alt="" className="hero-tree-img h-full w-full object-cover object-[55%_bottom]" fetchPriority="high" />
+          <span className="hero-sunbeam" />
+          <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-[#f6f6f1] lg:hidden" />
         </div>
-        <div className="hero-light-fade absolute inset-0" aria-hidden />
-        {[["38%", "18%", 0], ["47%", "58%", 1.4], ["6%", "88%", 2.3]].map(([l, t, d], i) => (
-          <svg key={i} viewBox="0 0 24 24" className="hero-mini-leaf absolute hidden h-4 w-4 text-lime-600/50 md:block" style={{ left: l as string, top: t as string, animationDelay: `${d}s` }} aria-hidden>
-            <path d="M4 20 C 4 9, 11 4, 21 4 C 21 14, 15 20, 4 20Z" fill="currentColor" />
-          </svg>
-        ))}
+        <div className="hero-light-fade absolute inset-0 hidden lg:block" aria-hidden />
+        <HeroLeaves />
 
-        <div className="hero-fit relative mx-auto flex w-full max-w-[1400px] items-center px-4 pb-12 pt-12 sm:px-6 sm:pt-16 md:flex-1 md:pb-12 lg:px-10">
-          <div className="max-w-xl">
-            <p className="hero-eyebrow flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-forest-900/80 sm:text-xs">
-              <span>Greener cities<br />healthier people</span>
-              <span className="hero-eyebrow-line mt-4 h-px w-12 bg-forest-700/60" />
+        <div className="hero-fit relative mx-auto flex w-full max-w-[1400px] items-center px-4 pb-8 pt-[240px] sm:px-6 sm:pt-[380px] lg:flex-1 lg:px-10 lg:pb-8 lg:pt-10">
+          <div className="max-w-[820px]">
+            <p className="hero-eyebrow flex items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1d5b33] sm:text-xs">
+              Greener cities. Healthier lives.
+              <span className="hero-eyebrow-line h-px w-16 bg-[#1d5b33]/70" />
             </p>
-            <h1 className="font-display mt-5 text-[2.8rem] font-semibold leading-[1.04] tracking-tight text-forest-900 sm:text-6xl lg:text-[4.4rem]">
-              <span className="block"><RiseWords text="The right tree." start={150} step={110} /></span>
+            <h1 className="font-display mt-5 text-[2.5rem] font-semibold leading-[1.05] tracking-tight text-[#10241a] sm:text-6xl lg:text-[4.5rem]">
+              <span className="block"><RiseWords text="Find the right tree" start={150} step={90} /></span>
               <span className="block">
-                <RiseWords text="The" start={480} step={110} />
-                <span className="rise-word hero-green" style={{ animationDelay: "600ms" }}>right place.</span>
+                <RiseWords text="for" start={520} step={90} />
+                {["a", "better", "tomorrow."].map((w, i) => <span key={w} className="rise-word hero-green" style={{ animationDelay: `${620 + i * 90}ms` }}>{w}{i < 2 ? "\u00a0" : ""}</span>)}
               </span>
             </h1>
-            <p className="anim-rise mt-6 max-w-md text-base leading-relaxed text-stone-700 sm:text-[17px]" style={{ animationDelay: "750ms" }}>
-              Discover trees that suit your district, soil, sunlight and available space. Buy healthy saplings and get expert guidance to help them thrive.
+            <p className="anim-rise mt-5 max-w-[34rem] text-base leading-relaxed text-stone-600 sm:text-lg" style={{ animationDelay: "800ms" }}>
+              Get personalised tree recommendations for your location, available space and climate. Plant with confidence, grow healthier surroundings, and make your place greener.
             </p>
-            <div className="anim-rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "880ms" }}>
-              <Link href="/recommend" className="hero-cta group flex items-center justify-center gap-3 rounded-xl bg-[#1d5b33] px-7 py-4 font-semibold text-white shadow-[0_14px_30px_-14px_rgb(29_91_51/0.9)] transition hover:-translate-y-0.5 hover:bg-[#174a29]">
+            <div className="anim-rise mt-7 flex flex-col gap-3 sm:flex-row sm:gap-4" style={{ animationDelay: "920ms" }}>
+              <Link href="/recommend" className="hero-cta group flex items-center justify-center gap-3 rounded-lg bg-[#145a32] px-8 py-4 font-semibold text-white shadow-[0_14px_30px_-14px_rgb(20_90_50/0.9)] transition hover:-translate-y-0.5 hover:bg-[#0f4826]">
                 Find trees for my place <span className="transition group-hover:translate-x-1">→</span>
               </Link>
-              <Link href="/trees" className="flex items-center justify-center rounded-xl border border-forest-900/25 bg-white/75 px-6 py-4 font-semibold text-forest-900 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white">
-                Explore saplings
+              <Link href="/trees" className="flex items-center justify-center rounded-lg border-[1.5px] border-[#145a32] bg-white/80 px-10 py-4 font-semibold text-[#145a32] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white">
+                Explore all trees
               </Link>
             </div>
-            <ul className="anim-rise mt-8 grid max-w-xl grid-cols-2 gap-y-4 sm:grid-cols-4" style={{ animationDelay: "1000ms" }}>
+            <ul className="mt-8 grid max-w-[720px] grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-0">
               {([
-                ["leaf", "Verified", "nurseries"],
-                ["shield", "Healthy", "saplings"],
-                ["truck", "Safe", "delivery"],
-                ["person", "Expert", "guidance"],
-              ] as const).map(([icon, a, b]) => (
-                <li key={a} className="hero-feature flex items-center gap-2.5 text-[13px] leading-tight text-forest-900 sm:px-3 sm:first:pl-0">
-                  <FeatureIcon kind={icon} />
-                  <span>{a}<br />{b}</span>
+                ["leaf", "Verified nurseries", "Reliable sources"],
+                ["shield", "Healthy saplings", "Better survival rate"],
+                ["truck", "Safe delivery", "Across all districts"],
+                ["book", "Expert guidance", "From planting to care"],
+              ] as const).map(([icon, a, b], i) => (
+                <li key={a} className="hero-feature hero-pop flex items-start gap-3 text-forest-900 sm:px-3 sm:first:pl-0" style={{ animationDelay: `${1050 + i * 110}ms` }}>
+                  <span className="hero-feature-icon grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#e6eee3] sm:h-12 sm:w-12"><FeatureIcon kind={icon} /></span>
+                  <span className="min-w-0 pt-0.5">
+                    <span className="block text-[13px] font-medium leading-tight sm:text-sm">{a}</span>
+                    <span className="mt-1 block text-[11px] leading-tight text-stone-500 sm:text-xs">{b}</span>
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Numbers */}
-        <div className="relative border-t border-forest-900/10 bg-[#eef3ec]/92 backdrop-blur-sm">
-          <dl className="mx-auto grid max-w-[1400px] grid-cols-3 divide-x divide-forest-900/10 px-4 sm:px-6 lg:px-10 py-6">
+        {/* Numbers: a floating card over the bottom of the photo */}
+        <div className="relative mx-auto w-full max-w-[1400px] px-4 pb-6 sm:px-6 lg:px-10">
+          <dl className="hero-stats grid grid-cols-3 rounded-2xl bg-[#eef3ec]/95 py-5 shadow-[0_20px_50px_-30px_rgb(13_43_35/0.55)] ring-1 ring-white/70 backdrop-blur-md sm:py-6">
             {([
-              [treeCount, "Tree species", "leaf"],
-              [64, "District profiles", "pin"],
-              [productCount, "Sapling variants", "pot"],
-            ] as const).map(([n, l, icon]) => (
-              <div key={l} className="flex flex-col items-center justify-center gap-2 px-2 sm:flex-row sm:gap-5">
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#dfe9d8] sm:h-14 sm:w-14"><StatIcon kind={icon} /></span>
-                <div className="text-center sm:text-left">
+              [treeCount, "Tree species", "Fruits, flowering, shade and timber", "leaf"],
+              [64, "District profiles", "Location-based recommendations", "pin"],
+              [productCount, "Sapling variants", "Different sizes to suit your space", "pot"],
+            ] as const).map(([n, l, sub, icon], i) => (
+              <div key={l} className={`flex flex-col items-center justify-center gap-2 px-2 text-center sm:flex-row sm:gap-5 sm:text-left ${i ? "border-l border-forest-900/10" : ""}`}>
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#dfe9d8] sm:h-16 sm:w-16"><StatIcon kind={icon} /></span>
+                <div>
                   <dt className="sr-only">{l}</dt>
-                  <dd className="font-display text-3xl font-semibold text-forest-900 sm:text-4xl"><CountUp to={n} /></dd>
-                  <dd className="text-xs text-stone-600 sm:text-sm">{l}</dd>
+                  <dd className="font-display text-2xl font-semibold text-forest-900 sm:text-4xl"><CountUp to={n} />{n !== 64 ? "+" : ""}</dd>
+                  <dd className="text-xs text-stone-700 sm:text-base">{l}</dd>
+                  <dd className="hidden text-xs text-stone-500 lg:block">{sub}</dd>
                 </div>
               </div>
             ))}
           </dl>
         </div>
-
       </section>
 
       {/* Popular species */}

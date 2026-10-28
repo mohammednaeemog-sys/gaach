@@ -344,3 +344,15 @@ model ContactMessage {
 
   @@index([email, createdAt])
 }
+
+// A record of every email the site tried to send, so the admin can see if it went out
+model EmailLog {
+  id        String   @id @default(cuid())
+  to        String
+  subject   String
+  ok        Boolean
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

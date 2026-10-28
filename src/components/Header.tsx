@@ -41,9 +41,9 @@ export async function Header() {
         <Link href="/" aria-label="Gaach home" className="logo-hover flex items-center text-base">
           <Logo size={40} />
         </Link>
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex xl:gap-1">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-full px-3.5 py-2 text-sm font-medium text-mint-100 transition hover:bg-white/10 hover:text-lime-400">
+            <Link key={l.href} href={l.href} className="whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-medium text-mint-100 transition hover:bg-white/10 hover:text-lime-400 xl:px-3.5">
               {l.label}
             </Link>
           ))}
@@ -57,8 +57,8 @@ export async function Header() {
           </Link>
           {!user && (
             <>
-              <Link href="/login" className="btn hidden text-mint-100 hover:bg-white/10 sm:inline-flex">Log in</Link>
-              <Link href="/register" className="btn-primary hidden sm:inline-flex">Sign up</Link>
+              <Link href="/login" className="btn hidden whitespace-nowrap text-mint-100 hover:bg-white/10 sm:inline-flex lg:hidden xl:inline-flex">Log in</Link>
+              <Link href="/register" className="btn-primary hidden whitespace-nowrap sm:inline-flex">Sign up</Link>
             </>
           )}
           {/* One menu button (three lines) for everything else */}
@@ -77,7 +77,7 @@ export async function Header() {
                 </div>
               )}
               {links.map((l) => (
-                <Link key={l.href} href={l.href} className="block rounded-xl px-3 py-2 text-sm hover:bg-mint-100 md:hidden">{l.label}</Link>
+                <Link key={l.href} href={l.href} className="block rounded-xl px-3 py-2 text-sm hover:bg-mint-100 lg:hidden">{l.label}</Link>
               ))}
               {user ? (
                 <>

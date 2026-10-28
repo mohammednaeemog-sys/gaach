@@ -67,7 +67,7 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 | 📷 **Photo check** | The user sends a photo of a sick plant and gets the likely problem, safe next steps and links to care guides. |
 | ⭐ **Ratings and reviews** | 1 to 5 stars and comments on each tree, with a "Bought from Gaach" badge for real buyers. |
 | 📚 **Care guides** | Public guides on watering, pests, diseases, fertiliser, pots and more. |
-| 🔑 **Forgot password** | A free email reset link (Gmail), valid for 30 minutes. |
+| 🔑 **Forgot password** | The user gets a reset email automatically (free, through Gmail). The link works once, for 30 minutes. |
 | 📬 **Contact and newsletter** | A contact form and newsletter sign-up in the footer. |
 | 📄 **Info pages** | About, Contact, Privacy policy, Terms, Refund and return policy, Community guidelines. |
 | 📱 **Mobile first** | Works on phones, fills wide screens up to 1400 px, and can be installed as an app (PWA). |
@@ -79,7 +79,7 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 |---|---|
 | **Trees and products** | Add and edit trees, publish rules, upload photos with credits, sizes, prices, stock and care stages. |
 | **Orders** | See all orders and change their status. Cancelling returns the stock. |
-| **Users** | See accounts, send a test email, and make a password reset link for someone. |
+| **Users** | See accounts, send a test email, email a reset link to someone, and see every email the site tried to send (Recent emails). |
 | **Reviews** | Hide, show or delete reviews. |
 | **Site info and messages** | Edit the hotline, addresses, email and social links in the footer. Read contact messages and see newsletter sign-ups. |
 | **Regions and delivery** | Edit regional climate profiles, assign districts, and set the flat delivery fee. |
@@ -188,7 +188,7 @@ Copy `.env.example` to `.env`. **Never commit `.env`**; it is already in `.gitig
 | `APP_URL` | Optional | The public site address used in email links. |
 | `BLOB_READ_WRITE_TOKEN` | Online | Added by Vercel when the Blob store is connected; stores admin photos. |
 
-Without a Gemini key, the site still works: the Advisor answers from Gaach's own data. Without email settings, reset links are printed in the terminal.
+Without a Gemini key, the site still works: the Advisor answers from Gaach's own data. Without email settings, the forgot-password page says email is not working, and reset links are printed in the terminal.
 
 ---
 
