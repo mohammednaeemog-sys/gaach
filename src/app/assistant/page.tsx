@@ -40,23 +40,26 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
   return (
     <div>
       <h1 className="sr-only">Gaach Tree Advisor</h1>
-      <div className="grid gap-6 lg:grid-cols-[17.5rem_1fr]">
-        <aside className="order-2 min-w-0 space-y-4 lg:order-1">
-          <div className="card p-3">
-            <div className="mb-1 flex items-center justify-between gap-2 px-2 pt-1">
-              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-stone-500"><Icon.chat className="h-4 w-4" /> Your chats</p>
-              <Link href="/assistant" className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-forest-700 hover:bg-mint-50"><Icon.plus className="h-3.5 w-3.5" /> New chat</Link>
-            </div>
+      <div className="grid gap-5 lg:grid-cols-[17.5rem_1fr]">
+        <aside className="advisor-side order-2 flex min-w-0 flex-col gap-4 rounded-[1.25rem] p-3 shadow-[0_1rem_2.5rem_-2rem_rgb(28_29_26/0.5)] ring-1 ring-stone-200/60 lg:order-1 lg:sticky lg:top-24 lg:h-[calc(100svh-9rem)] lg:min-h-[35rem]">
+          <Link href="/" className="hidden items-center gap-3 px-2 pt-2 lg:flex" aria-label="Gaach home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/gaach-badge.svg" alt="" className="h-12 w-12" />
+            <span className="leading-tight"><span className="font-display block text-xl font-semibold tracking-wide text-forest-900">GAACH</span><span className="block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-stone-600">Trees for Bangladesh</span></span>
+          </Link>
+          <Link href="/assistant" className="advisor-new"><Icon.plus className="h-4 w-4" /> New chat</Link>
+          <div className="min-h-0 flex-1">
+            <p className="px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-stone-500">Your chats</p>
             {conversations.length === 0 ? (
-              <p className="px-2 pb-2 text-sm text-stone-500">No chats yet. Ask your first question.</p>
+              <p className="px-2 pt-2 text-sm text-stone-500">No chats yet. Ask your first question.</p>
             ) : (
-              <ul className="max-h-[40vh] space-y-1 overflow-y-auto lg:max-h-[calc(100svh-26rem)]">
+              <ul className="mt-1.5 max-h-[40vh] space-y-0.5 overflow-y-auto lg:max-h-none lg:h-[calc(100%-1.5rem)]">
                 {conversations.map((c) => (
                   <li key={c.id}>
                     <Link href={`/assistant?c=${c.id}`} className={`chat-thread ${c.id === convo?.id ? "is-active" : "text-forest-900"}`} aria-current={c.id === convo?.id ? "page" : undefined}>
-                      <Icon.chat className="h-4 w-4 shrink-0 opacity-80" />
+                      <Icon.chat className="h-4 w-4 shrink-0 opacity-70" />
                       <span className="min-w-0">
-                        <span className="line-clamp-1 text-sm font-medium">{c.title}</span>
+                        <span className="line-clamp-1 text-sm">{c.title}</span>
                         <span className="chat-thread-date block text-xs text-stone-500">{dateText(c.updatedAt)}</span>
                       </span>
                     </Link>
@@ -65,7 +68,7 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
               </ul>
             )}
           </div>
-          <div className="rounded-2xl bg-[#1d4a2f] p-5 text-sm text-white/85">
+          <div className="can-do-card rounded-2xl p-5 text-sm text-white/85">
             <p className="font-display pb-3 text-xl text-white">What I can do</p>
             <ul>
               <li className="can-do-row"><Icon.leaf className="h-6 w-6 shrink-0 text-white" /> Suggest trees for your saved places</li>

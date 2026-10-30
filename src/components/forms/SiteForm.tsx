@@ -73,14 +73,14 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
         <div>
           <label htmlFor="divisionId" className="field-label">Division</label>
           <select id="divisionId" name="divisionId" className="input" value={v.divisionId ?? ""} onChange={set("divisionId")} aria-invalid={!!errors.districtId}>
-            <option value="">Choose division</option>
+            <option value="">Select division</option>
             {divisions.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
         </div>
         <div>
           <label htmlFor="districtId" className="field-label">District</label>
           <select id="districtId" name="districtId" className="input" value={v.districtId ?? ""} onChange={set("districtId")} disabled={!division} aria-invalid={!!errors.districtId}>
-            <option value="">{division ? "Choose district" : "Choose a division first"}</option>
+            <option value="">{division ? "Select district" : "Select a division first"}</option>
             {division?.districts.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
           {err("districtId")}
@@ -125,8 +125,11 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
           <p className="hint">{v.soil ? SOIL_HINTS[v.soil as keyof typeof SOIL_HINTS] : "Not sure? Choose Loam."}</p>
           {err("soil")}
         </div>
+      </fieldset>
+
+      <fieldset className="space-y-3 border-t border-stone-100 pt-5">
+        <Step n={3} title="What is the tree for?" text="Pick the main reason you are planting." />
         <div>
-          <span className="field-label">What is the tree for?</span>
           <div className="flex flex-wrap gap-2">
             {PURPOSES.map((x) => (
               <label key={x} className={`pill-radio ${v.purpose === x ? "is-on" : ""}`}>

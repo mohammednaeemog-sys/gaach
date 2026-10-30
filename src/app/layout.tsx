@@ -1,4 +1,3 @@
-import { FallingLeaves } from "@/components/FallingLeaves";
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Fraunces, Poppins } from "next/font/google";
 import "./globals.css";
@@ -30,7 +29,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main className="mx-auto w-full max-w-[87.5rem] flex-1 px-4 sm:px-6 lg:px-10 py-6 sm:py-10">{children}</main>
         <Footer />
         <MenuCloser />
-        <FallingLeaves />
         <ChatWidget loggedIn={!!user} firstName={user?.name.split(" ")[0] ?? null} offline={!aiConfigured()} />
       </body>
     </html>

@@ -34,6 +34,9 @@ export default async function AboutPage() {
         <li>{districts} districts covered, with delivery across the country.</li>
       </ul>
 
+      <h2>Who runs Gaach</h2>
+      <p>Gaach is run by Mohammed Naeem, who looks after the catalogue, the nursery partners and customer support. For partnerships, press or anything that needs a direct reply, you can write to <a href="mailto:mohammed.naeem.og@gmail.com">mohammed.naeem.og@gmail.com</a>. For orders and plant questions, the <Link href="/contact">contact page</Link> or the Tree Advisor is usually the quickest way to get help.</p>
+
       <div className="mt-6 flex flex-wrap gap-2">
         <Link href="/recommend" className="btn-primary !no-underline">Find trees for my place</Link>
         <Link href="/contact" className="btn-ghost !no-underline">Talk to us</Link>

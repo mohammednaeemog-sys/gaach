@@ -187,8 +187,16 @@ export function Chat(p: Props) {
   }, []);
 
   return (
-    <div className={widget ? "flex h-full min-h-0 flex-col bg-white" : "card advisor-chat flex flex-col overflow-hidden"}>
-      <div className={widget ? "hidden" : "flex items-center gap-3 border-b border-stone-200 px-5 py-3"}>
+    <div className={widget ? "flex h-full min-h-0 flex-col bg-white" : `advisor-chat relative flex flex-col overflow-hidden rounded-[1.25rem] ${messages.length === 0 ? "is-welcome" : ""}`}>
+      {!widget && (
+        <div className="advisor-art" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/advisor-leaves.jpg" alt="" className="advisor-art-leaves" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/advisor-book.jpg" alt="" className="advisor-art-book" />
+        </div>
+      )}
+      <div className={widget ? "hidden" : "relative z-10 mx-3 mt-3 flex items-center gap-3 rounded-xl bg-white/85 px-4 py-2.5 shadow-sm ring-1 ring-stone-200/60 backdrop-blur sm:mx-6 sm:mt-4"}>
         <Avatar />
         <div className="min-w-0 flex-1">
           <p className="font-display text-base text-forest-900">Gaach Tree Advisor <span className="ml-1.5 inline-flex items-center gap-1 align-middle font-sans text-[0.6875rem] font-medium text-forest-700"><span className="h-1.5 w-1.5 rounded-full bg-forest-700" />Online</span></p>
@@ -197,23 +205,23 @@ export function Chat(p: Props) {
         {messages.length > 0 && <Link href="/assistant" className="hidden rounded-full border border-stone-200 px-3 py-1.5 text-xs font-medium text-forest-700 hover:bg-mint-50 sm:block">+ New chat</Link>}
       </div>
       {notice && <p className="bg-amber-50 px-4 py-2 text-xs text-amber-900">{notice}</p>}
-      <div ref={listRef} className={`min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain ${widget ? "p-4" : "p-4 sm:px-6"}`} aria-live="polite">
-        {messages.length === 0 && (
-          <div className={`chat-welcome ${widget ? "space-y-4" : "mx-auto flex max-w-4xl flex-col gap-7 py-4 sm:py-6"}`}>
-            <div className={widget ? "flex items-start gap-2.5" : "text-center"}>
-              <span className={widget ? "" : "chat-hello-ring mx-auto mb-4 grid h-[4.5rem] w-[4.5rem] place-items-center"}><Avatar small={widget} /></span>
+      <div ref={listRef} className={`relative z-10 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain ${widget ? "p-4" : "p-4 sm:px-6"}`} aria-live="polite">
+        {messages.length === 0 && widget && (
+          <div className="chat-welcome space-y-4">
+            <div className="flex items-start gap-2.5">
+              <Avatar small />
               <div>
-                <p className={`font-display text-forest-900 ${widget ? "text-lg" : "mx-auto max-w-xl text-2xl font-semibold leading-tight sm:text-[2rem]"}`}>Hello{p.firstName ? ` ${p.firstName}` : ""}, I&apos;m here to help you every step of the way.</p>
-                <p className={`text-stone-500 ${widget ? "mt-1 text-sm" : "mt-3 text-base"}`}>{p.treeName ? `Ask me anything about ${p.treeName}.` : "How can I help with your trees today?"}</p>
+                <p className="font-display text-lg text-forest-900">Hello{p.firstName ? ` ${p.firstName}` : ""}, I&apos;m here to help you every step of the way.</p>
+                <p className="mt-1 text-sm text-stone-500">{p.treeName ? `Ask me anything about ${p.treeName}.` : "How can I help with your trees today?"}</p>
               </div>
             </div>
             {!p.treeName && (
-              <div className={`grid ${widget ? "grid-cols-2 gap-2.5" : "grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"}`}>
+              <div className="grid grid-cols-2 gap-2.5">
                 {QUICK.map((q, i) => (
                   <button key={q.title} type="button" onClick={() => (q.ask ? send(q.ask) : fileRef.current?.click())} className="quick-card" style={{ animationDelay: `${i * 80}ms` }}>
                     <q.icon className="quick-icon" />
                     <span className="font-display block text-base font-semibold text-forest-900">{q.title}</span>
-                    <span className="block text-xs text-stone-500 sm:text-sm">{q.text}</span>
+                    <span className="block text-xs text-stone-500">{q.text}</span>
                   </button>
                 ))}
               </div>
@@ -221,13 +229,50 @@ export function Chat(p: Props) {
             <div>
               <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">Popular questions you can try</p>
               <ul className="space-y-1.5">
-                {p.suggestions.slice(0, widget ? 3 : 6).map((s) => (
-                  <li key={s}>
-                    <button type="button" onClick={() => send(s)} className="popular-q">
-                      <span>{s}</span><span aria-hidden="true" className="text-lg leading-none text-forest-900">→</span>
-                    </button>
-                  </li>
+                {p.suggestions.slice(0, 3).map((s) => (
+                  <li key={s}><button type="button" onClick={() => send(s)} className="popular-q"><span>{s}</span><span aria-hidden="true" className="text-lg leading-none text-forest-900">→</span></button></li>
                 ))}
+              </ul>
+            </div>
+          </div>
+        )}
+        {messages.length === 0 && !widget && (
+          <div className="chat-welcome advisor-welcome relative mx-auto flex max-w-[68rem] flex-col gap-6 py-2 sm:py-4">
+            <div className="advisor-hello max-w-[33rem] md:ml-[22%]">
+              <p className="anim-rise flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.3em] text-[#2f6b3f]">Gaach Tree Advisor <span className="h-px w-9 bg-[#2f6b3f]/60" /></p>
+              <h2 className="font-display mt-3 text-[2.1rem] font-semibold leading-[1.05] text-forest-900 sm:text-[2.6rem] xl:text-[3rem]">
+                <span className="hh-line block overflow-hidden pb-1"><span className="block" style={{ animationDelay: "60ms" }}>Hello{p.firstName ? ` ${p.firstName}` : ""},</span></span>
+                <span className="hh-line block overflow-hidden pb-1"><span className="block" style={{ animationDelay: "180ms" }}>I&apos;m here to help you</span></span>
+                <span className="hh-line block overflow-hidden pb-1"><span className="block text-[#2f6b3f]" style={{ animationDelay: "300ms" }}>{p.treeName ? `with your ${p.treeName.split(" (")[0].toLowerCase()}.` : "with your trees."}</span></span>
+              </h2>
+              <p className="anim-rise mt-3 text-[0.9375rem] leading-relaxed text-stone-600 sm:text-base" style={{ animationDelay: "420ms" }}>Ask questions, get personalised recommendations, understand care steps, identify problems from photos and compare trees for your space.</p>
+            </div>
+            {!p.treeName && (
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+                {QUICK.map((q, i) => (
+                  <button key={q.title} type="button" onClick={() => (q.ask ? send(q.ask) : fileRef.current?.click())} className="quick-card group relative" style={{ animationDelay: `${480 + i * 90}ms` }}>
+                    <span className="mb-3 grid h-12 w-12 place-items-center rounded-full bg-[#e6ebdf] text-[#1d5b33] transition duration-300 group-hover:scale-110 group-hover:bg-[#1d5b33] group-hover:text-white"><q.icon className="h-5 w-5" /></span>
+                    <span className="font-display block text-[1.05rem] font-semibold text-forest-900">{q.title}</span>
+                    <span className="block pr-5 text-xs text-stone-500 sm:text-sm">{q.text}</span>
+                    <Icon.chev className="absolute bottom-5 right-4 h-4 w-4 text-forest-900 transition group-hover:translate-x-1" />
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="anim-rise" style={{ animationDelay: "800ms" }}>
+              <p className="mb-2.5 text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-stone-600">Popular questions you can try</p>
+              <ul className="space-y-2">
+                {p.suggestions.slice(0, 6).map((s, i) => {
+                  const Ic = [Icon.sprout, Icon.leaf, Icon.leaf, Icon.leaf, Icon.leaf, Icon.leaf][i] ?? Icon.leaf;
+                  return (
+                    <li key={s}>
+                      <button type="button" onClick={() => send(s)} className="popular-q group">
+                        <span className="flex items-center gap-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#e6ebdf] text-[#2f6b3f]"><Ic className="h-3.5 w-3.5" /></span>{s}</span>
+                        <Icon.arrow className="h-4 w-4 shrink-0 text-forest-900 transition group-hover:translate-x-1" />
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
@@ -262,7 +307,7 @@ export function Chat(p: Props) {
           <button type="button" onClick={() => setPhoto(null)} className="grid h-8 w-8 place-items-center rounded-full text-stone-500 hover:bg-stone-100" aria-label="Remove photo">×</button>
         </div>
       )}
-      <form onSubmit={(e) => { e.preventDefault(); send(input); }} className={`chat-input-bar flex items-center gap-2 ${widget ? "border-t border-stone-200 p-3" : "px-4 pb-4 pt-2 sm:px-6"}`}>
+      <form onSubmit={(e) => { e.preventDefault(); send(input); }} className={`chat-input-bar relative z-10 flex items-center gap-2 ${widget ? "border-t border-stone-200 p-3" : "mx-3 mb-3 rounded-full bg-white/90 p-2 shadow-[0_0.6rem_1.6rem_-1rem_rgb(28_29_26/0.4)] ring-1 ring-stone-200/70 backdrop-blur sm:mx-6 sm:mb-5"}`}>
         <input ref={fileRef} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => { pickPhoto(e.target.files?.[0]); e.target.value = ""; }} />
         <button type="button" onClick={() => fileRef.current?.click()} disabled={busy} className="chat-photo" aria-label="Attach a plant photo" title="Attach a plant photo">
           <Icon.clip className="h-5 w-5" />

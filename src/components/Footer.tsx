@@ -62,43 +62,50 @@ export async function Footer() {
   ).filter(([, href]) => href);
 
   return (
-    <footer className="site-footer relative mt-16 overflow-hidden bg-forest-900 text-mint-100">
-      <svg className="foot-leaf pointer-events-none absolute -right-10 -top-10 h-56 w-56 text-white/[0.04]" viewBox="0 0 24 24" aria-hidden>
-        <path d="M4 20 C 4 9, 11 4, 21 4 C 21 14, 15 20, 4 20Z" fill="currentColor" />
+    <footer className="site-footer relative mt-16 overflow-hidden bg-[#0f2a1d] text-[#e4ece4]">
+      {/* Faint leaves at both edges */}
+      <svg className="foot-leaf foot-leaf-l pointer-events-none absolute -left-16 top-0 h-[26rem] w-60 text-white/[0.045]" viewBox="0 0 120 260" aria-hidden>
+        <path d="M20 255 C 30 190, 50 120, 100 20" stroke="currentColor" strokeWidth="2" fill="none" />
+        {[[34, 200, -30], [44, 160, 40], [56, 120, -35], [70, 86, 35], [86, 50, -25]].map(([x, y, r], i) => <path key={i} d="M0 0 C 12 -16, 40 -16, 52 0 C 40 16, 12 16, 0 0Z" transform={`translate(${x} ${y}) rotate(${r + (i % 2 ? 180 : 0)})`} fill="currentColor" />)}
       </svg>
-      <div className="relative mx-auto grid max-w-[87.5rem] grid-cols-2 gap-x-6 gap-y-10 px-4 sm:px-6 lg:px-10 py-12 lg:grid-cols-[1.45fr_1fr_1fr_1.3fr]">
+      <svg className="foot-leaf foot-leaf-r pointer-events-none absolute -right-14 bottom-0 h-[24rem] w-56 text-white/[0.045]" viewBox="0 0 120 260" style={{ transform: "scaleX(-1)" }} aria-hidden>
+        <path d="M20 255 C 30 190, 50 120, 100 20" stroke="currentColor" strokeWidth="2" fill="none" />
+        {[[34, 200, -30], [44, 160, 40], [56, 120, -35], [70, 86, 35], [86, 50, -25]].map(([x, y, r], i) => <path key={i} d="M0 0 C 12 -16, 40 -16, 52 0 C 40 16, 12 16, 0 0Z" transform={`translate(${x} ${y}) rotate(${r + (i % 2 ? 180 : 0)})`} fill="currentColor" />)}
+      </svg>
+      <div className="relative mx-auto grid max-w-[87.5rem] grid-cols-2 gap-x-6 gap-y-10 px-4 sm:px-6 lg:px-10 py-12 lg:grid-cols-[1.35fr_0.95fr_0.95fr_1.25fr]">
         {/* Brand and contact */}
         <div className="col-span-2 space-y-5 lg:col-span-1">
-          <LogoBadge size={112} className="logo-hover-tilt" />
-          <p className="max-w-xs text-sm text-mint-200/80">Tree recommendations and healthy saplings for every district of Bangladesh.</p>
+          <Link href="/" className="flex items-center gap-4" aria-label="Gaach home">
+            <LogoBadge size={80} className="logo-hover-tilt" />
+            <span className="leading-tight"><span className="font-display block text-2xl tracking-wide text-white">GAACH</span><span className="block text-sm tracking-wide text-[#e4ece4]/85">TREES FOR BANGLADESH</span></span>
+          </Link>
+          <p className="max-w-xs text-[0.9375rem] leading-relaxed text-[#e4ece4]/85">Tree recommendations and healthy saplings for every district of Bangladesh.</p>
 
           {info.hotline && (
             <a href={telHref(info.hotline)} className="group flex items-center gap-3">
-              <Headset className="h-11 w-11 shrink-0 text-lime-400 transition group-hover:scale-105" />
+              <Headset className="h-10 w-10 shrink-0 text-[#5cc66a] transition group-hover:scale-105" />
               <span>
-                <span className="block text-xs text-mint-200/80">{info.hotlineNote ? `Hotline · ${info.hotlineNote}` : "Hotline"}</span>
+                <span className="block text-xs text-[#e4ece4]/80">{info.hotlineNote ? `Hotline - ${info.hotlineNote}` : "Hotline"}</span>
                 <span className="block text-lg font-semibold tracking-wide text-white group-hover:text-lime-300">{info.hotline}</span>
               </span>
             </a>
           )}
 
           {outlets.length > 0 && (
-            <div className="text-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lime-400">{outlets.length > 1 ? "Our nurseries" : "Our nursery"}</p>
-              <ul className="mt-2 space-y-1.5 text-mint-200/85">
-                {outlets.map((o, i) => (
-                  <li key={i} className="flex gap-2">
-                    <Icon.pin className="mt-0.5 h-4 w-4 shrink-0 text-lime-400/80" />
-                    <span>{o.name && <strong className="font-semibold text-white">{o.name}: </strong>}{o.address}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex gap-4 text-sm">
+              <Icon.pin className="mt-0.5 h-6 w-6 shrink-0 text-[#5cc66a]" />
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5cc66a]">{outlets.length > 1 ? "Our nurseries" : "Our nursery"}</p>
+                <ul className="mt-1 space-y-1.5 text-[#e4ece4]/90">
+                  {outlets.map((o, i) => <li key={i}>{o.name && <strong className="font-semibold text-white">{o.name}: </strong>}{o.address}</li>)}
+                </ul>
+              </div>
             </div>
           )}
 
-          <ul className="space-y-1.5 text-sm text-mint-200/85">
-            {info.email && <li><span className="text-mint-200/55">Email: </span><a href={`mailto:${info.email}`} className="foot-link">{info.email}</a></li>}
-            {info.phone && <li><span className="text-mint-200/55">Phone: </span><a href={telHref(info.phone)} className="foot-link">{info.phone}</a></li>}
+          <ul className="space-y-2 text-sm text-[#e4ece4]/90">
+            {info.email && <li className="flex items-center gap-4"><svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0 text-[#5cc66a]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden><rect x="3" y="5.5" width="18" height="13" rx="1.5" /><path d="M3.5 6.5l8.5 6.5 8.5-6.5" /></svg><span><span className="text-[#e4ece4]/70">Email: </span><a href={`mailto:${info.email}`} className="foot-link">{info.email}</a></span></li>}
+            {info.phone && <li className="flex items-center gap-4"><span className="w-6" aria-hidden /><span><span className="text-[#e4ece4]/70">Phone: </span><a href={telHref(info.phone)} className="foot-link">{info.phone}</a></span></li>}
             {!info.email && !info.phone && !info.hotline && (
               <>
                 <li className="flex items-center gap-2"><Icon.truck className="h-4 w-4 text-lime-400" /> Delivery to all 64 districts</li>
@@ -107,15 +114,6 @@ export async function Footer() {
             )}
           </ul>
 
-          {socials.length > 0 && (
-            <div className="flex gap-2.5">
-              {socials.map(([name, href, label]) => (
-                <a key={name} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="foot-social">
-                  <SocialIcon name={name} />
-                </a>
-              ))}
-            </div>
-          )}
         </div>
 
         <LinkColumn title="Information & services" links={INFO_LINKS} />
@@ -124,11 +122,11 @@ export async function Footer() {
         {/* Newsletter and rating */}
         <div className="col-span-2 lg:col-span-1">
           <h2 className="foot-title">Sign up for our newsletter</h2>
-          <p className="mt-3 mb-3 text-sm text-mint-200/80">Seasonal planting tips, care reminders and nursery offers. No spam.</p>
+          <p className="mt-4 mb-4 text-sm leading-relaxed text-[#e4ece4]/90">Seasonal planting tips, care reminders and nursery offers. No spam.</p>
           <NewsletterForm />
           {rating.count > 0 && (
-            <Link href="/trees" className="foot-rating mt-6 flex items-center gap-3 rounded-2xl bg-white p-3 text-forest-900 shadow-lg shadow-black/20">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-mint-100 text-forest-700"><Icon.leaf className="h-5 w-5" /></span>
+            <Link href="/trees" className="foot-rating mt-6 flex items-center gap-4 rounded-xl bg-[#fbfaf6] px-5 py-4 text-forest-900 shadow-lg shadow-black/20">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#e6ebdf] text-[#1d5b33]"><Icon.leaf className="h-5 w-5" /></span>
               <span className="min-w-0">
                 <span className="block text-xs text-stone-500">Gaach rating</span>
                 <span className="flex items-center gap-2">
@@ -142,9 +140,19 @@ export async function Footer() {
         </div>
       </div>
 
-      <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-[87.5rem] items-center justify-center px-4 sm:px-6 lg:px-10 py-5 text-xs text-mint-200/70">
+      <div className="relative mx-auto max-w-[87.5rem] px-4 sm:px-6 lg:px-10"><div className="border-t border-white/15" /></div>
+      <div className="relative">
+        <div className="mx-auto flex max-w-[87.5rem] flex-wrap items-center justify-between gap-4 px-4 py-5 text-xs text-[#e4ece4]/75 sm:px-6 lg:px-10">
           <p>© {new Date().getFullYear()} Gaach. Trees for Bangladesh.</p>
+          {socials.length > 0 && (
+            <div className="flex gap-1.5">
+              {socials.map(([name, href, label]) => (
+                <a key={name} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="foot-social">
+                  <SocialIcon name={name} />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </footer>

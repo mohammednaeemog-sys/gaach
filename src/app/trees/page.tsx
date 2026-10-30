@@ -58,7 +58,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
 
   const box = (name: string, value: string, text: string, n: number, checked: boolean) => (
     <label key={value} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-1 py-1 text-sm text-stone-700 hover:bg-mint-50">
-      <input type="checkbox" name={name} value={value} defaultChecked={checked} className="h-4 w-4 rounded accent-lime-600" />
+      <input type="checkbox" name={name} value={value} defaultChecked={checked} className="h-4 w-4 rounded accent-[#1d5b33]" />
       <span className="flex-1">{text}</span>
       <span className="text-xs text-stone-400">({n})</span>
     </label>
@@ -66,29 +66,27 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
 
   return (
     <div>
-      {/* Header: text on cream, nursery photo on the right */}
-      <section className="browse-hero relative -mt-6 overflow-hidden bg-[#f4efe2] sm:-mt-10 mx-[calc(50%-50vw)]">
-        <div className="absolute inset-y-0 right-0 w-full md:w-[60%]" aria-hidden>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/hero/browse.jpg" alt="" className="browse-hero-img h-full w-full object-cover object-[35%_50%]" />
-        </div>
+      {/* Header: dark leaves and a hand-drawn map of Bangladesh */}
+      <section className="browse-hero relative -mt-6 overflow-hidden bg-[#141513] text-[#f6f2ea] sm:-mt-10 mx-[calc(50%-50vw)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/hero/browse-map.jpg" alt="" aria-hidden className="browse-hero-img absolute inset-0 h-full w-full object-cover object-[70%_50%]" />
         <div className="browse-hero-fade absolute inset-0" aria-hidden />
-        <div className="relative mx-auto max-w-[87.5rem] px-4 pb-10 pt-12 sm:px-6 sm:pt-14 lg:px-10 md:pb-14">
-          <div className="max-w-xl">
-            <p className="hero-eyebrow flex items-center gap-3 text-[0.6875rem] font-medium uppercase tracking-[0.24em] text-forest-900/80">
-              Trees for a greener tomorrow <span className="hero-eyebrow-line h-px w-14 bg-forest-900/50" />
+        <div className="relative mx-auto max-w-[87.5rem] px-4 pb-10 pt-10 sm:px-6 sm:pt-12 lg:px-10 md:pb-12">
+          <div className="max-w-2xl">
+            <p className="anim-rise flex items-center gap-3 text-[0.6875rem] font-medium uppercase tracking-[0.24em] text-[#f6f2ea]/85">
+              Tree catalogue <span className="h-px w-14 bg-[#f6f2ea]/50" />
             </p>
-            <h1 className="font-display mt-4 text-4xl font-semibold leading-[1.06] text-forest-900 sm:text-5xl lg:text-6xl">
-              <span className="anim-rise block" style={{ animationDelay: "80ms" }}>Find trees for a</span>
-              <span className="anim-rise hero-green block" style={{ animationDelay: "200ms" }}>greener tomorrow</span>
+            <h1 className="font-display mt-4 text-[2.5rem] font-medium leading-[1.04] sm:text-5xl lg:text-[3.3rem]">
+              <span className="hh-line block overflow-hidden pb-1"><span className="block" style={{ animationDelay: "120ms" }}>Every Place Has</span></span>
+              <span className="hh-line block overflow-hidden pb-1"><span className="block" style={{ animationDelay: "260ms" }}>Its <span className="text-[#8fc27a]">Perfect Tree.</span></span></span>
             </h1>
-            <p className="anim-rise mt-4 max-w-lg text-[0.9375rem] leading-relaxed text-stone-700 sm:text-base" style={{ animationDelay: "320ms" }}>
-              Explore fruit, flowering, shade and timber trees suited to Bangladesh. Healthy saplings, guidance on care and delivery to your door.
+            <p className="anim-rise mt-4 max-w-md text-[0.9375rem] leading-relaxed text-[#f6f2ea]/90 sm:text-base" style={{ animationDelay: "420ms" }}>
+              Tell us about your space, and we&apos;ll match trees that fit your environment, purpose and local climate, for a greener, healthier tomorrow.
             </p>
-            <ul className="anim-rise mt-7 flex flex-wrap items-center gap-y-3" style={{ animationDelay: "440ms" }}>
-              {([[<Icon.leaf key="l" className="h-5 w-5" />, "Suited to", "Bangladesh"], [<Icon.shield key="s" className="h-5 w-5" />, "Healthy", "saplings"], [<Icon.truck key="t" className="h-5 w-5" />, "Delivery to all", "64 districts"]] as const).map(([icon, a1, b1], i) => (
-                <li key={a1} className={`flex items-center gap-3 pr-5 text-sm leading-tight text-forest-900 ${i ? "border-l border-forest-900/15 pl-5" : ""}`}>
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#e5ebd9] text-[#1d5b33]">{icon}</span>
+            <ul className="anim-rise mt-6 flex flex-wrap items-center gap-y-3" style={{ animationDelay: "560ms" }}>
+              {([[<Icon.leaf key="l" className="h-5 w-5" />, "Based on", "local climate"], [<Icon.sun key="s" className="h-5 w-5" />, "Matches your", "space & sunlight"], [<Icon.sprout key="t" className="h-5 w-5" />, "Expert", "growing guidance"]] as const).map(([icon, a1, b1], i) => (
+                <li key={a1} className={`flex items-center gap-3 whitespace-nowrap pr-4 text-[0.8125rem] leading-tight text-[#f6f2ea]/90 ${i ? "border-l border-[#f6f2ea]/20 pl-4" : ""}`}>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#8fc27a]/40 bg-[#1f3a26]/70 text-[#a9d394]">{icon}</span>
                   <span>{a1}<br />{b1}</span>
                 </li>
               ))}
@@ -100,12 +98,12 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
       {/* Search and type chips */}
       <div className="browse-bar relative mx-[calc(50%-50vw)] border-y border-stone-200/80 bg-white">
         <div className="mx-auto flex max-w-[87.5rem] flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-10">
-          <form method="get" action="/trees" className="flex w-full items-stretch overflow-hidden rounded-xl border border-stone-200 bg-white lg:max-w-md">
+          <form method="get" action="/trees" className="flex w-full items-stretch overflow-hidden rounded-xl border border-stone-200 bg-white lg:max-w-sm xl:max-w-md lg:shrink-0">
             <span className="grid place-items-center pl-4"><Icon.search className="h-5 w-5 text-stone-500" /></span>
             <label htmlFor="q" className="sr-only">Search trees</label>
             <input id="q" name="q" type="search" defaultValue={f.q} placeholder="Search trees (mango, আম, neem, etc.)" className="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm outline-none" />
             {picked.purpose.map((p) => <input key={p} type="hidden" name="purpose" value={p} />)}
-            <button className="bg-forest-900 px-6 text-sm font-semibold text-white transition hover:bg-forest-800">Search</button>
+            <button className="bg-[#183d27] px-6 text-sm font-semibold text-white transition hover:bg-[#1d5b33]">Search</button>
           </form>
           <div className="chip-row flex items-center overflow-x-auto lg:border-l lg:border-stone-200 lg:pl-3">
             <Link href={params({ purpose: null, page: null })} className={`cat-chip ${!picked.purpose.length ? "is-on" : ""}`}><Icon.grid className="h-5 w-5" /> All</Link>
@@ -128,8 +126,8 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
           </label>
           <AutoSubmitForm action="/trees" className="filter-panel mt-3 hidden space-y-5 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-100 peer-checked:block lg:sticky lg:top-20 lg:mt-0 lg:block">
             <div className="flex items-center justify-between">
-              <p className="font-semibold text-forest-900">Filters</p>
-              {active && <Link href="/trees" className="text-xs font-medium text-lime-600 hover:underline">Clear all</Link>}
+              <p className="text-sm font-semibold text-forest-900">Refine your search</p>
+              <Link href="/trees" className={`flex items-center gap-1 whitespace-nowrap text-xs font-medium text-[#2f6b3f] hover:underline ${active ? "" : "opacity-60"}`}><Icon.reset className="h-3.5 w-3.5" /> Reset all</Link>
             </div>
             {f.q && <input type="hidden" name="q" value={f.q} />}
             {f.sort && <input type="hidden" name="sort" value={f.sort} />}
@@ -141,11 +139,19 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
                 <span className="text-stone-400">–</span>
                 <input name="maxPrice" type="number" min="0" step="50" defaultValue={f.maxPrice} placeholder="2000+" aria-label="Highest price" className="input py-1.5 text-sm" />
               </div>
+              <div className="price-track mt-3" aria-hidden><span style={{ left: `${Math.min(100, (Number(f.minPrice) || 0) / 20)}%`, right: `${100 - Math.min(100, f.maxPrice ? Number(f.maxPrice) / 20 : 100)}%` }} /></div>
             </fieldset>
-            <fieldset><legend className="filter-title">Tree type</legend><div className="mt-1">{PURPOSES.map((p) => box("purpose", p, TYPES[p], count("purposes", p), picked.purpose.includes(p)))}</div></fieldset>
-            <fieldset><legend className="filter-title">Sunlight</legend><div className="mt-1">{SUNLIGHT.map((p) => box("sunlight", p, label(p), count("sunlight", p), picked.sunlight.includes(p)))}</div></fieldset>
-            <fieldset><legend className="filter-title">Soil type</legend><div className="mt-1">{SOILS.map((p) => box("soil", p, label(p), count("soils", p), picked.soil.includes(p)))}</div></fieldset>
-            <fieldset><legend className="filter-title">Mature size</legend><div className="mt-1">{Object.entries(SIZE_BANDS).map(([k, v]) => box("size", k, v.label, sizeCount(k), picked.size.includes(k)))}</div></fieldset>
+            {([
+              ["Tree type", PURPOSES.map((p) => box("purpose", p, TYPES[p], count("purposes", p), picked.purpose.includes(p)))],
+              ["Sunlight", SUNLIGHT.map((p) => box("sunlight", p, label(p), count("sunlight", p), picked.sunlight.includes(p)))],
+              ["Soil type", SOILS.map((p) => box("soil", p, label(p), count("soils", p), picked.soil.includes(p)))],
+              ["Mature size", Object.entries(SIZE_BANDS).map(([k, v]) => box("size", k, v.label, sizeCount(k), picked.size.includes(k)))],
+            ] as const).map(([title, boxes]) => (
+              <details key={title} open className="filter-group border-t border-stone-100 pt-3">
+                <summary className="filter-title flex cursor-pointer list-none items-center justify-between">{title}<Icon.chev className="filter-chev h-3.5 w-3.5 text-stone-500" /></summary>
+                <div className="mt-1">{boxes}</div>
+              </details>
+            ))}
             <noscript><button className="btn-primary w-full">Apply filters</button></noscript>
           </AutoSubmitForm>
         </aside>

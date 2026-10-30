@@ -71,7 +71,7 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 | 📬 **Contact and newsletter** | A contact form and newsletter sign-up in the footer. |
 | 📄 **Info pages** | About, Contact, Privacy policy, Terms, Refund and return policy, Community guidelines. |
 | 📱 **Mobile first** | Works on phones, fills wide screens up to 1400 px, and can be installed as an app (PWA). |
-| 🍃 **Living design** | Calm falling leaves across the site; tap one and it spins away with a small burst. Animations turn off for people who prefer reduced motion. |
+| 🌅 **Home page** | A three-picture hero that cross-fades with a slow zoom (01 · 02 · 03), picture tiles for each tree type, and featured trees. Colours: charcoal, warm white and natural green. Animations turn off for people who prefer reduced motion. |
 
 ### For the admin
 
@@ -182,9 +182,10 @@ Copy `.env.example` to `.env`. **Never commit `.env`**; it is already in `.gitig
 | `GEMINI_MODEL` | Optional | Forces one Gemini model instead of the automatic fallback list. |
 | `ANTHROPIC_API_KEY` | Optional | Uses Claude instead of Gemini (paid). |
 | `AI_PROVIDER` | Optional | `gemini` or `claude`, when both keys are set. |
-| `SMTP_USER` | Optional | Gmail address that sends password reset and contact emails. |
+| `SMTP_USER` | Optional | Gmail address that sends password reset and contact emails. Gaach uses `gaach.company@gmail.com`. |
 | `SMTP_PASS` | Optional | The 16-letter Gmail **App password** (not the normal password). |
 | `SMTP_HOST`, `SMTP_PORT` | Optional | Another email server (default Gmail, 465, with 587 as fallback). |
+| `MAIL_FROM` | Optional | Sender name and address, e.g. `Gaach <gaach.company@gmail.com>`. Defaults to `Gaach <SMTP_USER>`. |
 | `APP_URL` | Optional | The public site address used in email links. |
 | `BLOB_READ_WRITE_TOKEN` | Online | Added by Vercel when the Blob store is connected; stores admin photos. |
 

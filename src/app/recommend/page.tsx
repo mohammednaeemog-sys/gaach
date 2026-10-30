@@ -79,35 +79,55 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
       ]
     : [];
 
+  const chips = [
+    { k: "sun", icon: Icon.sun, title: sp.sunlight ? label(sp.sunlight) : "Full sun", text: sp.sunlight === "SHADE" ? "Little direct sun" : sp.sunlight === "PARTIAL" ? "Some hours of sun" : "Bright open spaces" },
+    { k: "soil", icon: Icon.soil, title: `${sp.soil ? label(sp.soil) : "Loamy"} soil`, text: sp.soil === "CLAY" ? "Holds water" : sp.soil === "SANDY" ? "Drains fast" : "Well-drained soil" },
+    { k: "air", icon: Icon.thermo, title: "Warm & humid", text: outcome ? `${outcome.district.name} climate` : "Bangladesh\u2019s climate" },
+    { k: "space", icon: Icon.leaf, title: sp.spaceM ? `${sp.spaceM} m of space` : "Spacious area", text: "For healthy growth" },
+  ];
+
   return (
     <div className="find-page relative mx-[calc(50%-50vw)] overflow-x-clip px-[calc(50vw-50%)]">
       <BlurLeaves />
-      {/* Header row with the site match card */}
-      <div className="flex flex-wrap items-start justify-between gap-5">
-        <div className="anim-rise">
-          <p className="flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]">Tree recommendation <span className="h-px w-10 bg-[#1d5b33]" aria-hidden /></p>
-          <h1 className="font-display mt-2 text-4xl font-semibold text-forest-900 sm:text-5xl lg:text-[3.4rem]">Find trees for <span className="text-[#2f7a45]">your place</span></h1>
-          <p className="mt-2 text-stone-600">
-            {outcome ? <>Matched to the climate of <b className="text-forest-900">{outcome.district.name}</b> and your spot.</> : "Tell us where and what the spot is like. We match every tree to your district's climate."}
+      {/* Header: title on the left, garden photo with floating condition chips on the right */}
+      <div className="find-head relative">
+        <div className="relative z-10 xl:max-w-[34rem] xl:py-4">
+          <p className="anim-rise flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#1d5b33]"><Icon.leaf className="h-4 w-4" /> Tree recommendation <span className="h-px w-10 bg-[#1d5b33]" aria-hidden /></p>
+          <h1 className="font-display anim-rise mt-3 text-[2.4rem] font-semibold leading-[1.02] text-forest-900 sm:text-5xl xl:text-[3.3rem]" style={{ animationDelay: "80ms" }}>Find the perfect trees <br className="hidden sm:block" />for <span className="text-[#2f6b3f]">your place</span></h1>
+          <p className="anim-rise mt-4 max-w-md text-[0.9375rem] leading-relaxed text-stone-600" style={{ animationDelay: "160ms" }}>
+            {outcome ? <>Matched to the climate of <b className="text-forest-900">{outcome.district.name}</b> and your spot.</> : "Tell us about your location and space. We\u2019ll match trees that suit your district\u2019s climate, environment and purpose."}
           </p>
         </div>
-        <div className="anim-rise relative z-10 w-full rounded-2xl bg-white p-4 shadow-[0_0.875rem_2.125rem_-1.25rem_rgb(13_43_35/0.5)] ring-1 ring-stone-100 sm:w-64" style={{ animationDelay: "120ms" }}>
-          <div className="flex items-center justify-between text-sm text-stone-500">
-            Best match
-            {best && <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${best.score >= 75 ? "bg-mint-100 text-forest-700" : "bg-amber-50 text-amber-800"}`}>{level(best.score)}</span>}
-          </div>
-          <p className="mt-1 text-right text-2xl font-semibold text-forest-900">{best ? best.score : 0}<span className="text-base font-medium text-stone-400"> / 100</span></p>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-stone-100"><div className={`score-bar h-full rounded-full ${best ? barColor(best.score) : ""}`} style={{ width: `${best?.score ?? 0}%` }} /></div>
-          <p className="mt-2 truncate text-xs text-stone-500">{best ? best.tree.name : "Run a search to see your best tree"}</p>
+        <div className="find-garden anim-fade mt-6 xl:mt-0" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/find-garden.jpg" alt="" className="find-garden-wide" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/find-garden-sm.jpg" alt="" className="find-garden-sm" />
+          {chips.map((c, i) => (
+            <span key={c.k} className={`find-chip find-chip-${c.k}`} style={{ animationDelay: `${450 + i * 140}ms` }}>
+              <span className="find-chip-ic"><c.icon className="h-[55%] w-[55%]" /></span>
+              <span className="min-w-0"><b>{c.title}</b><small>{c.text}</small></span>
+            </span>
+          ))}
         </div>
       </div>
 
-      {/* Section tabs */}
-      <nav className="find-tabs mt-6 grid grid-cols-3 rounded-2xl bg-[#efede6]/80 text-sm" aria-label="Sections">
-        <a href="#spot" className={`seg-tab ${outcome ? "" : "is-on"}`}><Icon.pin className="h-4 w-4" /> Your spot</a>
-        <a href="#results" className={`seg-tab ${outcome ? "is-on" : ""}`}><Icon.leaf className="h-4 w-4" /> Matches {outcome ? <span className="rounded-full bg-lime-500 px-1.5 text-[0.6875rem] text-white">{outcome.results.length}</span> : null}</a>
-        <a href="#district" className="seg-tab"><Icon.book className="h-4 w-4" /> District</a>
-      </nav>
+      {/* Section tabs and the best match card */}
+      <div className="mt-6 grid items-center gap-4 xl:mt-2 xl:grid-cols-[1fr_15.5rem]">
+        <nav className="find-tabs grid grid-cols-3 rounded-xl bg-[#ecebe3]/90 p-1 text-sm" aria-label="Sections">
+          <a href="#spot" className={`seg-tab ${outcome ? "" : "is-on"}`}><Icon.pin className="h-4 w-4" /> Your spot</a>
+          <a href="#results" className={`seg-tab ${outcome ? "is-on" : ""}`}><Icon.leaf className="h-4 w-4" /> Matches {outcome ? <span className="rounded-full bg-lime-500 px-1.5 text-[0.6875rem] text-white">{outcome.results.length}</span> : null}</a>
+          <a href="#district" className="seg-tab"><Icon.map className="h-4 w-4" /> District</a>
+        </nav>
+        <div className="anim-rise relative z-10 rounded-2xl bg-white/95 p-4 shadow-[0_0.875rem_2.125rem_-1.25rem_rgb(13_43_35/0.5)] ring-1 ring-stone-100 backdrop-blur xl:-mt-14" style={{ animationDelay: "300ms" }}>
+          <div className="flex items-center justify-between gap-2 text-sm text-forest-900">
+            <span className="flex items-center gap-1.5"><Icon.leaf className="h-4 w-4 text-[#1d5b33]" /> Best match</span>
+            <span className="text-2xl font-semibold">{best ? best.score : 0}<span className="text-sm font-medium text-stone-500"> / 100</span></span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-stone-100"><div className={`score-bar h-full rounded-full ${best ? barColor(best.score) : ""}`} style={{ width: `${best?.score ?? 0}%` }} /></div>
+          <p className="mt-2 truncate text-xs text-stone-500">{best ? <>{best.tree.name} · {level(best.score)}</> : "Complete the details to see your best trees"}</p>
+        </div>
+      </div>
 
       <div className="relative mt-6 grid gap-6 lg:grid-cols-[22.5rem_1fr]">
         <aside id="spot" className="h-fit scroll-mt-24 rounded-3xl bg-white p-5 shadow-[0_0.875rem_2.5rem_-1.75rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100 lg:sticky lg:top-20">
@@ -138,24 +158,26 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
           )}
 
           {!outcome && (
-            <div className="find-empty relative grid overflow-hidden rounded-3xl bg-[#f7f6f0] shadow-[0_0.875rem_2.5rem_-1.75rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100 md:min-h-[35rem] md:grid-cols-[1.05fr_1fr]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/hero/find-photo.jpg" alt="A young tree growing in open ground" className="find-photo h-64 w-full object-cover md:h-full" />
+            <div className="find-empty relative grid overflow-hidden rounded-3xl bg-[#f6f3ec] shadow-[0_0.875rem_2.5rem_-1.75rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100 md:min-h-[38rem] md:grid-cols-[1.05fr_1fr]">
+              <div className="relative overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/hero/find-annotated.jpg" alt="A young tree in a home garden, with notes: right tree for your space, healthier environment, shade and cooler surroundings, a greener Bangladesh" className="find-annot anim-fade h-72 w-full object-cover md:absolute md:inset-0 md:h-full" />
+              </div>
               <div className="relative flex flex-col justify-center p-6 sm:p-10">
-                <span className="h-0.5 w-10 rounded-full bg-[#1d5b33]" aria-hidden />
-                <h2 className="font-display mt-4 text-3xl font-semibold leading-tight text-forest-900 lg:text-[2.4rem]">{Object.keys(errors).length ? "Please fix the highlighted fields" : <>Your matches<br className="hidden md:block" /> will appear here</>}</h2>
-                <p className="mt-4 text-[0.9375rem] leading-relaxed text-stone-600">We match your district&apos;s rainfall, flood, drought and salt conditions with your space, sunlight, soil and purpose, and explain every pick.</p>
+                <p className="anim-rise flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-stone-600">Personalised recommendations <span className="h-px w-10 bg-stone-400" aria-hidden /></p>
+                <h2 className="font-display anim-rise mt-4 text-[2.1rem] font-semibold leading-[1.05] text-forest-900 lg:text-[2.7rem]" style={{ animationDelay: "80ms" }}>{Object.keys(errors).length ? "Please fix the highlighted fields" : <>Your matches<br /> will <span className="text-[#2f6b3f]">appear here</span></>}</h2>
+                <p className="anim-rise mt-4 text-[0.9375rem] leading-relaxed text-stone-600" style={{ animationDelay: "140ms" }}>We&apos;ll match your district&apos;s rainfall, temperature, soil type and space conditions with the most suitable trees. Get trees that grow well, stay healthy, and fit your purpose.</p>
                 <ul className="mt-7 space-y-5">
                   {[
-                    { icon: Icon.pot, title: "Trees suited to your district", text: "Recommendations based on local climate and environment." },
-                    { icon: Icon.leaf, title: "Clear growing guidance", text: "Learn about space, sunlight, soil and care requirements." },
-                    { icon: Icon.doc, title: "Compare and choose", text: "See details, benefits and best matches for your place." },
+                    { icon: Icon.sprout, title: "Trees suited to your district", text: "Recommendations based on local climate and environment." },
+                    { icon: Icon.doc, title: "Clear growing guidance", text: "Learn about space, sunlight, soil and care requirements." },
+                    { icon: Icon.bars, title: "Compare and choose", text: "See details, benefits and best matches for your place." },
                   ].map((f, i) => (
-                    <li key={f.title} className="anim-rise flex items-start gap-4" style={{ animationDelay: `${150 + i * 90}ms` }}>
-                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#e3ecdf] text-[#1d5b33]"><f.icon className="h-6 w-6" /></span>
-                      <span>
+                    <li key={f.title} className="anim-rise flex items-start gap-4" style={{ animationDelay: `${220 + i * 110}ms` }}>
+                      <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#e6ebdf] text-[#1d5b33] transition duration-300 hover:scale-105"><f.icon className="h-6 w-6" /></span>
+                      <span className="pt-1">
                         <span className="block font-semibold text-forest-900">{f.title}</span>
-                        <span className="block text-sm text-stone-500">{f.text}</span>
+                        <span className="block text-sm leading-relaxed text-stone-500">{f.text}</span>
                       </span>
                     </li>
                   ))}

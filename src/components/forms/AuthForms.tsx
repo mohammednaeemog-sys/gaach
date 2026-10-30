@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { adminResetLink, adminTestEmail, login, register, requestPasswordReset, resetPassword } from "@/modules/accounts/actions";
 import type { FormState } from "@/lib/forms";
+import { PasswordInput } from "./PasswordInput";
 
 export function LoginForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(login, {});
@@ -20,7 +21,7 @@ export function LoginForm({ next }: { next?: string }) {
           <label htmlFor="password" className="field-label">Password</label>
           <Link href="/forgot-password" className="text-xs font-medium text-lime-700 hover:underline">Forgot password?</Link>
         </div>
-        <input id="password" name="password" type="password" autoComplete="current-password" className="input" required />
+        <PasswordInput id="password" name="password" autoComplete="current-password" className="input" required />
       </div>
       <button className="btn-primary w-full" disabled={pending}>{pending ? "Logging in..." : "Log in"}</button>
       <p className="text-center text-sm text-stone-600">
@@ -48,7 +49,7 @@ export function RegisterForm({ next }: { next?: string }) {
       </div>
       <div>
         <label htmlFor="password" className="field-label">Password</label>
-        <input id="password" name="password" type="password" autoComplete="new-password" className="input" aria-invalid={!!e.password} />
+        <PasswordInput id="password" name="password" autoComplete="new-password" className="input" aria-invalid={!!e.password} />
         <p className="hint">At least 8 characters, with letters and numbers.</p>
         {e.password && <p className="field-error">{e.password}</p>}
       </div>
@@ -100,13 +101,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
       )}
       <div>
         <label htmlFor="password" className="field-label">New password</label>
-        <input id="password" name="password" type="password" autoComplete="new-password" className="input" aria-invalid={!!e.password} />
+        <PasswordInput id="password" name="password" autoComplete="new-password" className="input" aria-invalid={!!e.password} />
         <p className="hint">At least 8 characters, with letters and numbers.</p>
         {e.password && <p className="field-error">{e.password}</p>}
       </div>
       <div>
         <label htmlFor="confirm" className="field-label">Type it again</label>
-        <input id="confirm" name="confirm" type="password" autoComplete="new-password" className="input" aria-invalid={!!e.confirm} />
+        <PasswordInput id="confirm" name="confirm" autoComplete="new-password" className="input" aria-invalid={!!e.confirm} />
         {e.confirm && <p className="field-error">{e.confirm}</p>}
       </div>
       <button className="btn-primary w-full" disabled={pending}>{pending ? "Saving..." : "Save new password"}</button>

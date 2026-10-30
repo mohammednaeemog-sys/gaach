@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
+import { HeaderShell } from "./HeaderShell";
 import { getCurrentUser } from "@/modules/accounts/session";
 import { db } from "@/lib/db";
 import { logout } from "@/modules/accounts/actions";
@@ -36,7 +37,7 @@ export async function Header() {
     : [];
 
   return (
-    <header className="sticky top-0 z-30 bg-forest-900/95 text-white backdrop-blur">
+    <HeaderShell>
       <div className="mx-auto flex h-16 max-w-[87.5rem] items-center gap-4 px-4 sm:px-6 lg:px-10">
         <Link href="/" aria-label="Gaach home" className="logo-hover flex items-center text-base">
           <Logo size={40} />
@@ -49,6 +50,11 @@ export async function Header() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <form action="/trees" method="get" role="search" className="header-search hidden items-center gap-2 rounded-full bg-white/10 px-4 py-2 ring-1 ring-white/25 backdrop-blur focus-within:bg-white/15 2xl:flex">
+            <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-white/80" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+            <label htmlFor="header-q" className="sr-only">Search trees</label>
+            <input id="header-q" name="q" type="search" placeholder="Search trees, e.g. Mango" className="w-44 bg-transparent text-sm text-white outline-none placeholder:text-white/60" />
+          </form>
           <Link href="/cart" className="relative rounded-full px-3 py-2 text-sm font-medium text-mint-100 transition hover:bg-white/10" aria-label={`Cart, ${cartCount} items`}>
             <CartIcon /> <span className="hidden sm:inline">Cart</span>
             {cartCount > 0 && (
@@ -98,6 +104,6 @@ export async function Header() {
           </details>
         </div>
       </div>
-    </header>
+    </HeaderShell>
   );
 }
