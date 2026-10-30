@@ -1,14 +1,26 @@
 <div align="center">
 
-<img src="public/brand/gaach-badge.svg" alt="Gaach logo" width="140" />
+<img src="public/brand/gaach-badge.svg" alt="Gaach logo" width="130" />
 
 # Gaach (গাছ)
 
-**Find the right tree for your place in Bangladesh, buy a healthy sapling, and get help keeping it alive.**
+### The right tree for the right place in Bangladesh
 
-### 🌐 Live site: **[gaach.vercel.app](https://gaach.vercel.app/)**
+Gaach recommends trees that suit a user's district and planting spot, sells healthy saplings with cash on delivery, and helps after planting with care plans, an AI Tree Advisor and a photo check for sick plants.
 
-Next.js 15 · React 19 · TypeScript · Tailwind CSS 4 · Prisma · PostgreSQL · Google Gemini
+**[🌐 Live site: gaach.vercel.app](https://gaach.vercel.app/)**
+
+![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?logo=postgresql&logoColor=white)
+![Gemini](https://img.shields.io/badge/AI-Google_Gemini-8E75B2?logo=googlegemini&logoColor=white)
+![Vercel](https://img.shields.io/badge/Hosted_on-Vercel-000000?logo=vercel&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-44_passing-5e8c4a)
+
+<img src="docs/screenshots/home.jpg" alt="Gaach home page: hero with a young tree on a Dhaka rooftop at sunset, and tree category tiles" width="100%" />
 
 </div>
 
@@ -16,39 +28,78 @@ Next.js 15 · React 19 · TypeScript · Tailwind CSS 4 · Prisma · PostgreSQL �
 
 ## Contents
 
-- [About the project](#about-the-project)
-- [Features](#features)
-- [Screens and pages](#screens-and-pages)
-- [Tech stack](#tech-stack)
-- [Getting started (run it on your computer)](#getting-started-run-it-on-your-computer)
-- [Environment variables](#environment-variables)
-- [Admin access](#admin-access)
-- [How the recommendation works](#how-the-recommendation-works)
-- [The Tree Advisor (AI assistant)](#the-tree-advisor-ai-assistant)
-- [Photo check for sick plants](#photo-check-for-sick-plants)
-- [Shop, reviews and accounts](#shop-reviews-and-accounts)
-- [Deploying for free](#deploying-for-free)
-- [Project structure](#project-structure)
-- [Scripts](#scripts)
-- [Testing and evaluation](#testing-and-evaluation)
-- [Requirement coverage](#requirement-coverage)
-- [Security and privacy](#security-and-privacy)
-- [Known limits and future work](#known-limits-and-future-work)
-- [Author](#author)
+1. [Overview](#overview)
+2. [Highlights](#highlights)
+3. [Screenshots](#screenshots)
+4. [Features](#features)
+5. [Pages and routes](#pages-and-routes)
+6. [Tech stack](#tech-stack)
+7. [Architecture](#architecture)
+8. [Data model](#data-model)
+9. [Getting started](#getting-started)
+10. [Environment variables](#environment-variables)
+11. [Email and password reset](#email-and-password-reset)
+12. [Admin access](#admin-access)
+13. [How the recommendation works](#how-the-recommendation-works)
+14. [The Tree Advisor (AI assistant)](#the-tree-advisor-ai-assistant)
+15. [Photo check for sick plants](#photo-check-for-sick-plants)
+16. [Shop, reviews and accounts](#shop-reviews-and-accounts)
+17. [Design system](#design-system)
+18. [Responsive layout and accessibility](#responsive-layout-and-accessibility)
+19. [Deployment](#deployment)
+20. [Project structure](#project-structure)
+21. [Scripts](#scripts)
+22. [Testing and quality](#testing-and-quality)
+23. [Requirement coverage](#requirement-coverage)
+24. [Security and privacy](#security-and-privacy)
+25. [Troubleshooting](#troubleshooting)
+26. [Roadmap](#roadmap)
+27. [Credits](#credits)
+28. [Author and license](#author-and-license)
 
 ---
 
-## About the project
+## Overview
 
-Many saplings planted in Bangladesh die in their first year. Usually the tree simply didn't suit the place: too much shade, salty soil in the south, flood-prone land, or a big tree squeezed into a rooftop pot.
+Many saplings planted in Bangladesh die in their first year. Usually the tree didn't suit the place: too much shade, salty soil in the coastal south, land that floods every monsoon, or a large tree squeezed into a rooftop drum.
 
-**Gaach** (Bangla for *tree*) solves this in three steps:
+**Gaach** (Bangla for *tree*) handles the whole journey in three steps:
 
-1. **Recommend.** The user enters their district, available space, sunlight, soil and goal (fruit, shade, flowers, timber...). Gaach suggests trees that will actually survive there and explains why.
-2. **Buy.** The user orders healthy saplings in different sizes, with cash on delivery to all 64 districts.
-3. **Care.** After buying, the user gets a care plan for each stage of the tree's life, an AI Tree Advisor that answers questions, and a photo check for sick plants.
+| Step | What happens |
+|---|---|
+| **1. Recommend** | The user picks their division and district and describes the spot: space, sunlight, soil and purpose. Gaach matches trees to the district's rainfall, flooding, drought and salinity, and explains every pick. |
+| **2. Buy** | The user orders healthy saplings in several sizes, with cash on delivery to all 64 districts. |
+| **3. Care** | After buying, the user gets a stage-by-stage care plan, an AI Tree Advisor that knows their own trees and sites, practical care guides, and a photo check for sick plants. |
 
-The project was built for **CSE412 (Software Engineering) at East West University, Dhaka**, from a requirements specification of 61 functional and non-functional requirements.
+Gaach was built for **CSE412 (Software Engineering) at East West University, Dhaka**, from a requirements specification of 61 functional and non-functional requirements.
+
+---
+
+## Highlights
+
+- **Explainable recommendations.** Every match shows a score, a match level and a plain-language reason. If nothing fits, Gaach names the condition that ruled out the most trees and suggests how to relax it.
+- **A grounded AI advisor.** The Tree Advisor answers only tree questions. It uses nine read-only tools over Gaach's own data, and checks that every price and stock figure in an answer matches the tool results.
+- **Built for real shopping.** Stock is reserved in a single database transaction, so two people can't buy the last sapling at the same moment.
+- **Polished, responsive design.** A charcoal, warm white and natural green palette, careful entrance animations, and layouts that work from a 360 px phone up to a zoomed-out 4K screen.
+- **Free to run.** Vercel Hobby, a Neon free database, the Gemini free tier and Gmail SMTP.
+
+---
+
+## Screenshots
+
+| Find trees for your place | Browse the catalogue |
+|---|---|
+| <img src="docs/screenshots/find-trees.jpg" alt="Find trees page with a garden photo, floating condition chips and the three-step form" /> | <img src="docs/screenshots/browse.jpg" alt="Browse page with a dark hero showing a hand-drawn map of Bangladesh, filters and tree cards" /> |
+| **Compare trees side by side** | **Tree Advisor** |
+| <img src="docs/screenshots/compare.jpg" alt="Compare page with three tree cards on a balance board and slots to pick trees" /> | <img src="docs/screenshots/tree-advisor.jpg" alt="Tree Advisor chat with a chat list, quick action cards and popular questions" /> |
+| **Planting and care guides** | **From your rooftop to a growing tree** |
+| <img src="docs/screenshots/guides.jpg" alt="Guides page with a planting table photo, four care habits and guide categories" /> | <img src="docs/screenshots/journey.jpg" alt="Home page section showing the four steps from picking a district to buying and growing" /> |
+
+<p align="center">
+  <img src="docs/screenshots/mobile-home.jpg" alt="Home page on a phone" width="260" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/mobile-find.jpg" alt="Find trees page on a phone" width="260" />
+</p>
 
 ---
 
@@ -56,57 +107,57 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 
 ### For visitors and customers
 
-| Feature | What it does |
+| Feature | Description |
 |---|---|
-| 🌳 **Tree finder** | Recommends trees for a district and planting conditions. Results are photo cards with a match score, a plain-language reason, and Buy and Compare buttons. |
-| 🔎 **Browse and search** | All trees with filters (purpose, size, sunlight, soil), search in English or by scientific name, and star ratings on each card. |
-| ⚖️ **Compare** | Puts 2 or 3 trees side by side (size, sunlight, water, soil, years to fruit, price). |
-| 🛒 **Cart and checkout** | Several sizes per tree, a cart with +/− steppers, a stock-safe checkout, and cash on delivery. |
-| 📦 **Orders and My trees** | Order history, plus a "My trees" page showing each tree's current growth stage and what to do now. |
-| 🤖 **Tree Advisor** | An AI chat that answers only tree questions, using Gaach's own data and the user's own trees and sites. |
-| 📷 **Photo check** | The user sends a photo of a sick plant and gets the likely problem, safe next steps and links to care guides. |
-| ⭐ **Ratings and reviews** | 1 to 5 stars and comments on each tree, with a "Bought from Gaach" badge for real buyers. |
-| 📚 **Care guides** | Public guides on watering, pests, diseases, fertiliser, pots and more. |
-| 🔑 **Forgot password** | The user gets a reset email automatically (free, through Gmail). The link works once, for 30 minutes. |
-| 📬 **Contact and newsletter** | A contact form and newsletter sign-up in the footer. |
-| 📄 **Info pages** | About, Contact, Privacy policy, Terms, Refund and return policy, Community guidelines. |
-| 📱 **Mobile first** | Works on phones, fills wide screens up to 1400 px, and can be installed as an app (PWA). |
-| 🌅 **Home page** | A three-picture hero that cross-fades with a slow zoom (01 · 02 · 03), picture tiles for each tree type, and featured trees. Colours: charcoal, warm white and natural green. Animations turn off for people who prefer reduced motion. |
+| 🌳 **Tree finder** | Recommends trees for a district and spot. Photo cards show the match score, the reasons and Buy and Compare buttons. Condition chips on the page update with the user's choices. |
+| 🔎 **Browse and search** | Every tree, with filters for type, sunlight, soil, mature size and price. Search works in English, in Bangla and by scientific name. Grid and list views, sorting and star ratings are included. |
+| ⚖️ **Compare** | Put 2 or 3 trees side by side: size, growth rate, sunlight, soil, water, season, flood, drought and salt tolerance, and cautions. Search and quick-add chips make it easy to fill the slots. |
+| 🛒 **Cart and checkout** | Several sizes per tree, quantity steppers, a stock-safe checkout, cash on delivery and a flat delivery fee. |
+| 📦 **Orders and My trees** | Order history, plus a "My trees" page that shows each tree's current growth stage and what to do next. |
+| 🤖 **Tree Advisor** | An AI chat that answers tree questions using Gaach's data and the user's own trees and saved sites. It is available on every page and as a full page at `/assistant`. |
+| 📷 **Photo check** | Send a photo of a sick plant and get the likely problem, safe next steps and links to care guides. |
+| 📚 **Care guides** | 28 practical guides grouped into planting and care, pests, problems and diseases, site and weather, safety, and specific trees. All are searchable. |
+| ⭐ **Ratings and reviews** | 1 to 5 stars with comments, and a "Bought from Gaach" badge for verified buyers. |
+| 🎬 **"Why Trees Matter" film** | A 60-second film with captions, opened from the home page hero. |
+| 🔑 **Accounts** | Register, log in, a show/hide eye on every password box, saved sites, and a self-service password reset by email. |
+| 📬 **Contact and newsletter** | A contact form and a newsletter sign-up, both protected by a hidden bot trap and rate limits. |
+| 📱 **Installable** | Works as a Progressive Web App on phones. |
 
-### For the admin
+### For the administrator
 
-| Area | What the admin can do |
+| Area | Capabilities |
 |---|---|
-| **Trees and products** | Add and edit trees, publish rules, upload photos with credits, sizes, prices, stock and care stages. |
-| **Orders** | See all orders and change their status. Cancelling returns the stock. |
-| **Users** | See accounts, send a test email, email a reset link to someone, and see every email the site tried to send (Recent emails). |
+| **Trees and products** | Add and edit trees and publish them, upload photos with credits, and manage sizes, prices, stock and care stages. |
+| **Orders** | View all orders and update their status. Cancelling an order returns its stock. |
+| **Users and email** | View accounts, send a test email, email a reset link to a user, and see the last emails the site tried to send, with the result of each. |
 | **Reviews** | Hide, show or delete reviews. |
-| **Site info and messages** | Edit the hotline, addresses, email and social links in the footer. Read contact messages and see newsletter sign-ups. |
-| **Regions and delivery** | Edit regional climate profiles, assign districts, and set the flat delivery fee. |
+| **Site info and messages** | Edit the hotline, nursery addresses, email and social links shown in the footer. Read contact messages and newsletter sign-ups. |
+| **Regions and delivery** | Edit regional climate profiles, assign districts to regions, and set the delivery fee. |
 | **Care guides** | Review guides and mark them as checked. |
-| **AI status and review** | Test the AI connection, see which questions were refused and why, and see tool usage. |
+| **AI status and review** | Test the AI connection, and see refused questions with their reasons, plus tool usage. |
 
 ---
 
-## Screens and pages
+## Pages and routes
 
-| Page | Path |
+| Page | Route |
 |---|---|
 | Home | `/` |
 | Find trees for my place | `/recommend` |
 | Browse all trees | `/trees` |
 | Tree details, sizes and reviews | `/trees/[slug]` |
 | Compare | `/compare` |
-| Tree Advisor | `/assistant` (also a chat button on every page) |
-| Care guides | `/guides` |
-| Cart, Checkout | `/cart`, `/checkout` |
+| Tree Advisor | `/assistant` (plus a chat button on every page) |
+| Care guides, one guide | `/guides`, `/guides/[slug]` |
+| Cart, checkout | `/cart`, `/checkout` |
 | My orders, My trees | `/orders`, `/my-trees` |
 | Account and saved sites | `/account` |
-| Log in, Register, Forgot password | `/login`, `/register`, `/forgot-password` |
-| About, Contact | `/about`, `/contact` |
+| Log in, register, forgot and reset password | `/login`, `/register`, `/forgot-password`, `/reset-password` |
+| About, contact | `/about`, `/contact` |
 | Policies | `/privacy`, `/terms`, `/refund-policy`, `/community-guidelines` |
 | Photo credits | `/credits` |
 | Admin dashboard | `/admin` |
+| API | `/api/chat`, `/api/photo-check` |
 
 ---
 
@@ -115,89 +166,140 @@ The project was built for **CSE412 (Software Engineering) at East West Universit
 | Layer | Technology |
 |---|---|
 | Framework | **Next.js 15** (App Router, Server Components, Server Actions) |
-| Language | **TypeScript** |
-| UI | **React 19**, **Tailwind CSS 4**, custom CSS animations |
+| Language | **TypeScript** (strict) |
+| UI | **React 19**, **Tailwind CSS 4**, hand-written CSS animations |
 | Database | **PostgreSQL** (Neon, free tier) |
 | ORM | **Prisma 6** |
-| Validation | **Zod** |
-| Auth | Email and password, **bcrypt** hashing, database sessions with idle timeout |
-| AI | **Google Gemini** (free tier, with model fallback); Claude (Anthropic) also supported |
-| Email | **Nodemailer** through Gmail SMTP (free) |
-| File storage | **Vercel Blob** online, local `uploads/` folder in development |
-| Hosting | **Vercel** (Hobby, free) |
-| Tests | Node's built-in test runner (`node:test`) with `tsx` |
+| Validation | **Zod** on every form and API input |
+| Authentication | Email and password, **bcrypt** hashing, database sessions with an idle timeout |
+| AI | **Google Gemini** (free tier, with automatic model fallback); **Claude** (Anthropic) also supported |
+| Email | **Nodemailer** through Gmail SMTP |
+| File storage | **Vercel Blob** online, a local `uploads/` folder in development |
+| Hosting | **Vercel** (Hobby plan, Singapore region) |
+| Testing | Node's built-in test runner (`node:test`) with `tsx`, and Playwright for browser checks |
 
 ---
 
-## Getting started (run it on your computer)
+## Architecture
 
-### Requirements
+```mermaid
+flowchart LR
+  U[Browser] -->|pages, forms| N[Next.js App Router<br/>Server Components + Server Actions]
+  U -->|chat, photo| API["/api/chat<br/>/api/photo-check"]
+  N --> M[Domain modules<br/>accounts · catalogue · recommendation<br/>shop · care · reviews · site · admin]
+  API --> A[Tree Advisor<br/>router → tools → validate]
+  A -->|read-only tools| M
+  A -->|LLM call| G[(Google Gemini<br/>or Claude)]
+  M --> P[Prisma ORM] --> DB[(PostgreSQL · Neon)]
+  M -->|reset & contact emails| SMTP[(Gmail SMTP)]
+  M -->|admin photos| B[(Vercel Blob)]
+```
 
-- **Node.js 20 or newer** (`node -v` to check)
-- A **PostgreSQL** database. The easiest free option is [Neon](https://neon.tech), or a local PostgreSQL.
+- **Pages** are Server Components that read data directly through Prisma. **Mutations** (cart, checkout, reviews, admin edits) are Server Actions that validate input with Zod and check the user's role on the server.
+- **Business logic** lives in `src/modules/*`, separate from the UI, so it can be unit-tested and reused, for example by the Advisor's tools.
+- **The Tree Advisor** never writes data. Its tools are read-only, and the user's identity always comes from the session, never from the chat message.
 
-### Steps
+---
+
+## Data model
+
+The Prisma schema (`prisma/schema.prisma`) has 23 models, in six groups:
+
+| Group | Models |
+|---|---|
+| Accounts | `User`, `Session`, `PasswordReset`, `Site` (saved planting spots) |
+| Geography and climate | `Division`, `District`, `Region` (rainfall, flood, drought and salinity profile) |
+| Catalogue and care | `Tree`, `Product` (sizes, prices, stock), `CareStage`, `CareGuide` |
+| Shop | `CartItem`, `Order`, `OrderItem`, `OwnedTree` (a bought tree with its planted date) |
+| Community | `Review`, `Subscriber`, `ContactMessage` |
+| Advisor and operations | `Conversation`, `ChatMessage`, `RefusedQuestion`, `EmailLog`, `Setting` |
+
+The starting data in `prisma/data/` covers 30 tree species, all 8 divisions and 64 districts mapped to regional climate profiles, the care stages for each tree, and the care guides.
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- **Node.js 20 or newer** (check with `node -v`)
+- A **PostgreSQL** database. The easiest free option is [Neon](https://neon.tech). A local PostgreSQL works too.
+
+### Install and run
 
 ```bash
-# 1. Install packages
+# 1. Clone and install
+git clone https://github.com/mohammednaeemog-sys/gaach.git
+cd gaach
 npm install
 
 # 2. Create your settings file
-cp .env.example .env       # on Windows: copy .env.example .env
-#    then open .env and paste your DATABASE_URL (see below)
+cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
+#    then open .env and set DATABASE_URL
 
-# 3. Create the tables and fill the database with trees, districts and guides
+# 3. Create the tables and load trees, districts and guides
 npm run setup
 
-# 4. Start the site
+# 4. Start the development server
 npm run dev
 ```
 
 Open **http://localhost:3000**.
 
-`npm run setup` is safe to run again: it never deletes data. To wipe the database and start fresh, use `npm run db:reset`.
+`npm run setup` is safe to repeat and never deletes data. To wipe the database and start again, use `npm run db:reset`.
 
-### Demo account (for local testing only)
+### Demo account (local development)
 
 | Role | Email | Password |
 |---|---|---|
 | User | `user@gaach.test` | `User1234` |
 
-This demo user has two saved sites and a delivered lemon tree, so "My trees" and personal Advisor questions work straight away.
-
-Locally, if `ADMIN_EMAIL` is not set, a demo admin is also created for testing. Online it is always locked (see [Admin access](#admin-access)).
+The demo user has two saved sites and a delivered lemon tree, so "My trees" and personal Advisor questions work straight away. Locally, if `ADMIN_EMAIL` is not set, a demo admin is created for testing. Online, the demo admin is always locked (see [Admin access](#admin-access)).
 
 ---
 
 ## Environment variables
 
-Copy `.env.example` to `.env`. **Never commit `.env`**; it is already in `.gitignore`.
+Copy `.env.example` to `.env`. **Never commit `.env`**; it is already listed in `.gitignore`.
 
-| Variable | Required | Purpose |
+| Variable | Needed | Purpose |
 |---|---|---|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string (`postgresql://...`). |
-| `ADMIN_EMAIL` | Online | Email of the site owner's admin account. |
+| `DATABASE_URL` | ✅ Always | PostgreSQL connection string (`postgresql://...`). |
+| `ADMIN_EMAIL` | Online | Email address of the owner's admin account. |
 | `ADMIN_PASSWORD` | Online | Password for that admin account. |
 | `GEMINI_API_KEY` | Optional | Turns on the AI Tree Advisor and photo check. Free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). |
 | `GEMINI_MODEL` | Optional | Forces one Gemini model instead of the automatic fallback list. |
 | `ANTHROPIC_API_KEY` | Optional | Uses Claude instead of Gemini (paid). |
 | `AI_PROVIDER` | Optional | `gemini` or `claude`, when both keys are set. |
-| `SMTP_USER` | Optional | Gmail address that sends password reset and contact emails. Gaach uses `gaach.company@gmail.com`. |
-| `SMTP_PASS` | Optional | The 16-letter Gmail **App password** (not the normal password). |
-| `SMTP_HOST`, `SMTP_PORT` | Optional | Another email server (default Gmail, 465, with 587 as fallback). |
+| `SMTP_USER` | Optional | Gmail address that sends reset and contact emails. Gaach uses `gaach.company@gmail.com`. |
+| `SMTP_PASS` | Optional | The 16-letter Gmail **App password**, never the account password. |
+| `SMTP_HOST`, `SMTP_PORT` | Optional | Another SMTP server. Defaults to Gmail on port 465, with 587 as a fallback. |
 | `MAIL_FROM` | Optional | Sender name and address, e.g. `Gaach <gaach.company@gmail.com>`. Defaults to `Gaach <SMTP_USER>`. |
 | `APP_URL` | Optional | The public site address used in email links. |
-| `BLOB_READ_WRITE_TOKEN` | Online | Added by Vercel when the Blob store is connected; stores admin photos. |
+| `BLOB_READ_WRITE_TOKEN` | Online | Added by Vercel when a Blob store is connected; stores admin photo uploads. |
 
-Without a Gemini key, the site still works: the Advisor answers from Gaach's own data. Without email settings, the forgot-password page says email is not working, and reset links are printed in the terminal.
+Without a Gemini key, the site still works: the Advisor answers from Gaach's own data. Without email settings, the forgot-password page explains that email isn't available, and reset links are printed in the server log.
+
+---
+
+## Email and password reset
+
+When someone uses **Forgot password**, Gaach emails them a one-time reset link straight away. The link expires after 30 minutes, and a user can request at most 3 links per hour. Resetting the password signs the user out on every device.
+
+**Setting up Gmail (free):**
+
+1. Turn on **2-Step Verification** for the Google account that will send the emails.
+2. Create an **App password** at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords).
+3. In Vercel → Settings → Environment Variables, set `SMTP_USER` to the Gmail address and `SMTP_PASS` to the App password. Mark both as secret.
+4. Redeploy. Vercel only applies new variables to new deployments.
+
+Every attempt is logged. **Admin → Users → Recent emails** shows each message's recipient, time and result, including the error if Gmail refused it.
 
 ---
 
 ## Admin access
 
-The site owner and administrator is **Mohammed Naeem**.
-
-The admin login is **never stored in the code or in this repository**. It is set privately as environment variables (`ADMIN_EMAIL` and `ADMIN_PASSWORD`) in Vercel's project settings.
+The admin login is **never stored in the code or the repository**. It is set privately through the `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables.
 
 On every build, `scripts/seed-if-empty.ts`:
 
@@ -258,26 +360,49 @@ Blurry photos get a request for a better photo instead of a guess. The photo is 
 
 ## Shop, reviews and accounts
 
-- **Cart and checkout.** Stock is checked and reduced in a single database transaction, so two people can't buy the last sapling at once. Payment is cash on delivery. A test-mode online gateway is included for demonstration.
-- **Delivery.** One flat fee, set by the admin, for all 64 districts.
-- **Reviews.** One review per user per tree. Reviewers who bought the tree get a "Bought from Gaach" badge. Admins can hide reviews that break the community guidelines.
-- **Accounts.** Passwords are hashed with bcrypt. Sessions are stored in the database and expire when idle. A password reset signs the user out on every device.
-- **Footer details.** The hotline, addresses and social links are edited in **Admin → Site info & messages**. Empty fields are hidden, so no placeholder contact details ever appear.
+- **Checkout.** Stock is checked and reduced in a single database transaction, so two people can't buy the last sapling at once. Payment is cash on delivery. A test-mode online gateway is included for demonstration.
+- **Delivery.** One flat fee for all 64 districts, set by the admin.
+- **Reviews.** One review per user per tree. Verified buyers get a "Bought from Gaach" badge. Admins can hide reviews that break the community guidelines.
+- **Accounts.** Passwords are hashed with bcrypt. Sessions are stored in the database and expire when idle. Every password box has a show/hide eye button.
+- **Footer details.** The hotline, nursery addresses, email and social links are edited in **Admin → Site info & messages**. Empty fields are hidden, so no placeholder contact details ever appear.
 
 ---
 
-## Deploying for free
+## Design system
 
-The live site, **[gaach.vercel.app](https://gaach.vercel.app/)**, runs on **Vercel** (free Hobby plan) with a **Neon** PostgreSQL database and **Vercel Blob** for photos. Full step-by-step guide: **[DEPLOY.md](DEPLOY.md)**.
+| Token | Value | Use |
+|---|---|---|
+| Charcoal | `#1c1d1a` | Header, hero overlays, primary text |
+| Warm white | `#f6f2ea` | Page background, text on dark |
+| Natural green | `#5e8c4a` | Accents and highlights |
+| Deep green | `#183d27` | Primary buttons, active tabs, step numbers |
+| Footer green | `#0f2a1d` | Footer background |
 
-Short version:
+- **Type.** Fraunces for headings, Poppins for body text, Cinzel for the wordmark, and Noto Serif Bengali for Bangla names.
+- **Photography.** Real tree photos on cards. The page heroes (garden, map of Bangladesh, balance board, advisor desk and planting table) were prepared from the approved design mockups.
+- **Motion.** Headlines rise in line by line, hero photos settle with a slow zoom, condition chips and labels pop in and drift gently, step numbers pop and connecting lines draw across, and cards lift on hover. The home hero cross-fades between three photos every 2 seconds, with a progress line under 01 · 02 · 03.
+- **Restraint.** Every animation is turned off for people who set "reduce motion" in their system settings.
+
+---
+
+## Responsive layout and accessibility
+
+- **Mobile first.** Layouts are checked at 360, 390, 768, 1024, 1100, 1280, 1440 and 1920 px wide, with no sideways scrolling on any page.
+- **Wide and zoomed-out screens.** From 1536 px up, the root font size grows with the screen width (`font-size: calc(100vw / 96)`), and every size in the interface is set in `rem`. The whole layout scales together, so it fills a 4K monitor or a browser zoomed out to 25%.
+- **Accessibility.** The HTML is semantic, every form field has a label, and focus states are visible. The film has captions, the carousel pauses on hover, and live regions announce Advisor replies. Images have alt text, and decorative images are hidden from screen readers.
+
+---
+
+## Deployment
+
+The live site runs on **Vercel** (free Hobby plan) with a **Neon** PostgreSQL database and **Vercel Blob** for photos. The full step-by-step guide is in **[DEPLOY.md](DEPLOY.md)**.
 
 1. Create a Vercel project and link it: `npx vercel@latest link`.
-2. In Vercel → Storage, connect a **Neon** database (prefix `DATABASE`) and a **public Blob store** (with a read-write token).
+2. In Vercel → Storage, connect a **Neon** database (prefix `DATABASE`) and a **public Blob store**.
 3. Add `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `GEMINI_API_KEY`, `SMTP_USER` and `SMTP_PASS` as environment variables.
-4. Publish with `npx vercel@latest --prod`, or connect this GitHub repository so every push deploys automatically.
+4. Deploy with `npx vercel@latest --prod`, or connect this GitHub repository so every push deploys automatically.
 
-The build (`npm run build`) syncs the database schema, fills an empty database once, sets up the admin, and then builds the site. It never overwrites existing data.
+The build command (`npm run build`) syncs the database schema, loads starting data into an empty database, sets up the admin account, and then builds the site. It never overwrites existing data.
 
 ---
 
@@ -310,6 +435,7 @@ gaach/
 │       ├── site/              footer details, contact form, newsletter
 │       └── admin/             admin actions and uploads
 ├── tests/                     unit tests
+├── docs/                      screenshots and the film notes
 ├── DEPLOY.md                  free hosting guide
 └── vercel.json                Vercel settings (Next.js, Singapore region)
 ```
@@ -318,26 +444,27 @@ gaach/
 
 ## Scripts
 
-| Command | What it does |
+| Command | Description |
 |---|---|
-| `npm run dev` | Starts the development server at http://localhost:3000 |
-| `npm run setup` | Creates the tables and fills an empty database (safe to repeat) |
-| `npm run build` | Syncs the database, sets up first-time data and the admin, then builds |
-| `npm start` | Runs the production build |
-| `npm test` | Runs the unit tests |
-| `npm run typecheck` | Checks TypeScript types |
-| `npm run eval` | Runs the Tree Advisor evaluation (add `-- --ai` to use the AI) |
-| `npm run db:reset` | ⚠️ Deletes everything and re-seeds the database |
-| `npm run photos` | Downloads tree photos from Wikimedia Commons |
-| `npm run logo` | Redraws the logo files |
+| `npm run dev` | Start the development server at http://localhost:3000 |
+| `npm run setup` | Create the tables and fill an empty database (safe to repeat) |
+| `npm run build` | Sync the database, set up first-time data and the admin, then build |
+| `npm start` | Run the production build |
+| `npm test` | Run the unit tests |
+| `npm run typecheck` | Check TypeScript types |
+| `npm run eval` | Run the Tree Advisor evaluation (add `-- --ai` to use the live AI) |
+| `npm run db:reset` | ⚠️ Delete everything and reload the starting data |
+| `npm run photos` | Download openly licensed tree photos from Wikimedia Commons |
+| `npm run logo` | Redraw the logo files |
 
 ---
 
-## Testing and evaluation
+## Testing and quality
 
-- **Unit tests** (`npm test`): 44 tests covering the recommendation engine, care stages, passwords, password reset tokens, the Advisor's routing and AI fallback, and photo check parsing.
-- **Advisor evaluation** (`npm run eval`): 140 test conversations (catalogue, recommendations, care, multi-turn, personal questions, missing information, off-topic and safety cases) plus 30 guide-search checks. Offline result: 140/140 and 30/30. The report is written to `evals/REPORT-offline.md`.
-- **Browser checks.** Key flows (cart, checkout, reviews, photo check, contact and newsletter forms) were tested in a real browser on desktop and phone sizes.
+- **Unit tests** (`npm test`): 44 tests covering the recommendation engine, care stages, password hashing, reset tokens, the Advisor's routing and AI fallback, and photo-check parsing.
+- **Advisor evaluation** (`npm run eval`): 140 scripted conversations covering catalogue questions, recommendations, care, multi-turn chats, personal questions, missing information, off-topic requests and safety cases, plus 30 guide-search checks. Offline result: 140/140 and 30/30. The report is written to `evals/REPORT-offline.md`.
+- **Browser checks.** Playwright scripts test the cart, checkout, reviews, photo check, login (including the password eye), and the contact and newsletter forms. They also check every main page for horizontal overflow at 8 screen widths.
+- **Type safety.** `npm run typecheck` passes with no errors.
 
 ---
 
@@ -358,34 +485,56 @@ gaach/
 
 ## Security and privacy
 
-- No passwords, API keys or personal contact details are stored in this repository. All secrets live in environment variables.
-- Passwords are hashed with bcrypt. Reset tokens are stored only as SHA-256 hashes, expire after 30 minutes and are limited to 3 per hour.
+- No passwords, API keys or private credentials are stored in the repository. All secrets live in environment variables, marked as secret in Vercel.
+- Passwords are hashed with bcrypt. Reset tokens are stored only as SHA-256 hashes, expire after 30 minutes, and are limited to 3 per hour.
 - Every admin page and action checks the admin role on the server.
-- Forms are validated on the server with Zod. The contact and newsletter forms have a hidden bot trap and rate limits.
-- Plant photos sent for a check are not stored.
+- All input is validated on the server with Zod. The contact and newsletter forms have a hidden bot trap and rate limits.
+- Plant photos sent for a check are never stored.
 - Redirects only go to paths on this site.
 
 ---
 
-## Known limits and future work
+## Troubleshooting
 
-- The care guides come from general horticultural references and haven't been reviewed by an expert yet.
-- Offline Advisor answers (when no AI is available) are in English only.
-- Online payment is a test-mode gateway; a real bKash, Nagad or SSLCommerz integration is future work.
-- Possible next steps: native Android and iOS apps (Capacitor or Expo, reusing the same server), Bangla interface, and order tracking with courier updates.
+| Problem | Fix |
+|---|---|
+| `P1001: Can't reach database server` | Check `DATABASE_URL`. Locally, make sure PostgreSQL is running. |
+| Reset emails don't arrive | Use a Gmail **App password** (not the account password) in `SMTP_PASS`, redeploy, then check **Admin → Users → Recent emails** for the exact error. |
+| The Advisor answers without AI | Set `GEMINI_API_KEY`. **Admin → AI status & review** shows whether the key works and which model answered. |
+| New environment variables have no effect | Redeploy. Vercel applies variables only to new deployments. |
+| `git commit` opens a Vim screen | Press `Esc`, type `:q!` and press Enter, then commit with `git commit -m "your message"`. To use Notepad instead, run `git config --global core.editor notepad`. |
 
 ---
 
-## Author
+## Roadmap
+
+- Expert review of every care guide.
+- Bangla interface and Bangla offline Advisor answers.
+- Real online payments (bKash, Nagad or SSLCommerz) in place of the test gateway.
+- Order tracking with courier updates.
+- Native Android and iOS apps (Capacitor or Expo) that reuse the same server.
+
+---
+
+## Credits
+
+- Tree photos are credited on the [photo credits](https://gaach.vercel.app/credits) page under their open licenses.
+- The "Why Trees Matter" film uses royalty-free footage from Pixabay; the notes are in [`docs/why-trees-matter-film.md`](docs/why-trees-matter-film.md).
+- Fonts (Fraunces, Poppins, Cinzel, Noto Serif Bengali) are used under the SIL Open Font License.
+
+---
+
+## Author and license
 
 **Mohammed Naeem**
-Computer Science and Engineering student, East West University, Dhaka
+Computer Science and Engineering, East West University, Dhaka
+Designer, developer and administrator of Gaach
 
 - GitHub: [@mohammednaeemog-sys](https://github.com/mohammednaeemog-sys)
+- Email: [mohammed.naeem.og@gmail.com](mailto:mohammed.naeem.og@gmail.com)
 - Live site: [gaach.vercel.app](https://gaach.vercel.app/)
-- Role: designer, developer and administrator of Gaach
 
-Tree photos are credited on the [photo credits](https://gaach.vercel.app/credits) page under their open licenses. Fonts (Cinzel, Fraunces, Poppins, Noto Serif Bengali) are under the SIL Open Font License.
+This repository does not include an open-source license yet, so all rights are reserved by the author. Please get in touch before reusing the code or content.
 
 <div align="center">
 
