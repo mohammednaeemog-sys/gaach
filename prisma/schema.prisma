@@ -137,6 +137,38 @@ model Tree {
   careStages CareStage[]
   ownedBy    OwnedTree[]
   reviews    Review[]
+  photos     TreePhoto[]
+  promotions Promotion[] @relation("PromotionTrees")
+}
+
+// Extra photos of a tree, shown in the card slider and the gallery on its page
+model TreePhoto {
+  id        String   @id @default(cuid())
+  treeId    String
+  url       String
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+  tree      Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+
+  @@index([treeId, sort])
+}
+
+// A sale for an occasion (Eid, Pohela Boishakh, monsoon planting...): a percentage off
+// all trees or chosen trees, between optional start and end dates
+model Promotion {
+  id         String    @id @default(cuid())
+  name       String
+  badge      String    @default("SALE")
+  message    String    @default("") // why the discount, shown on the sale banner
+  theme      String    @default("general") // banner look: general, eid, boishakh, monsoon, winter, victory
+  showBanner Boolean   @default(true)
+  percentOff Int
+  allTrees   Boolean   @default(true)
+  startsAt   DateTime?
+  endsAt     DateTime?
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  trees      Tree[]    @relation("PromotionTrees")
 }
 
 model Product {
@@ -146,6 +178,7 @@ model Product {
   sizeLabel String // e.g. "2 ft sapling"
   ageMonths Int
   priceBdt  Int
+  salePriceBdt Int? // optional reduced price set by the admin; the normal price is then shown crossed out
   stock     Int      @default(0)
   imageUrl  String? // photo of this size; without one the tree photo is shown
   active    Boolean  @default(true)

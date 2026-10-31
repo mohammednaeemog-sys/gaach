@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { listTrees, many, SIZE_BANDS, type CatalogueFilters } from "@/modules/catalogue/queries";
 import { readCompare } from "@/modules/catalogue/compare-list";
 import { Reveal } from "@/components/Reveal";
@@ -26,11 +27,16 @@ function CatIcon({ kind }: { kind: string }) {
 
 export default async function TreesPage({ searchParams }: { searchParams: Promise<CatalogueFilters> }) {
   const f = await searchParams;
-  const [trees, compare, all] = await Promise.all([
+  const [found, compare, all, promos] = await Promise.all([
     listTrees(f),
     readCompare(),
     db.tree.findMany({ where: { published: true }, select: { purposes: true, sunlight: true, soils: true, matureHeightM: true } }),
+    livePromotions(),
   ]);
+  // "On sale only" keeps trees with at least one discounted size
+  const onSale = (t: (typeof found)[number]) => !!treePrices(t.products, t.id, promos).top;
+  const saleOnly = f.sale === "1";
+  const trees = saleOnly ? found.filter(onSale) : found;
   const ratings = await ratingsFor(trees.map((t) => t.id));
   const picked = { purpose: many(f.purpose, PURPOSES), sunlight: many(f.sunlight, SUNLIGHT), soil: many(f.soil, SOILS), size: many(f.size, Object.keys(SIZE_BANDS)) };
   const count = (field: "purposes" | "sunlight" | "soils", v: string) => all.filter((t) => splitList(t[field]).includes(v)).length;
@@ -39,7 +45,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
   // Keep every current filter in links, changing only what a link sets
   const params = (over: Record<string, string | string[] | null>) => {
     const sp = new URLSearchParams();
-    const cur: Record<string, string | string[] | undefined> = { q: f.q, minPrice: f.minPrice, maxPrice: f.maxPrice, sort: f.sort, view: f.view, ...picked };
+    const cur: Record<string, string | string[] | undefined> = { q: f.q, minPrice: f.minPrice, maxPrice: f.maxPrice, sort: f.sort, view: f.view, sale: saleOnly ? "1" : undefined, ...picked };
     for (const [k, v] of Object.entries({ ...cur, ...over })) {
       if (v === null || v === undefined || v === "") continue;
       (Array.isArray(v) ? v : [v]).forEach((x) => sp.append(k, x));
@@ -53,7 +59,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
   const shown = trees.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const back = params({ page: String(page) });
   const list = f.view === "list";
-  const active = Boolean(f.q || f.minPrice || f.maxPrice || Object.values(picked).some((v) => v.length));
+  const active = Boolean(saleOnly || f.q || f.minPrice || f.maxPrice || Object.values(picked).some((v) => v.length));
   const singleType = picked.purpose.length === 1 ? picked.purpose[0] : null;
 
   const box = (name: string, value: string, text: string, n: number, checked: boolean) => (
@@ -132,6 +138,13 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
             {f.q && <input type="hidden" name="q" value={f.q} />}
             {f.sort && <input type="hidden" name="sort" value={f.sort} />}
             {f.view && <input type="hidden" name="view" value={f.view} />}
+            {(promos.length > 0 || saleOnly) && (
+              <label className="flex cursor-pointer items-center gap-2.5 rounded-lg bg-[#f2994a]/10 px-2.5 py-2 text-sm font-medium text-[#b8561a]">
+                <input type="checkbox" name="sale" value="1" defaultChecked={saleOnly} className="h-4 w-4 accent-[#f2994a]" />
+                On sale only
+                <span className="ml-auto text-xs font-normal">{found.filter(onSale).length}</span>
+              </label>
+            )}
             <fieldset>
               <legend className="filter-title">Price range (৳)</legend>
               <div className="mt-2 flex items-center gap-2">
@@ -161,7 +174,7 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <p className="text-sm text-stone-600"><b className="text-forest-900">{trees.length}</b> {trees.length === 1 ? "tree" : "trees"} found</p>
             <AutoSubmitForm action="/trees" className="ml-auto flex items-center gap-2">
-              {Object.entries({ q: f.q, minPrice: f.minPrice, maxPrice: f.maxPrice, view: f.view }).map(([k, v]) => v ? <input key={k} type="hidden" name={k} value={v} /> : null)}
+              {Object.entries({ q: f.q, minPrice: f.minPrice, maxPrice: f.maxPrice, view: f.view, sale: saleOnly ? "1" : undefined }).map(([k, v]) => v ? <input key={k} type="hidden" name={k} value={v} /> : null)}
               {Object.entries(picked).flatMap(([k, vs]) => vs.map((v) => <input key={k + v} type="hidden" name={k} value={v} />))}
               <label htmlFor="sort" className="text-sm text-stone-500">Sort by</label>
               <select id="sort" name="sort" defaultValue={f.sort ?? ""} className="input w-auto py-1.5 text-sm">

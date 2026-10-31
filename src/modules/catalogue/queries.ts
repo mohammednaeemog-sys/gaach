@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { PURPOSES, SOILS, SUNLIGHT } from "@/lib/constants";
 
 type Param = string | string[] | undefined;
-export type CatalogueFilters = { q?: string; size?: Param; purpose?: Param; sunlight?: Param; soil?: Param; minPrice?: string; maxPrice?: string; sort?: string; page?: string; view?: string };
+export type CatalogueFilters = { q?: string; size?: Param; purpose?: Param; sunlight?: Param; soil?: Param; minPrice?: string; maxPrice?: string; sort?: string; page?: string; view?: string; sale?: string };
 
 export const SIZE_BANDS: Record<string, { label: string; min: number; max: number }> = {
   small: { label: "Small (under 5 m tall)", min: 0, max: 4.99 },
@@ -42,7 +42,7 @@ export async function listTrees(f: CatalogueFilters) {
 
   const trees = await db.tree.findMany({
     where,
-    include: { products: { where: { active: true }, orderBy: { priceBdt: "asc" } } },
+    include: { products: { where: { active: true }, orderBy: { priceBdt: "asc" } }, photos: { orderBy: { sort: "asc" }, select: { url: true } } },
     orderBy: { name: "asc" },
   });
   if (f.sort === "price") {
@@ -63,6 +63,7 @@ export function getTree(slug: string) {
     include: {
       products: { where: { active: true }, orderBy: { priceBdt: "asc" } },
       careStages: true,
+      photos: { orderBy: { sort: "asc" } },
     },
   });
 }

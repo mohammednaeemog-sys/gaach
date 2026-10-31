@@ -1,5 +1,5 @@
 // A tree's picture: its own photo, or else the first size photo an admin uploaded.
-type WithPhotos = { imageUrl: string | null; products?: { imageUrl: string | null }[]; slug?: string };
+type WithPhotos = { imageUrl: string | null; products?: { imageUrl?: string | null }[]; slug?: string };
 
 // Built-in photos for trees that have none uploaded yet (public/featured/)
 const BUILT_IN: Record<string, string> = {
@@ -13,4 +13,10 @@ const BUILT_IN: Record<string, string> = {
 
 export function treePhoto(t: WithPhotos): string | null {
   return t.imageUrl ?? t.products?.find((p) => p.imageUrl)?.imageUrl ?? (t.slug ? BUILT_IN[t.slug] ?? null : null);
+}
+
+// Every picture for a card slider: the main photo, extra photos the admin added, then size photos
+export function treePhotos(t: WithPhotos & { photos?: { url: string }[] }): string[] {
+  const all = [treePhoto(t), ...(t.photos ?? []).map((p) => p.url), ...(t.products ?? []).map((p) => p.imageUrl)].filter((u): u is string => !!u);
+  return [...new Set(all)].slice(0, 8);
 }

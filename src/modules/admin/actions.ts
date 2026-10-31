@@ -116,7 +116,9 @@ const productSchema = z.object({
   ageMonths: z.coerce.number().int("Age must be whole months.").min(0).max(240),
   priceBdt: z.coerce.number().int("Price must be whole taka.").min(1, "Price must be at least ৳1.").max(1_000_000),
   stock: z.coerce.number().int("Stock must be a whole number.").min(0, "Stock cannot be negative.").max(100_000),
-});
+  // Optional fixed sale price for this size; empty means no sale price
+  salePriceBdt: z.preprocess((v) => (v === "" || v == null ? null : v), z.coerce.number().int("Sale price must be whole taka.").min(1, "Sale price must be at least ৳1.").nullable()),
+}).refine((d) => d.salePriceBdt == null || d.salePriceBdt < d.priceBdt, { path: ["salePriceBdt"], message: "The sale price must be lower than the normal price." });
 
 export async function saveProduct(_: FormState, fd: FormData): Promise<FormState> {
   await requireAdmin();

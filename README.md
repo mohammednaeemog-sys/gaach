@@ -112,6 +112,8 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 | 🌳 **Tree finder** | Recommends trees for a district and spot. Photo cards show the match score, the reasons and Buy and Compare buttons. Condition chips on the page update with the user's choices. |
 | 🔎 **Browse and search** | Every tree, with filters for type, sunlight, soil, mature size and price. Search works in English, in Bangla and by scientific name. Grid and list views, sorting and star ratings are included. |
 | ⚖️ **Compare** | Put 2 or 3 trees side by side: size, growth rate, sunlight, soil, water, season, flood, drought and salt tolerance, and cautions. Search and quick-add chips make it easy to fill the slots. |
+| 🖼️ **Product cards** | Swipe through several photos with arrow buttons, see a SALE badge and the old price crossed out, and add to cart, view details or compare from the card. |
+| 🏷️ **Occasion sales** | Eid, Pohela Boishakh, monsoon and other sales show an animated banner with the reason for the discount and a countdown. An "On sale only" filter lists every discounted tree. |
 | 🛒 **Cart and checkout** | Several sizes per tree, quantity steppers, a stock-safe checkout, cash on delivery and a flat delivery fee. |
 | 📦 **Orders and My trees** | Order history, plus a "My trees" page that shows each tree's current growth stage and what to do next. |
 | 🤖 **Tree Advisor** | An AI chat that answers tree questions using Gaach's data and the user's own trees and saved sites. It is available on every page and as a full page at `/assistant`. |
@@ -127,7 +129,8 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 
 | Area | Capabilities |
 |---|---|
-| **Trees and products** | Add and edit trees and publish them, upload photos with credits, and manage sizes, prices, stock and care stages. |
+| **Trees and products** | Add and edit trees and publish them, upload several photos per tree (with reordering), and manage sizes, prices, sale prices, stock and care stages. |
+| **Sales and offers** | Create occasion sales: name, badge, percent off, the reason shown to shoppers, banner style, start and end dates, and all trees or chosen trees. Each sale shows as Live, Scheduled, Ended or Off. |
 | **Orders** | View all orders and update their status. Cancelling an order returns its stock. |
 | **Users and email** | View accounts, send a test email, email a reset link to a user, and see the last emails the site tried to send, with the result of each. |
 | **Reviews** | Hide, show or delete reviews. |
@@ -203,14 +206,14 @@ flowchart LR
 
 ## Data model
 
-The Prisma schema (`prisma/schema.prisma`) has 23 models, in six groups:
+The Prisma schema (`prisma/schema.prisma`) has 25 models, in six groups:
 
 | Group | Models |
 |---|---|
 | Accounts | `User`, `Session`, `PasswordReset`, `Site` (saved planting spots) |
 | Geography and climate | `Division`, `District`, `Region` (rainfall, flood, drought and salinity profile) |
-| Catalogue and care | `Tree`, `Product` (sizes, prices, stock), `CareStage`, `CareGuide` |
-| Shop | `CartItem`, `Order`, `OrderItem`, `OwnedTree` (a bought tree with its planted date) |
+| Catalogue and care | `Tree`, `TreePhoto` (extra photos), `Product` (sizes, prices, sale prices, stock), `CareStage`, `CareGuide` |
+| Shop | `CartItem`, `Order`, `OrderItem`, `OwnedTree` (a bought tree with its planted date), `Promotion` (occasion sales) |
 | Community | `Review`, `Subscriber`, `ContactMessage` |
 | Advisor and operations | `Conversation`, `ChatMessage`, `RefusedQuestion`, `EmailLog`, `Setting` |
 
@@ -361,9 +364,10 @@ Blurry photos get a request for a better photo instead of a guess. The photo is 
 ## Shop, reviews and accounts
 
 - **Checkout.** Stock is checked and reduced in a single database transaction, so two people can't buy the last sapling at once. Payment is cash on delivery. A test-mode online gateway is included for demonstration.
+- **Discounts.** A size can have a fixed sale price, and an occasion sale can take a percentage off all trees or chosen ones. The customer always gets the lowest price, and the cart, checkout, order record and Tree Advisor all use the same pricing rules (`src/modules/shop/price-rules.ts`).
 - **Delivery.** One flat fee for all 64 districts, set by the admin.
 - **Reviews.** One review per user per tree. Verified buyers get a "Bought from Gaach" badge. Admins can hide reviews that break the community guidelines.
-- **Accounts.** Passwords are hashed with bcrypt. Sessions are stored in the database and expire when idle. Every password box has a show/hide eye button.
+- **Accounts.** Passwords are hashed with bcrypt. Sessions are stored in the database and expire when idle. A reset needs the one-time link sent to the account's inbox, and the owner gets a "password changed" email afterwards. Every password box has a show/hide eye button.
 - **Footer details.** The hotline, nursery addresses, email and social links are edited in **Admin → Site info & messages**. Empty fields are hidden, so no placeholder contact details ever appear.
 
 ---

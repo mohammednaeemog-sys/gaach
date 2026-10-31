@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { deleteTree } from "@/modules/admin/actions";
 import { TreeForm } from "@/components/admin/TreeForm";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { TreePhotos } from "@/components/admin/TreePhotos";
 import { CareStageForm } from "@/components/admin/CareStageForm";
 import { CARE_STAGES, label } from "@/lib/constants";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -13,7 +14,7 @@ export const metadata = { title: "Edit tree" };
 export default async function EditTree({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const { id } = await params;
   const sp = await searchParams;
-  const tree = await db.tree.findUnique({ where: { id }, include: { products: { orderBy: { createdAt: "asc" } }, careStages: true } });
+  const tree = await db.tree.findUnique({ where: { id }, include: { products: { orderBy: { createdAt: "asc" } }, careStages: true, photos: { orderBy: [{ sort: "asc" }, { createdAt: "asc" }] } } });
   if (!tree) notFound();
   return (
     <div className="space-y-6">
@@ -27,8 +28,14 @@ export default async function EditTree({ params, searchParams }: { params: Promi
 
       <section className="card p-5"><TreeForm t={tree} /></section>
 
+      <section id="photos" className="card scroll-mt-20 space-y-3 p-5">
+        <h2 className="font-semibold text-forest-900">Photos ({tree.photos.length + (tree.imageUrl ? 1 : 0)})</h2>
+        <p className="text-xs text-stone-500">The main photo is set in the form above. Extra photos show after it, in this order.</p>
+        <TreePhotos treeId={tree.id} photos={tree.photos.map((p) => ({ id: p.id, url: p.url }))} mainUrl={tree.imageUrl} />
+      </section>
+
       <section id="products" className="card scroll-mt-20 space-y-3 p-5">
-        <h2 className="font-semibold text-forest-900">Products (price, stock, plant size, photo)</h2>
+        <h2 className="font-semibold text-forest-900">Products (price, sale price, stock, plant size, photo)</h2>
         <p className="text-xs text-stone-500">Each size can have its own photo. Sizes without one show the tree&apos;s main photo from the form above.</p>
         {tree.products.map((p) => <ProductForm key={p.id} treeId={tree.id} p={p} treeImage={tree.imageUrl} />)}
         <p className="pt-2 text-sm font-medium text-stone-700">Add a product</p>

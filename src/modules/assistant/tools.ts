@@ -13,6 +13,7 @@ import { currentStage } from "@/modules/care/stage";
 import { describeRegion, eligibility, recommend, type SiteConditions } from "@/modules/recommendation/engine";
 import { resolveTree } from "./lookup";
 import { chunkGuides, GuideIndex, MIN_EVIDENCE_SCORE } from "./retrieval";
+import { livePromotions, priceFor, treePrices } from "@/modules/shop/pricing";
 
 export type Source = { kind: "tree" | "guide" | "site" | "purchase" | "recommendation" | "product"; title: string; href: string; note?: string };
 
@@ -168,8 +169,11 @@ const productDetails = tool({
     const products = await db.product.findMany({ where: { treeId: f.tree.id, active: true }, orderBy: { priceBdt: "asc" } });
     const fee = Number((await db.setting.findUnique({ where: { key: DELIVERY_FEE_KEY } }))?.value ?? DEFAULT_DELIVERY_FEE);
     ctx.prices.add(fee);
+    const promos = await livePromotions();
+    const deal = (p: (typeof products)[number]) => priceFor(p, f.tree.id, promos);
     for (const p of products) {
       ctx.prices.add(p.priceBdt);
+      ctx.prices.add(deal(p).now);
       ctx.stock.set(p.sizeLabel, p.stock);
     }
     addSource(ctx, { kind: "product", title: `${f.tree.name}: sizes and prices`, href: `/trees/${f.tree.slug}#buy` });
@@ -177,7 +181,10 @@ const productDetails = tool({
       ok: true,
       tree: f.tree.name,
       on_sale: products.length > 0,
-      products: products.map((p) => ({ size: p.sizeLabel, age_months: p.ageMonths, price_bdt: p.priceBdt, stock: p.stock, available: p.stock > 0 })),
+      products: products.map((p) => {
+        const d = deal(p);
+        return { size: p.sizeLabel, age_months: p.ageMonths, price_bdt: d.now, ...(d.was ? { normal_price_bdt: d.was, discount_percent: d.percentOff, sale: d.occasion ?? "Sale price" } : {}), stock: p.stock, available: p.stock > 0 };
+      }),
       delivery_fee_bdt: fee,
       payment: "Cash on delivery, or online payment (test mode)",
       how_to_buy: `The user adds a size to the cart on the tree page (/trees/${f.tree.slug}) and checks out. The assistant cannot order for them.`,
@@ -196,8 +203,9 @@ const compareTrees = tool({
       const f = await findTree(name);
       if ("error" in f) return { ok: false, ...f };
       const t = f.tree;
-      const cheapest = await db.product.findFirst({ where: { treeId: t.id, active: true }, orderBy: { priceBdt: "asc" } });
-      if (cheapest) ctx.prices.add(cheapest.priceBdt);
+      const sizes = await db.product.findMany({ where: { treeId: t.id, active: true } });
+      const cheapest = treePrices(sizes, t.id, await livePromotions()).cheapest?.price ?? null;
+      if (cheapest) ctx.prices.add(cheapest.now);
       addSource(ctx, { kind: "tree", title: t.name, href: `/trees/${t.slug}` });
       rows.push({
         name: t.name,
@@ -212,7 +220,7 @@ const compareTrees = tool({
         salt_tolerance: unknown(label(t.salinityTolerance)),
         purposes: words(t.purposes),
         season: unknown(t.fruitingSeason),
-        price_from_bdt: cheapest?.priceBdt ?? "not on sale",
+        price_from_bdt: cheapest?.now ?? "not on sale",
       });
     }
     addSource(ctx, { kind: "tree", title: "Compare page", href: "/compare" });

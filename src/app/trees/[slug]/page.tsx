@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { treePhoto } from "@/lib/photo";
 import { getTree } from "@/modules/catalogue/queries";
+import { livePromotions, priceFor } from "@/modules/shop/pricing";
 import { readCompare } from "@/modules/catalogue/compare-list";
 import { CompareButton } from "@/components/CompareButton";
 import { BuyBox } from "@/components/BuyBox";
@@ -31,11 +33,11 @@ export default async function TreePage({ params, searchParams }: { params: Promi
   const firstPurpose = splitList(tree.purposes)[0] ?? "";
   const related = await db.tree.findMany({
     where: { published: true, id: { not: tree.id }, purposes: { contains: firstPurpose } },
-    include: { products: { where: { active: true }, orderBy: { priceBdt: "asc" } } },
+    include: { products: { where: { active: true }, orderBy: { priceBdt: "asc" } }, photos: { orderBy: { sort: "asc" }, select: { url: true } } },
     take: 4,
     orderBy: { name: "asc" },
   });
-  const [user, rv, relatedRatings] = await Promise.all([getCurrentUser(), reviewsForTree(tree.id), ratingsFor(related.map((t) => t.id))]);
+  const [user, rv, relatedRatings, promos] = await Promise.all([getCurrentUser(), reviewsForTree(tree.id), ratingsFor(related.map((t) => t.id)), livePromotions()]);
   const mine = user ? await db.review.findUnique({ where: { treeId_userId: { treeId: tree.id, userId: user.id } } }) : null;
 
   const list = (v: string) => splitList(v).map(label).join(", ");
@@ -64,8 +66,9 @@ export default async function TreePage({ params, searchParams }: { params: Promi
   ];
   const stages = CARE_STAGES.map((s) => stage(s)).filter(Boolean);
   const images = [
-    ...tree.products.map((p) => ({ key: p.id, src: p.imageUrl ?? tree.imageUrl, label: p.sizeLabel })),
+    ...tree.products.map((p) => ({ key: p.id, src: p.imageUrl ?? treePhoto(tree), label: p.sizeLabel })),
     ...(tree.imageUrl ? [{ key: "tree", src: tree.imageUrl, label: "Grown tree" }] : []),
+    ...tree.photos.map((ph, i) => ({ key: ph.id, src: ph.url, label: `Photo ${i + 1}` })),
   ];
   if (!images.length) images.push({ key: "tree", src: tree.imageUrl, label: tree.name });
 
@@ -84,7 +87,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
             <div className="mt-5">
               {cart === "missing" && <p className="field-error mb-2">That size is no longer available.</p>}
               {tree.products.length ? (
-                <BuyBox products={tree.products.map((p) => ({ id: p.id, sizeLabel: p.sizeLabel, ageMonths: p.ageMonths, priceBdt: p.priceBdt, stock: p.stock }))} back={`/trees/${tree.slug}`} />
+                <BuyBox products={tree.products.map((p) => { const pr = priceFor(p, tree.id, promos); return { id: p.id, sizeLabel: p.sizeLabel, ageMonths: p.ageMonths, priceBdt: pr.now, wasBdt: pr.was, percentOff: pr.percentOff, occasion: pr.occasion, stock: p.stock }; })} back={`/trees/${tree.slug}`} />
               ) : (
                 <p className="rounded-2xl bg-white p-4 text-sm text-stone-600 ring-1 ring-stone-100">This tree is not on sale right now. You can still read about it and ask the Tree Advisor.</p>
               )}
@@ -104,9 +107,6 @@ export default async function TreePage({ params, searchParams }: { params: Promi
           {/* Pictures and care */}
           <div className="anim-rise order-1 space-y-5 lg:order-2" style={{ animationDelay: "120ms" }}>
             <Gallery images={images} shape={tree.shape} color={tree.color} name={tree.name} />
-            {tree.imageUrl && tree.imageCredit && (
-              <p className="-mt-2 text-xs text-stone-500">Photo: {tree.imageSourceUrl ? <a href={tree.imageSourceUrl} target="_blank" rel="noopener noreferrer" className="hover:text-lime-600 hover:underline">{tree.imageCredit}</a> : tree.imageCredit}</p>
-            )}
             <div className="divide-y divide-stone-100 rounded-2xl bg-white px-4 shadow-[0_0.625rem_1.875rem_-1.25rem_rgb(13_43_35/0.4)] ring-1 ring-stone-100">
               {care.map((c, i) => (
                 <details key={c.title} className="care-item group py-1" open={i === 0}>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { treePhoto } from "@/lib/photo";
 import { db } from "@/lib/db";
 import { readCompare } from "@/modules/catalogue/compare-list";
@@ -62,6 +63,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     include: { products: { where: { active: true }, orderBy: { priceBdt: "asc" } } },
   });
   const trees = slugs.map((s) => found.find((t) => t.slug === s)).filter((t): t is (typeof found)[number] => !!t);
+  const promos = await livePromotions();
   const pick = { slug: true, name: true, shape: true, color: true, imageUrl: true, products: { where: { active: true }, select: { imageUrl: true } } } as const;
   const suggestions = trees.length < 3
     ? await db.tree.findMany({ where: { published: true, slug: { in: ["jackfruit", "guava", "lemon", "papaya", "mango-amrapali", "hibiscus"].filter((s) => !slugs.includes(s)) } }, take: 4, select: pick })
@@ -240,7 +242,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   <Link href={`/trees/${t.slug}`} className="font-semibold text-forest-900 hover:text-lime-600">{t.name}</Link>
                   <p className="text-xs text-stone-500">{t.banglaName}</p>
                   <div className="mt-2 flex items-center justify-between">
-                    <p className="font-bold text-lime-700">{t.products[0] ? <><span className="text-xs font-normal text-stone-500">from </span>{taka(t.products[0].priceBdt)}</> : <span className="text-sm font-normal text-stone-500">Not on sale</span>}</p>
+                    <p className="font-bold text-lime-700">{t.products[0] ? (() => { const c = treePrices(t.products, t.id, promos).cheapest!; return <><span className="text-xs font-normal text-stone-500">from </span>{taka(c.price.now)}{c.price.was && <s className="ml-1 text-xs font-normal text-stone-400">{taka(c.price.was)}</s>}</>; })() : <span className="text-sm font-normal text-stone-500">Not on sale</span>}</p>
                     <Link href={`/trees/${t.slug}`} className="rounded-full bg-forest-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-800">View</Link>
                   </div>
                 </div>

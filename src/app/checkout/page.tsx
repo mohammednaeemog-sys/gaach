@@ -6,6 +6,7 @@ import { getDeliveryFee } from "@/modules/shop/settings";
 import { CheckoutForm } from "@/components/forms/CheckoutForm";
 import { TreeArt } from "@/components/TreeArt";
 import { taka } from "@/lib/format";
+import { livePromotions, priceFor } from "@/modules/shop/pricing";
 
 export const metadata = { title: "Checkout" };
 
@@ -13,8 +14,9 @@ export default async function CheckoutPage() {
   const user = await requireUser("/checkout");
   const items = await db.cartItem.findMany({ where: { userId: user.id }, include: { product: { include: { tree: true } } }, orderBy: { id: "asc" } });
   if (!items.length) redirect("/cart");
-  const fee = await getDeliveryFee();
-  const subtotal = items.reduce((s, i) => s + i.product.priceBdt * i.quantity, 0);
+  const [fee, promos] = await Promise.all([getDeliveryFee(), livePromotions()]);
+  const unit = (i: (typeof items)[number]) => priceFor(i.product, i.product.treeId, promos).now;
+  const subtotal = items.reduce((s, i) => s + unit(i) * i.quantity, 0);
   return (
     <div>
       <ol className="checkout-steps" aria-label="Checkout progress">
@@ -40,7 +42,7 @@ export default async function CheckoutPage() {
                   <span className="block truncate font-medium">{i.product.tree.name}</span>
                   <span className="text-xs text-white/60">{i.product.sizeLabel} × {i.quantity}</span>
                 </span>
-                <span>{taka(i.product.priceBdt * i.quantity)}</span>
+                <span>{taka(unit(i) * i.quantity)}</span>
               </li>
             ))}
           </ul>

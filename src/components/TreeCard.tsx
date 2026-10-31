@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { treePhoto } from "@/lib/photo";
-import { TreeArt } from "./TreeArt";
+import { treePhotos } from "@/lib/photo";
+import { CardPhotos } from "./CardPhotos";
+import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { Stars } from "./Stars";
 import { addToCart } from "@/modules/shop/cart";
 import { toggleCompare } from "@/modules/catalogue/compare";
@@ -8,9 +9,10 @@ import { label, splitList } from "@/lib/constants";
 import { taka } from "@/lib/format";
 
 type T = {
-  slug: string; name: string; banglaName: string; shape: string; color: string; imageUrl: string | null;
+  id: string; slug: string; name: string; banglaName: string; shape: string; color: string; imageUrl: string | null;
   matureHeightM: number; canopySpreadM: number; purposes: string; sunlight: string;
-  products: { id: string; priceBdt: number; stock: number; imageUrl?: string | null }[];
+  products: { id: string; priceBdt: number; salePriceBdt?: number | null; stock: number; imageUrl?: string | null }[];
+  photos?: { url: string }[];
 };
 
 // Where a tree fits, from how wide it grows
@@ -33,24 +35,37 @@ function LeafIcon() {
   return <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden><path d="M5 19 C 5 10, 11 5, 20 5 C 20 13, 14 19, 5 19Z" /><path d="M6 18 L 14 10" /></svg>;
 }
 
-// Product card: photo, names, price, where it fits and an add-to-cart button.
-export function TreeCard({ tree, comparing = false, back = "/trees", layout = "grid", rating }: { tree: T; comparing?: boolean; back?: string; layout?: "grid" | "list"; rating?: { avg: number; count: number } }) {
-  const sorted = [...tree.products].sort((a, b) => a.priceBdt - b.priceBdt);
-  const cheapest = sorted[0];
-  const buyable = sorted.find((p) => p.stock > 0);
-  const stockLeft = sorted.reduce((n, p) => n + p.stock, 0);
+// Long badge words get smaller letters so they stay inside the circle
+export function badgeSize(badge: string | null) {
+  const n = Math.max(...(badge ?? "").split(" ").map((w) => w.length));
+  return n > 7 ? { fontSize: "0.44rem" } : n > 5 ? { fontSize: "0.52rem" } : undefined;
+}
+
+export function EyeIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>;
+}
+
+// Product card: photo slider, sale badge, names, price (with the old price crossed out on sale) and buttons.
+export async function TreeCard({ tree, comparing = false, back = "/trees", layout = "grid", rating }: { tree: T; comparing?: boolean; back?: string; layout?: "grid" | "list"; rating?: { avg: number; count: number } }) {
+  const promos = await livePromotions();
+  const { priced, cheapest, top } = treePrices(tree.products, tree.id, promos);
+  const byPrice = [...priced].sort((a, b) => a.price.now - b.price.now);
+  const buyable = byPrice.find((x) => x.product.stock > 0)?.product;
+  const stockLeft = tree.products.reduce((n, p) => n + p.stock, 0);
   const sun = splitList(tree.sunlight)[0];
   const list = layout === "list";
   const kind = KIND[splitList(tree.purposes)[0] ?? ""];
+  const href = `/trees/${tree.slug}`;
+  const iconBtn = "grid h-10 w-9 sm:w-10 shrink-0 place-items-center rounded-md ring-1 transition active:scale-90";
 
   const compare = (
-    <form action={toggleCompare} className="absolute right-2.5 top-2.5 z-10">
+    <form action={toggleCompare}>
       <input type="hidden" name="slug" value={tree.slug} />
       <button
         aria-pressed={comparing}
         aria-label={comparing ? `Remove ${tree.name} from comparison` : `Add ${tree.name} to comparison`}
         title={comparing ? "In comparison" : "Add to comparison"}
-        className={`grid h-8 w-8 place-items-center rounded-full text-sm shadow-sm ring-1 ring-black/5 transition active:scale-90 ${comparing ? "bg-lime-500 text-white" : "bg-white/95 text-forest-700 hover:bg-white hover:text-lime-600"}`}
+        className={`${iconBtn} ${comparing ? "bg-lime-500 text-white ring-lime-500" : "bg-white text-forest-700 ring-stone-200 hover:text-lime-600 hover:ring-lime-500"}`}
       >
         {comparing ? "✓" : <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M7 7h12l-3-3M17 17H5l3 3" /></svg>}
       </button>
@@ -58,30 +73,32 @@ export function TreeCard({ tree, comparing = false, back = "/trees", layout = "g
   );
 
   const button = buyable ? (
-    <form action={addToCart} className={list ? "" : "mt-3"}>
+    <form action={addToCart} className="min-w-0 flex-1">
       <input type="hidden" name="productId" value={buyable.id} />
       <input type="hidden" name="back" value={back} />
-      <button aria-label={`Add ${tree.name} to cart`} className="flex w-full items-center justify-center gap-2 rounded-md bg-[#183d27] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#1d5b33] active:scale-[0.97]">
-        <CartIcon /> Add to cart
+      <button aria-label={`Add ${tree.name} to cart`} className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#183d27] px-3 text-sm font-medium text-white transition hover:bg-[#1d5b33] active:scale-[0.97]">
+        <CartIcon /> <span className="whitespace-nowrap"><span className="sm:hidden">Add</span><span className="hidden sm:inline">Add to cart</span></span>
       </button>
     </form>
   ) : (
-    <Link href={`/trees/${tree.slug}`} className={`${list ? "" : "mt-3"} flex w-full items-center justify-center rounded-md border border-stone-200 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-mint-50`}>
-      {cheapest ? "Out of stock · details" : "View details"}
+    <Link href={href} className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-md border border-stone-200 px-3 text-sm font-medium text-stone-600 hover:bg-mint-50">
+      {cheapest ? "Out of stock" : "View details"}
     </Link>
   );
 
   return (
     <div className={`tree-card group relative flex overflow-hidden rounded-lg bg-white shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_1.5rem_-0.9rem_rgb(28_29_26/0.25)] ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1rem_rgb(28_29_26/0.35)] ${list ? "flex-row gap-4 p-2.5" : "h-full flex-col"}`}>
       <div className={`relative shrink-0 ${list ? "w-36 sm:w-44" : ""}`}>
-        {compare}
-        <Link href={`/trees/${tree.slug}`} className={`block overflow-hidden bg-gradient-to-b from-mint-50 to-mint-100 ${list ? "h-full min-h-36 rounded-md" : "aspect-[4/2.3]"}`} tabIndex={-1} aria-hidden>
-          <TreeArt shape={tree.shape} color={tree.color} name={tree.name} imageUrl={treePhoto({ slug: tree.slug, imageUrl: tree.imageUrl, products: tree.products.map((p) => ({ imageUrl: p.imageUrl ?? null })) })} className="transition duration-500 group-hover:scale-105" />
-        </Link>
-        {buyable && stockLeft <= 5 && <span className="absolute left-2.5 top-2.5 rounded-full bg-red-500 px-2 py-0.5 text-[0.625rem] font-semibold text-white shadow">Only {stockLeft} left</span>}
+        <CardPhotos photos={treePhotos(tree)} href={href} name={tree.name} shape={tree.shape} color={tree.color} className={list ? "h-full min-h-36 rounded-md" : "aspect-[4/2.3]"} />
+        {top && (
+          <span className="sale-badge absolute left-2.5 top-2.5 z-10" title={top.occasion ?? "On sale"} style={badgeSize(top.badge)}>
+            <span>{top.badge}<br /><span className="text-[0.6875rem]">-{top.percentOff}%</span></span>
+          </span>
+        )}
+        {buyable && stockLeft <= 5 && <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-red-500 px-2 py-0.5 text-[0.625rem] font-semibold text-white shadow">Only {stockLeft} left</span>}
       </div>
       <div className={`flex flex-1 flex-col ${list ? "py-1 pr-2" : "px-2.5 pb-2.5 pt-2.5"}`}>
-        <Link href={`/trees/${tree.slug}`} className="block">
+        <Link href={href} className="block">
           <h3 className="text-[0.9375rem] font-semibold leading-snug text-forest-900 group-hover:text-[#2f6b3f]">{tree.name}</h3>
           <p className="text-xs text-stone-500">{tree.banglaName}</p>
         </Link>
@@ -89,8 +106,14 @@ export function TreeCard({ tree, comparing = false, back = "/trees", layout = "g
           <p className="mt-1 flex items-center gap-1 text-[0.6875rem] text-stone-500"><Stars value={rating.avg} size="h-3 w-3" /> <b className="text-forest-900">{rating.avg.toFixed(1)}</b> ({rating.count})</p>
         )}
         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-2">
-          <p className="text-base font-bold text-forest-900">
-            {cheapest ? <>{sorted.length > 1 && <span className="mr-1 text-xs font-normal text-stone-500">from</span>}{taka(cheapest.priceBdt)}</> : <span className="text-sm font-normal text-stone-500">Not on sale yet</span>}
+          <p className="flex flex-wrap items-baseline gap-x-1.5 text-base font-bold text-forest-900">
+            {cheapest ? (
+              <>
+                {priced.length > 1 && <span className="text-xs font-normal text-stone-500">from</span>}
+                <span className={cheapest.price.was ? "text-[#c2410c]" : ""}>{taka(cheapest.price.now)}</span>
+                {cheapest.price.was && <s className="text-xs font-normal text-stone-400">{taka(cheapest.price.was)}</s>}
+              </>
+            ) : <span className="text-sm font-normal text-stone-500">Not on sale yet</span>}
           </p>
           {kind && <span className="inline-flex items-center gap-1 text-[0.6875rem] text-stone-500"><LeafIcon />{kind}</span>}
         </div>
@@ -99,7 +122,11 @@ export function TreeCard({ tree, comparing = false, back = "/trees", layout = "g
           <span className="inline-flex items-center gap-1 rounded bg-[#eef0e6] px-1.5 py-0.5 text-forest-800"><HomeIcon className="h-3 w-3" />{spaceTag(tree.canopySpreadM)}</span>
           {list && <span className="inline-flex items-center rounded bg-stone-100 px-1.5 py-0.5">{tree.matureHeightM} m tall</span>}
         </div>
-        <div className={list ? "mt-auto max-w-xs pt-3" : "mt-auto"}>{button}</div>
+        <div className={`mt-auto flex items-center gap-1.5 pt-3 ${list ? "max-w-sm" : ""}`}>
+          {button}
+          <Link href={href} aria-label={`View ${tree.name} details`} title="View details" className={`${iconBtn} bg-white text-forest-700 ring-stone-200 hover:text-lime-600 hover:ring-lime-500`}><EyeIcon /></Link>
+          {compare}
+        </div>
       </div>
     </div>
   );

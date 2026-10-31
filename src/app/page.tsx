@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { treePhoto } from "@/lib/photo";
+import { treePhotos } from "@/lib/photo";
+import { CardPhotos } from "@/components/CardPhotos";
+import { EyeIcon, badgeSize } from "@/components/TreeCard";
+import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { db } from "@/lib/db";
 import { Reveal } from "@/components/Reveal";
 import { HeroSlider } from "@/components/HeroSlider";
-import { TreeArt } from "@/components/TreeArt";
 import { Icon } from "@/components/icons";
 import { addToCart } from "@/modules/shop/cart";
 import { label, splitList } from "@/lib/constants";
@@ -24,8 +26,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
   const { denied } = await searchParams;
   // The film ships in public/film. Hosts like Vercel do not keep public/ on the server disk, so no file check here.
   const filmReady = true;
-  const [all] = await Promise.all([
-    db.tree.findMany({ where: { published: true }, include: { products: { where: { active: true } } }, orderBy: { name: "asc" } }),
+  const [all, promos] = await Promise.all([
+    db.tree.findMany({ where: { published: true }, include: { products: { where: { active: true } }, photos: { orderBy: { sort: "asc" }, select: { url: true } } }, orderBy: { name: "asc" } }),
+    livePromotions(),
   ]);
   const bySlug = (s: string) => all.find((t) => t.slug === s);
   const featured = ["mango-himsagar", "neem", "krishnachura", "guava", "bamboo-borak"]
@@ -68,15 +71,16 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
         </Reveal>
         <div className="feat-row -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
           {featured.map((t, n) => {
-            const buyable = [...t.products].sort((x, y) => x.priceBdt - y.priceBdt).find((p) => p.stock > 0);
-            const cheapest = [...t.products].sort((x, y) => x.priceBdt - y.priceBdt)[0];
+            const { priced, cheapest, top } = treePrices(t.products, t.id, promos);
+            const buyable = [...priced].sort((x, y) => x.price.now - y.price.now).find((x) => x.product.stock > 0)?.product;
             const type = splitList(t.purposes)[0];
             return (
               <Reveal key={t.id} delay={n * 90} className="w-[72%] shrink-0 snap-start sm:w-auto">
                 <article className="feat-card group flex h-full flex-col border border-stone-200/80 bg-white">
-                  <Link href={`/trees/${t.slug}`} className="block aspect-[2/1.05] overflow-hidden bg-[#eee8dc]" tabIndex={-1} aria-hidden>
-                    <TreeArt shape={t.shape} color={t.color} name={t.name} imageUrl={treePhoto(t)} className="transition duration-700 group-hover:scale-105" />
-                  </Link>
+                  <div className="relative">
+                    <CardPhotos photos={treePhotos(t)} href={`/trees/${t.slug}`} name={t.name} shape={t.shape} color={t.color} className="aspect-[2/1.05] !bg-[#eee8dc] !bg-none" />
+                    {top && <span className="sale-badge absolute left-2 top-2 z-10" title={top.occasion ?? "On sale"} style={badgeSize(top.badge)}><span>{top.badge}<br /><span className="text-[0.6875rem]">-{top.percentOff}%</span></span></span>}
+                  </div>
                   <div className="flex flex-1 flex-col p-4">
                     <h3 className="text-[0.9375rem] text-[#1c1d1a]"><Link href={`/trees/${t.slug}`} className="hover:text-[#4a7339]">{t.name.split(" (")[0]}</Link></h3>
                     <p className="text-sm text-stone-500">{t.banglaName.split(" (")[0]}</p>
@@ -84,20 +88,21 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
                       <span className="inline-flex items-center gap-1"><Icon.sun className="h-3.5 w-3.5" /> {label(splitList(t.sunlight)[0])}</span>
                       {type && <span className="inline-flex items-center gap-1"><Icon.leaf className="h-3.5 w-3.5" /> {TYPE_WORD[type] ?? label(type)}</span>}
                     </p>
-                    <p className="mt-3 font-medium text-[#1c1d1a]">{cheapest ? taka(cheapest.priceBdt) : ""}</p>
-                    <div className="mt-auto pt-3">
+                    <p className="mt-3 flex flex-wrap items-baseline gap-x-2 font-semibold text-[#1c1d1a]">{cheapest && <><span className={cheapest.price.was ? "text-[#c2410c]" : ""}>{taka(cheapest.price.now)}</span>{cheapest.price.was && <s className="text-xs font-normal text-stone-400">{taka(cheapest.price.was)}</s>}</>}</p>
+                    <div className="mt-auto flex gap-1.5 pt-3">
                       {buyable ? (
-                        <form action={addToCart}>
+                        <form action={addToCart} className="min-w-0 flex-1">
                           <input type="hidden" name="productId" value={buyable.id} />
                           <input type="hidden" name="back" value="/" />
-                          <button className="feat-btn flex w-full items-center justify-center gap-3 bg-[#1c1d1a] px-4 py-2.5 text-sm text-[#f6f2ea] transition hover:bg-[#2f5a3a]" aria-label={`Add ${t.name} to cart`}>
+                          <button className="feat-btn flex w-full items-center justify-center gap-2 whitespace-nowrap bg-[#1c1d1a] px-2 py-2.5 text-sm text-[#f6f2ea] transition hover:bg-[#2f5a3a]" aria-label={`Add ${t.name} to cart`}>
                             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 4h2.5l2.2 11h10.6L20 8H7" /><circle cx="9" cy="19" r="1.4" /><circle cx="17" cy="19" r="1.4" /></svg>
                             Add to cart
                           </button>
                         </form>
                       ) : (
-                        <Link href={`/trees/${t.slug}`} className="flex w-full items-center justify-center border border-stone-300 px-4 py-2.5 text-sm text-stone-600 hover:bg-[#f6f2ea]">View details</Link>
+                        <Link href={`/trees/${t.slug}`} className="flex min-w-0 flex-1 items-center justify-center border border-stone-300 px-4 py-2.5 text-sm text-stone-600 hover:bg-[#f6f2ea]">View details</Link>
                       )}
+                      <Link href={`/trees/${t.slug}`} aria-label={`View ${t.name} details`} title="View details" className="grid w-10 shrink-0 place-items-center border border-stone-300 text-[#1c1d1a] transition hover:bg-[#f6f2ea]"><EyeIcon /></Link>
                     </div>
                   </div>
                 </article>

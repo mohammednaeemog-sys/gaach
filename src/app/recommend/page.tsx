@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { label } from "@/lib/constants";
 import { fieldErrors } from "@/lib/forms";
 import { taka } from "@/lib/format";
+import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { Icon } from "@/components/icons";
 
 export const metadata = { title: "Find trees for your place" };
@@ -40,7 +41,7 @@ function BlurLeaves() {
 export default async function RecommendPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const user = await getCurrentUser();
-  const [divisions, compare] = await Promise.all([locationOptions(), readCompare()]);
+  const [divisions, compare, promos] = await Promise.all([locationOptions(), readCompare(), livePromotions()]);
   const savedSites = user
     ? (await db.site.findMany({ where: { userId: user.id }, include: { district: true }, orderBy: { createdAt: "desc" } })).map((s) => ({
         id: s.id, name: s.name, districtId: s.districtId, divisionId: s.district.divisionId,
@@ -203,7 +204,7 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
 
               <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {outcome.results.map((r, i) => {
-                  const product = r.tree.products[0];
+                  const product = r.tree.products.length ? treePrices(r.tree.products, r.tree.id, promos).cheapest : null;
                   return (
                     <li key={r.tree.id} className="match-card anim-rise flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_0.625rem_1.875rem_-1.5rem_rgb(13_43_35/0.6)] ring-1 ring-stone-100" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
                       <Link href={`/trees/${r.tree.slug}`} className="match-photo relative block h-48 overflow-hidden bg-gradient-to-b from-mint-50 to-mint-100" tabIndex={-1} aria-hidden>
@@ -226,7 +227,7 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
                         </ul>
                         <div className="mt-4 flex items-center gap-2">
                           {product ? (
-                            <Link href={`/trees/${r.tree.slug}`} className="btn-primary flex-1 justify-center px-3 py-2 text-xs">Buy from {taka(product.priceBdt)}</Link>
+                            <Link href={`/trees/${r.tree.slug}`} className="btn-primary flex-1 justify-center px-3 py-2 text-xs">Buy from {taka(product.price.now)}{product.price.was && <s className="ml-1 font-normal opacity-60">{taka(product.price.was)}</s>}</Link>
                           ) : (
                             <Link href={`/trees/${r.tree.slug}`} className="btn-secondary flex-1 justify-center px-3 py-2 text-xs">Details</Link>
                           )}

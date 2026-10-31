@@ -7,6 +7,8 @@ import { ChatWidget } from "@/components/ChatWidget";
 import { MenuCloser } from "@/components/MenuCloser";
 import { getCurrentUser } from "@/modules/accounts/session";
 import { aiConfigured } from "@/modules/assistant/ai";
+import { SaleBanner } from "@/components/SaleBanner";
+import { livePromotions } from "@/modules/shop/pricing";
 
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["700"], variable: "--font-cinzel", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-display", display: "swap" });
@@ -20,11 +22,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#0d2b23", width: "device-width", initialScale: 1 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
+  const [user, promos] = await Promise.all([getCurrentUser(), livePromotions().catch(() => [])]);
+  const sales = promos
+    .filter((p) => p.showBanner !== false)
+    .map((p) => ({ id: p.id, name: p.name, badge: p.badge, percentOff: p.percentOff, message: p.message ?? "", theme: p.theme ?? "general", endsAt: p.endsAt ? p.endsAt.toISOString() : null, allTrees: p.allTrees }));
   return (
     <html lang="en" className={`${poppins.variable} ${cinzel.variable} ${fraunces.variable}`}>
       <body className="flex min-h-screen flex-col overflow-x-clip antialiased">
         <noscript><style>{`.reveal{opacity:1;transform:none;filter:none}.step-icon,.rise-word,.species-item,.hero-photo-card,.hero-eyebrow-line{opacity:1;transform:none;filter:none}`}</style></noscript>
+        <SaleBanner sales={sales} />
         <Header />
         <main className="mx-auto w-full max-w-[87.5rem] flex-1 px-4 sm:px-6 lg:px-10 py-6 sm:py-10">{children}</main>
         <Footer />

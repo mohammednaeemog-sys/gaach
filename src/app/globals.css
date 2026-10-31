@@ -801,3 +801,47 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
 @keyframes journey-draw { to { transform: scaleX(1); } }
 .foot-leaf-l { animation: leaves-sway 11s ease-in-out infinite alternate; transform-origin: 0 0; }
 @media (prefers-reduced-motion: reduce) { .journey-leaf, .foot-leaf-l { animation: none; } .journey-num { opacity: 1; scale: 1; animation: none !important; } .journey-line { transform: none; animation: none !important; } .journey-rule { transform: none; } }
+
+/* Product card photo arrows and sale badge */
+.card-arrow {
+  position: absolute; top: 50%; z-index: 10; display: grid; place-items: center;
+  width: 2rem; height: 2rem; margin-top: -1rem; border-radius: 9999px;
+  background: rgb(255 255 255 / 0.92); color: #1c1d1a; box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  transition: opacity .2s, transform .2s, background .2s;
+}
+.card-arrow:hover { background: #fff; transform: scale(1.08); }
+.card-arrow:active { transform: scale(0.92); }
+@media (hover: hover) {
+  .card-arrow { opacity: 0; }
+  .group:hover .card-arrow, .card-arrow:focus-visible { opacity: 1; }
+}
+.sale-badge {
+  display: grid; place-items: center; width: 3.1rem; height: 3.1rem; border-radius: 9999px;
+  background: #f2994a; color: #fff; font-weight: 800; font-size: 0.625rem; line-height: 1.05;
+  letter-spacing: .04em; text-align: center; text-transform: uppercase; box-shadow: 0 4px 12px rgb(242 153 74 / 0.45);
+  padding: 0.25rem;
+}
+
+/* Occasion sale banner */
+.sale-banner { animation: sale-bg 9s ease-in-out infinite alternate; }
+@keyframes sale-bg { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+.sale-float { bottom: -1.5rem; animation: sale-rise linear infinite; }
+@keyframes sale-rise {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  15% { opacity: .28; }
+  85% { opacity: .28; }
+  100% { transform: translateY(-5rem) rotate(200deg); opacity: 0; }
+}
+.sale-shine { left: -40%; background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.16), transparent); animation: sale-shine 4.5s ease-in-out infinite; }
+@keyframes sale-shine { 0%, 40% { left: -40%; } 100% { left: 120%; } }
+.sale-in { animation: sale-in .6s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes sale-in { from { opacity: 0; transform: translateY(0.6rem); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+.sale-pulse { animation: sale-pulse 2.2s ease-in-out infinite; }
+@keyframes sale-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0.45); } 50% { box-shadow: 0 0 0 0.4rem rgb(255 255 255 / 0); } }
+.sale-badge { animation: sale-pop .5s cubic-bezier(.3,1.6,.5,1) both, sale-wiggle 4s ease-in-out 1s infinite; }
+@keyframes sale-pop { from { transform: scale(0) rotate(-30deg); } to { transform: none; } }
+@keyframes sale-wiggle { 0%, 88%, 100% { transform: rotate(0); } 92% { transform: rotate(-10deg) scale(1.06); } 96% { transform: rotate(8deg) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .sale-banner, .sale-float, .sale-shine, .sale-in, .sale-pulse, .sale-badge { animation: none !important; }
+  .sale-float, .sale-shine { display: none; }
+}

@@ -1,6 +1,7 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
+import { livePromotions, priceFor } from "./pricing";
 
 export class StockError extends Error {
   constructor(public items: string[]) {
@@ -21,6 +22,8 @@ type NewOrder = {
 // Each stock decrement only succeeds if enough stock remains at that moment, so two
 // buyers can never both get the last plant. Any failure rolls everything back.
 export async function placeOrder(input: NewOrder) {
+  // Sale prices are worked out once, so the customer pays what the cart showed
+  const promos = await livePromotions();
   return db.$transaction(
     async (tx) => {
       const cart = await tx.cartItem.findMany({ where: { userId: input.userId }, include: { product: { include: { tree: true } } } });
@@ -44,7 +47,8 @@ export async function placeOrder(input: NewOrder) {
       }
       if (short.length) throw new StockError(short);
 
-      const subtotal = cart.reduce((sum, i) => sum + i.product.priceBdt * i.quantity, 0);
+      const unit = (i: (typeof cart)[number]) => priceFor(i.product, i.product.treeId, promos).now;
+      const subtotal = cart.reduce((sum, i) => sum + unit(i) * i.quantity, 0);
       const order = await tx.order.create({
         data: {
           userId: input.userId,
@@ -59,7 +63,7 @@ export async function placeOrder(input: NewOrder) {
             create: cart.map((i) => ({
               productId: i.productId,
               titleSnapshot: i.product.title,
-              unitPriceBdt: i.product.priceBdt,
+              unitPriceBdt: unit(i),
               quantity: i.quantity,
             })),
           },

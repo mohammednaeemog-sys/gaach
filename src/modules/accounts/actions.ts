@@ -152,6 +152,17 @@ export async function resetPassword(_: FormState, fd: FormData): Promise<FormSta
   if (password !== confirm) return { errors: { confirm: "The two passwords don't match." } };
   const user = await redeemResetToken(token, password);
   if (!user) return { message: "This link has expired or was already used. Ask for a new one." };
+  // Tell the owner, so a change they didn't make never goes unnoticed
+  try {
+    await sendMail(
+      user.email,
+      "Your Gaach password was changed",
+      `Hi ${user.name},\n\nThe password for your Gaach account was just changed and every device was signed out.\n\nIf this was you, there's nothing to do. If it wasn't, reset your password again straight away from the "Forgot password" page and reply to this email.\n\nGaach`,
+      `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#0d2b23"><h2 style="margin:0 0 12px">Your password was changed</h2><p>Hi ${escapeHtml(user.name)},</p><p>The password for your Gaach account was just changed and every device was signed out.</p><p style="font-size:13px;color:#57534e">If this was you, there's nothing to do. If it wasn't, reset your password again straight away from the "Forgot password" page and reply to this email.</p></div>`,
+    );
+  } catch (e) {
+    console.error("[email] password-changed notice failed:", mailProblem(e));
+  }
   await createSession(user.id);
   redirect("/account?reset=1");
 }

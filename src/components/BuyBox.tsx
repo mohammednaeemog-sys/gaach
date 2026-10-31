@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { addToCart, buyNow } from "@/modules/shop/cart";
 
-type Product = { id: string; sizeLabel: string; ageMonths: number; priceBdt: number; stock: number };
+// priceBdt is what the customer pays now; wasBdt is the normal price when on sale
+type Product = { id: string; sizeLabel: string; ageMonths: number; priceBdt: number; stock: number; wasBdt?: number | null; percentOff?: number; occasion?: string | null };
 
 const taka = (n: number) => `৳${n.toLocaleString("en-IN")}`;
 
@@ -19,8 +20,15 @@ export function BuyBox({ products, back, onSelect }: { products: Product[]; back
 
   return (
     <div>
-      <div className="flex items-baseline gap-3">
+      {p.wasBdt && (
+        <p className="mb-1.5 inline-flex items-center gap-2 rounded-full bg-[#f2994a]/15 px-3 py-1 text-xs font-semibold text-[#b8561a]">
+          <span className="rounded-full bg-[#f2994a] px-2 py-0.5 text-[0.625rem] uppercase tracking-wide text-white">{p.percentOff}% off</span>
+          {p.occasion ?? "On sale"}
+        </p>
+      )}
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <p key={p.id} className="price-pop text-3xl font-bold text-lime-700">{taka(p.priceBdt)}</p>
+        {p.wasBdt && <s className="text-lg text-stone-400">{taka(p.wasBdt)}</s>}
         <p className="text-sm text-stone-500">{p.sizeLabel} · about {p.ageMonths} months old</p>
       </div>
       <p className={`mt-1 text-xs font-medium ${out ? "text-red-700" : p.stock <= 5 ? "text-amber-700" : "text-lime-700"}`}>{out ? "Out of stock" : p.stock <= 5 ? `Only ${p.stock} left` : "In stock"}</p>

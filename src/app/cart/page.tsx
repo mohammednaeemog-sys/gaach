@@ -6,6 +6,7 @@ import { getDeliveryFee } from "@/modules/shop/settings";
 import { TreeArt } from "@/components/TreeArt";
 import { Icon } from "@/components/icons";
 import { taka } from "@/lib/format";
+import { livePromotions, priceFor } from "@/modules/shop/pricing";
 
 export const metadata = { title: "Cart" };
 
@@ -17,8 +18,11 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
     include: { product: { include: { tree: true } } },
     orderBy: { id: "asc" },
   });
-  const fee = await getDeliveryFee();
-  const subtotal = items.reduce((s, i) => s + i.product.priceBdt * i.quantity, 0);
+  const [fee, promos] = await Promise.all([getDeliveryFee(), livePromotions()]);
+  const deal = new Map(items.map((i) => [i.id, priceFor(i.product, i.product.treeId, promos)]));
+  const unit = (id: string) => deal.get(id)!;
+  const subtotal = items.reduce((s, i) => s + unit(i.id).now * i.quantity, 0);
+  const saved = items.reduce((s, i) => s + ((unit(i.id).was ?? unit(i.id).now) - unit(i.id).now) * i.quantity, 0);
   const count = items.reduce((s, i) => s + i.quantity, 0);
   const problems = items.filter((i) => !i.product.active || i.product.stock < i.quantity);
 
@@ -67,7 +71,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
                       <div className="min-w-0">
                         <Link href={`/trees/${p.tree.slug}`} className="font-semibold text-forest-900 hover:underline">{p.tree.name}</Link>
                         <p className="text-sm text-stone-500">Size: {p.sizeLabel}</p>
-                        <p className="text-xs text-stone-400">{taka(p.priceBdt)} each</p>
+                        <p className="text-xs text-stone-400">{taka(unit(i.id).now)} each{unit(i.id).was && <> · <s>{taka(unit(i.id).was!)}</s> <span className="font-semibold text-[#c2410c]">{unit(i.id).occasion ?? "Sale"} -{unit(i.id).percentOff}%</span></>}</p>
                         {short && <p className="field-error">{short}</p>}
                       </div>
                     </div>
@@ -84,7 +88,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
                         <button aria-label={`One more ${p.title}`} disabled={i.quantity >= Math.min(50, p.stock)}>+</button>
                       </form>
                     </div>
-                    <p className="text-right font-semibold text-forest-900">{taka(p.priceBdt * i.quantity)}</p>
+                    <p className="text-right font-semibold text-forest-900">{taka(unit(i.id).now * i.quantity)}</p>
                     <form action={removeCartItem} className="col-span-2 justify-self-end sm:col-span-1">
                       <input type="hidden" name="id" value={i.id} />
                       <button className="grid h-9 w-9 place-items-center rounded-full text-stone-400 transition hover:bg-red-50 hover:text-red-700" aria-label={`Remove ${p.title}`}>
@@ -102,6 +106,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
             <h2 className="font-display text-2xl">Order summary</h2>
             <dl className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between text-white/80"><dt>Items ({count})</dt><dd>{taka(subtotal)}</dd></div>
+              {saved > 0 && <div className="flex justify-between font-medium text-[#f6c48f]"><dt>Sale savings</dt><dd>−{taka(saved)}</dd></div>}
               <div className="flex justify-between text-white/80"><dt>Delivery (flat fee)</dt><dd>{taka(fee)}</dd></div>
               <div className="flex justify-between border-t border-white/15 pt-3 text-lg font-bold"><dt>Total</dt><dd>{taka(subtotal + fee)}</dd></div>
             </dl>
