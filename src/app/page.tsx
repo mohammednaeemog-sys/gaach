@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { treePhotos } from "@/lib/photo";
 import { CardPhotos } from "@/components/CardPhotos";
-import { EyeIcon, badgeSize } from "@/components/TreeCard";
+import { EyeIcon, badgeSize, quickData } from "@/components/TreeCard";
+import { QuickView } from "@/components/QuickView";
 import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { db } from "@/lib/db";
 import { Reveal } from "@/components/Reveal";
@@ -73,12 +73,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           {featured.map((t, n) => {
             const { priced, cheapest, top } = treePrices(t.products, t.id, promos);
             const buyable = [...priced].sort((x, y) => x.price.now - y.price.now).find((x) => x.product.stock > 0)?.product;
+            const q = quickData(t, priced);
             const type = splitList(t.purposes)[0];
             return (
               <Reveal key={t.id} delay={n * 90} className="w-[72%] shrink-0 snap-start sm:w-auto">
                 <article className="feat-card group flex h-full flex-col border border-stone-200/80 bg-white">
                   <div className="relative">
-                    <CardPhotos photos={treePhotos(t)} href={`/trees/${t.slug}`} name={t.name} shape={t.shape} color={t.color} className="aspect-[2/1.05] !bg-[#eee8dc] !bg-none" />
+                    <CardPhotos photos={q.slides} href={`/trees/${t.slug}`} name={t.name} shape={t.shape} color={t.color} className="aspect-[4/3] !bg-[#eee8dc] !bg-none" />
                     {top && <span className="sale-badge absolute left-2 top-2 z-10" title={top.occasion ?? "On sale"} style={badgeSize(top.badge)}><span>{top.badge}<br /><span className="text-[0.6875rem]">-{top.percentOff}%</span></span></span>}
                   </div>
                   <div className="flex flex-1 flex-col p-4">
@@ -102,7 +103,16 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
                       ) : (
                         <Link href={`/trees/${t.slug}`} className="flex min-w-0 flex-1 items-center justify-center border border-stone-300 px-4 py-2.5 text-sm text-stone-600 hover:bg-[#f6f2ea]">View details</Link>
                       )}
-                      <Link href={`/trees/${t.slug}`} aria-label={`View ${t.name} details`} title="View details" className="grid w-10 shrink-0 place-items-center border border-stone-300 text-[#1c1d1a] transition hover:bg-[#f6f2ea]"><EyeIcon /></Link>
+                      <QuickView
+                        tree={{ slug: t.slug, name: t.name, banglaName: t.banglaName, description: t.description, shape: t.shape, color: t.color, facts: q.facts }}
+                        photos={q.slides}
+                        products={q.sizes}
+                        badge={top ? { badge: top.badge ?? "SALE", percentOff: top.percentOff, occasion: top.occasion, style: badgeSize(top.badge) } : null}
+                        back="/"
+                        buttonClass="grid w-10 shrink-0 place-items-center border border-stone-300 text-[#1c1d1a] transition hover:bg-[#f6f2ea]"
+                      >
+                        <EyeIcon />
+                      </QuickView>
                     </div>
                   </div>
                 </article>

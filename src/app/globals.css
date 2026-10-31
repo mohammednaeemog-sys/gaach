@@ -802,19 +802,19 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
 .foot-leaf-l { animation: leaves-sway 11s ease-in-out infinite alternate; transform-origin: 0 0; }
 @media (prefers-reduced-motion: reduce) { .journey-leaf, .foot-leaf-l { animation: none; } .journey-num { opacity: 1; scale: 1; animation: none !important; } .journey-line { transform: none; animation: none !important; } .journey-rule { transform: none; } }
 
-/* Product card photo arrows and sale badge */
-.card-arrow {
+/* Photo slider arrow tabs (always visible) and sale badge */
+.slide-arrow {
   position: absolute; top: 50%; z-index: 10; display: grid; place-items: center;
-  width: 2rem; height: 2rem; margin-top: -1rem; border-radius: 9999px;
-  background: rgb(255 255 255 / 0.92); color: #1c1d1a; box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
-  transition: opacity .2s, transform .2s, background .2s;
+  width: 1.9rem; height: 2.75rem; margin-top: -1.375rem;
+  background: rgb(255 255 255 / 0.94); color: #1c1d1a; box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+  transition: background .2s, width .2s, color .2s;
 }
-.card-arrow:hover { background: #fff; transform: scale(1.08); }
-.card-arrow:active { transform: scale(0.92); }
-@media (hover: hover) {
-  .card-arrow { opacity: 0; }
-  .group:hover .card-arrow, .card-arrow:focus-visible { opacity: 1; }
-}
+.slide-arrow:hover { background: #fff; width: 2.2rem; color: #183d27; }
+.slide-arrow:active { background: #eef0e6; }
+.slide-arrow:not(.slide-arrow-big) { top: 58%; width: 1.6rem; height: 2.3rem; margin-top: -1.15rem; }
+.slide-arrow:not(.slide-arrow-big):hover { width: 1.85rem; }
+.slide-arrow-big { width: 2.4rem; height: 3.2rem; margin-top: -1.6rem; }
+.slide-arrow-big:hover { width: 2.7rem; }
 .sale-badge {
   display: grid; place-items: center; width: 3.1rem; height: 3.1rem; border-radius: 9999px;
   background: #f2994a; color: #fff; font-weight: 800; font-size: 0.625rem; line-height: 1.05;
@@ -845,3 +845,10 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
   .sale-banner, .sale-float, .sale-shine, .sale-in, .sale-pulse, .sale-badge { animation: none !important; }
   .sale-float, .sale-shine { display: none; }
 }
+
+/* Quick view panel */
+.qv-back { animation: fade-in .25s ease both; }
+.qv-panel { animation: qv-in .4s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes qv-in { from { transform: translateX(100%); } to { transform: none; } }
+@media (max-width: 639px) { .qv-panel { animation-name: qv-up; } @keyframes qv-up { from { transform: translateY(100%); } to { transform: none; } } }
+@media (prefers-reduced-motion: reduce) { .qv-back, .qv-panel { animation: none !important; } }

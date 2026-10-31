@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { treePhotos } from "@/lib/photo";
+import { treeSlides } from "@/lib/photo";
+import { QuickView } from "./QuickView";
 import { CardPhotos } from "./CardPhotos";
 import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { Stars } from "./Stars";
@@ -11,7 +12,8 @@ import { taka } from "@/lib/format";
 type T = {
   id: string; slug: string; name: string; banglaName: string; shape: string; color: string; imageUrl: string | null;
   matureHeightM: number; canopySpreadM: number; purposes: string; sunlight: string;
-  products: { id: string; priceBdt: number; salePriceBdt?: number | null; stock: number; imageUrl?: string | null }[];
+  description: string; waterNeed: string;
+  products: { id: string; priceBdt: number; salePriceBdt?: number | null; stock: number; imageUrl?: string | null; sizeLabel: string; ageMonths: number }[];
   photos?: { url: string }[];
 };
 
@@ -35,6 +37,23 @@ function LeafIcon() {
   return <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden><path d="M5 19 C 5 10, 11 5, 20 5 C 20 13, 14 19, 5 19Z" /><path d="M6 18 L 14 10" /></svg>;
 }
 
+// What the quick-view panel needs: slides, each size with its sale price, and short facts
+export function quickData(tree: T, priced: { product: { id: string }; price: { now: number; was: number | null; percentOff: number; occasion: string | null } }[], kind = KIND[splitList(tree.purposes)[0] ?? ""]) {
+  const slides = treeSlides(tree);
+  const sizes = [...tree.products].sort((a, b) => a.priceBdt - b.priceBdt).map((p) => {
+    const d = priced.find((x) => x.product.id === p.id)!.price;
+    return { id: p.id, sizeLabel: p.sizeLabel, ageMonths: p.ageMonths, priceBdt: d.now, wasBdt: d.was, percentOff: d.percentOff, occasion: d.occasion, stock: p.stock };
+  });
+  const facts = [
+    kind && `Type: ${kind}`,
+    `Sunlight: ${splitList(tree.sunlight).map(label).join(", ")}`,
+    `Best for: ${spaceTag(tree.canopySpreadM)}`,
+    `Grows to about ${tree.matureHeightM} m tall and ${tree.canopySpreadM} m wide`,
+    `Water need: ${label(tree.waterNeed)}`,
+  ].filter((x): x is string => !!x);
+  return { slides, sizes, facts };
+}
+
 // Long badge words get smaller letters so they stay inside the circle
 export function badgeSize(badge: string | null) {
   const n = Math.max(...(badge ?? "").split(" ").map((w) => w.length));
@@ -56,6 +75,7 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
   const list = layout === "list";
   const kind = KIND[splitList(tree.purposes)[0] ?? ""];
   const href = `/trees/${tree.slug}`;
+  const { slides, sizes, facts } = quickData(tree, priced, kind);
   const iconBtn = "grid h-10 w-9 sm:w-10 shrink-0 place-items-center rounded-md ring-1 transition active:scale-90";
 
   const compare = (
@@ -89,7 +109,7 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
   return (
     <div className={`tree-card group relative flex overflow-hidden rounded-lg bg-white shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_1.5rem_-0.9rem_rgb(28_29_26/0.25)] ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1rem_rgb(28_29_26/0.35)] ${list ? "flex-row gap-4 p-2.5" : "h-full flex-col"}`}>
       <div className={`relative shrink-0 ${list ? "w-36 sm:w-44" : ""}`}>
-        <CardPhotos photos={treePhotos(tree)} href={href} name={tree.name} shape={tree.shape} color={tree.color} className={list ? "h-full min-h-36 rounded-md" : "aspect-[4/2.3]"} />
+        <CardPhotos photos={slides} href={href} name={tree.name} shape={tree.shape} color={tree.color} className={list ? "h-full min-h-36 rounded-md" : "aspect-[4/3]"} />
         {top && (
           <span className="sale-badge absolute left-2.5 top-2.5 z-10" title={top.occasion ?? "On sale"} style={badgeSize(top.badge)}>
             <span>{top.badge}<br /><span className="text-[0.6875rem]">-{top.percentOff}%</span></span>
@@ -124,7 +144,16 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
         </div>
         <div className={`mt-auto flex items-center gap-1.5 pt-3 ${list ? "max-w-sm" : ""}`}>
           {button}
-          <Link href={href} aria-label={`View ${tree.name} details`} title="View details" className={`${iconBtn} bg-white text-forest-700 ring-stone-200 hover:text-lime-600 hover:ring-lime-500`}><EyeIcon /></Link>
+          <QuickView
+            tree={{ slug: tree.slug, name: tree.name, banglaName: tree.banglaName, description: tree.description, shape: tree.shape, color: tree.color, facts, rating }}
+            photos={slides}
+            products={sizes}
+            badge={top ? { badge: top.badge ?? "SALE", percentOff: top.percentOff, occasion: top.occasion, style: badgeSize(top.badge) } : null}
+            back={back}
+            buttonClass={`${iconBtn} bg-white text-forest-700 ring-stone-200 hover:text-lime-600 hover:ring-lime-500`}
+          >
+            <EyeIcon />
+          </QuickView>
           {compare}
         </div>
       </div>

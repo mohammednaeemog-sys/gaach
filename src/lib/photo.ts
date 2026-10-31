@@ -20,3 +20,9 @@ export function treePhotos(t: WithPhotos & { photos?: { url: string }[] }): stri
   const all = [treePhoto(t), ...(t.photos ?? []).map((p) => p.url), ...(t.products ?? []).map((p) => p.imageUrl)].filter((u): u is string => !!u);
   return [...new Set(all)].slice(0, 8);
 }
+
+// Slides for a photo slider: every photo, then the potted-sapling drawing showing how it arrives
+export function treeSlides(t: WithPhotos & { photos?: { url: string }[] }): (string | null)[] {
+  const list = treePhotos(t);
+  return list.length ? [...list, null] : [null];
+}
