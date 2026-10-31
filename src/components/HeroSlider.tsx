@@ -10,7 +10,7 @@ const SLIDES = [
   { src: "/hero/slide-2.jpg", alt: "Sunlight through a big tree above a river and the city" },
   { src: "/hero/slide-3.jpg", alt: "An orange sunset over the city skyline and a bridge, framed by trees" },
 ];
-const SECONDS = 2;
+const SECONDS = 4;
 
 export function HeroSlider({ onFilm }: { onFilm?: boolean }) {
   const [i, setI] = useState(0);

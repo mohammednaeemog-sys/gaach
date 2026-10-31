@@ -380,7 +380,7 @@ Blurry photos get a request for a better photo instead of a guess. The photo is 
 
 - **Type.** Fraunces for headings, Poppins for body text, Cinzel for the wordmark, and Noto Serif Bengali for Bangla names.
 - **Photography.** Real tree photos on cards. The page heroes (garden, map of Bangladesh, balance board, advisor desk and planting table) were prepared from the approved design mockups.
-- **Motion.** Headlines rise in line by line, hero photos settle with a slow zoom, condition chips and labels pop in and drift gently, step numbers pop and connecting lines draw across, and cards lift on hover. The home hero cross-fades between three photos every 2 seconds, with a progress line under 01 · 02 · 03.
+- **Motion.** Headlines rise in line by line, hero photos settle with a slow zoom, condition chips and labels pop in and drift gently, step numbers pop and connecting lines draw across, and cards lift on hover. The home hero cross-fades between three photos every 4 seconds, with a progress line under 01 · 02 · 03.
 - **Restraint.** Every animation is turned off for people who set "reduce motion" in their system settings.
 
 ---

@@ -659,7 +659,7 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
 .site-header.is-clear { background: linear-gradient(180deg, rgb(20 21 19 / .55), transparent); }
 .home-hero { background: #1c1d1a url(/hero/slide-1.jpg) center/cover no-repeat; height: max(36rem, min(calc(100svh - 10.5rem), 46rem)); }
 @media (max-width: 639px) { .home-hero { background: #1c1d1a url(/hero/slide-1.jpg) center/cover no-repeat; height: auto; min-height: 40rem; } }
-.home-hero-img { opacity: 0; transform: scale(1.06); transition: opacity .8s ease, transform 3s linear; }
+.home-hero-img { opacity: 0; transform: scale(1.06); transition: opacity 1s ease, transform 5s linear; }
 .home-hero-img.is-on { opacity: 1; transform: scale(1); }
 .home-hero-shade { background: linear-gradient(90deg, rgb(20 21 19 / .78) 0%, rgb(20 21 19 / .5) 34%, rgb(20 21 19 / .05) 62%), linear-gradient(0deg, rgb(20 21 19 / .55) 0%, transparent 30%), linear-gradient(180deg, rgb(20 21 19 / .45) 0%, transparent 22%); }
 @media (max-width: 767px) { .home-hero-shade { background: linear-gradient(0deg, rgb(20 21 19 / .9) 0%, rgb(20 21 19 / .55) 55%, rgb(20 21 19 / .35) 100%); } }
