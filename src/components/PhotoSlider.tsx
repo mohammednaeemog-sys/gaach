@@ -18,7 +18,7 @@ export function PhotoSlider({ photos, name, shape, color, href, className = "", 
   const strip = (
     <div className="flex h-full w-full transition-transform duration-500 ease-out" style={{ transform: `translateX(-${i * 100}%)` }}>
       {photos.map((src, k) => (
-        <div key={(src ?? "art") + k} className="relative h-full w-full shrink-0" aria-hidden={k !== i}>
+        <div key={(src ?? "art") + k} className="relative h-full w-full shrink-0 overflow-hidden" aria-hidden={k !== i}>
           <TreeArt shape={shape} color={color} name={k ? `${name} ${k + 1}` : name} imageUrl={src === "grown" ? null : src} grown={src === "grown"} animate={false} className={big ? "" : "transition duration-500 group-hover:scale-105"} />
           {src === "grown" && <span className="absolute bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/90 px-2.5 py-0.5 text-[0.625rem] font-medium text-forest-900 shadow-sm">When fully grown</span>}
           {!src && n > 1 && <span className="absolute bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/90 px-2.5 py-0.5 text-[0.625rem] font-medium text-forest-900 shadow-sm">How it arrives: potted sapling</span>}
