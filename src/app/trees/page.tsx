@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { livePromotions, treePrices } from "@/modules/shop/pricing";
+import { SaleHero } from "@/components/festival/SaleHero";
 import { listTrees, many, SIZE_BANDS, type CatalogueFilters } from "@/modules/catalogue/queries";
 import { readCompare } from "@/modules/catalogue/compare-list";
 import { Reveal } from "@/components/Reveal";
@@ -122,6 +123,8 @@ export default async function TreesPage({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </div>
+
+      <SaleHero className="mt-8" />
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[15.625rem_1fr]">
         {/* Filters */}

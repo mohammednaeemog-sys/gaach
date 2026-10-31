@@ -160,8 +160,11 @@ model Promotion {
   name       String
   badge      String    @default("SALE")
   message    String    @default("") // why the discount, shown on the sale banner
-  theme      String    @default("general") // banner look: general, eid, boishakh, monsoon, winter, victory
-  showBanner Boolean   @default(true)
+  theme      String    @default("general") // festival style, see src/lib/festivals.ts
+  showBanner Boolean   @default(true) // thin strip at the top of every page
+  heroBanner Boolean   @default(true) // big decorated banner on the home and shop pages
+  imageUrl   String? // the admin's own banner picture (optional)
+  imageOnly  Boolean   @default(false) // the picture already has its text, so show it alone
   percentOff Int
   allTrees   Boolean   @default(true)
   startsAt   DateTime?

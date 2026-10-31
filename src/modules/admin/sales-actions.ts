@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/modules/accounts/session";
 import { fieldErrors, type FormState } from "@/lib/forms";
 import { saveImage } from "./uploads";
+import { FESTIVAL_KEYS } from "@/lib/festivals";
 
 const MAX_PHOTOS = 12;
 
@@ -58,7 +59,6 @@ export async function moveTreePhoto(fd: FormData) {
   revalidatePath("/", "layout");
 }
 
-const THEME_KEYS = ["general", "eid", "boishakh", "monsoon", "winter", "victory"] as const;
 
 // The admin's date boxes are in Bangladesh time (UTC+6), whatever the server's clock zone is
 const dateField = z.preprocess(
@@ -70,7 +70,7 @@ const promoSchema = z
     name: z.string().trim().min(2, "Name the occasion, like Eid ul-Adha sale.").max(60),
     badge: z.string().trim().min(2, "Write a short badge, like EID SALE.").max(14, "Keep the badge to 14 letters so it fits the circle."),
     message: z.string().trim().max(140, "Keep the reason under 140 letters.").default(""),
-    theme: z.enum(THEME_KEYS),
+    theme: z.string().refine((t) => FESTIVAL_KEYS.includes(t), "Pick a banner style."),
     percentOff: z.coerce.number().int("Use a whole number.").min(1, "At least 1% off.").max(90, "At most 90% off."),
     startsAt: dateField,
     endsAt: dateField,
@@ -87,12 +87,17 @@ export async function savePromotion(_: FormState, fd: FormData): Promise<FormSta
   const allTrees = fd.get("scope") !== "some";
   const treeIds = allTrees ? [] : fd.getAll("trees").map(String).filter(Boolean);
   if (!allTrees && !treeIds.length) return { errors: { trees: "Tick at least one tree, or choose All trees." }, values };
+  const image = await saveImage(fd.get("image") as File | null, "sale-banner");
+  if (image.error) return { errors: { image: image.error }, values };
   const data = {
     ...parsed.data,
     badge: parsed.data.badge.toUpperCase(),
     allTrees,
     active: fd.get("active") === "on",
     showBanner: fd.get("showBanner") === "on",
+    heroBanner: fd.get("heroBanner") === "on",
+    imageOnly: fd.get("imageOnly") === "on",
+    ...(image.url ? { imageUrl: image.url } : fd.get("removeImage") === "on" ? { imageUrl: null } : {}),
   };
   const trees = { set: treeIds.map((t) => ({ id: t })) };
   if (id) await db.promotion.update({ where: { id }, data: { ...data, trees } });

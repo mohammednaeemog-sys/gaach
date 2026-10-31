@@ -113,7 +113,7 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 | 🔎 **Browse and search** | Every tree, with filters for type, sunlight, soil, mature size and price. Search works in English, in Bangla and by scientific name. Grid and list views, sorting and star ratings are included. |
 | ⚖️ **Compare** | Put 2 or 3 trees side by side: size, growth rate, sunlight, soil, water, season, flood, drought and salt tolerance, and cautions. Search and quick-add chips make it easy to fill the slots. |
 | 🖼️ **Product cards** | Swipe through several photos with arrow buttons, see a SALE badge and the old price crossed out, and add to cart, view details or compare from the card. |
-| 🏷️ **Occasion sales** | Eid, Pohela Boishakh, monsoon and other sales show an animated banner with the reason for the discount and a countdown. An "On sale only" filter lists every discounted tree. |
+| 🏷️ **Festival sales** | 18 hand-drawn, animated festival styles (Eid, Ramadan, Durga Puja, Diwali, Pohela Boishakh, 21 February, Victory Day, Christmas, Halloween, winter, monsoon and more) for a big sale banner and a top strip with a countdown. An "On sale only" filter lists every discounted tree. |
 | 🛒 **Cart and checkout** | Several sizes per tree, quantity steppers, a stock-safe checkout, cash on delivery and a flat delivery fee. |
 | 📦 **Orders and My trees** | Order history, plus a "My trees" page that shows each tree's current growth stage and what to do next. |
 | 🤖 **Tree Advisor** | An AI chat that answers tree questions using Gaach's data and the user's own trees and saved sites. It is available on every page and as a full page at `/assistant`. |
@@ -130,7 +130,7 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 | Area | Capabilities |
 |---|---|
 | **Trees and products** | Add and edit trees and publish them, upload several photos per tree (with reordering), and manage sizes, prices, sale prices, stock and care stages. |
-| **Sales and offers** | Create occasion sales: name, badge, percent off, the reason shown to shoppers, banner style, start and end dates, and all trees or chosen trees. Each sale shows as Live, Scheduled, Ended or Off. |
+| **Sales and offers** | A Bangladesh festival calendar fills in a sale in one tap. Pick a festival style or upload your own banner picture, then set the name, badge, percent off, the reason shown to shoppers, start and end dates, and all trees or chosen trees. Each sale shows as Live, Scheduled, Ended or Off. |
 | **Orders** | View all orders and update their status. Cancelling an order returns its stock. |
 | **Users and email** | View accounts, send a test email, email a reset link to a user, and see the last emails the site tried to send, with the result of each. |
 | **Reviews** | Hide, show or delete reviews. |

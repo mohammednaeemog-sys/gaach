@@ -4,7 +4,7 @@
 
 export type LivePromo = {
   id: string; name: string; badge: string; percentOff: number; allTrees: boolean; treeIds: string[];
-  message?: string; theme?: string; showBanner?: boolean; endsAt?: Date | null;
+  message?: string; theme?: string; showBanner?: boolean; heroBanner?: boolean; imageUrl?: string | null; imageOnly?: boolean; startsAt?: Date | null; endsAt?: Date | null;
 };
 export type PriceInput = { priceBdt: number; salePriceBdt?: number | null };
 export type Price = {

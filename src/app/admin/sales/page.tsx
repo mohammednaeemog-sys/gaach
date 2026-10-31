@@ -3,6 +3,7 @@ import { PromotionForm } from "@/components/admin/PromotionForm";
 import { deletePromotion, togglePromotion } from "@/modules/admin/sales-actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { isLive } from "@/modules/shop/pricing";
+import { festival, upcomingFestivals } from "@/lib/festivals";
 
 export const metadata = { title: "Sales & offers" };
 
@@ -24,17 +25,19 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
     db.promotion.findMany({ include: { trees: { select: { id: true, name: true } } }, orderBy: { createdAt: "desc" } }),
     db.tree.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
+  const dm = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Dhaka" });
+  const upcoming = upcomingFestivals().map((u) => ({ key: u.key, name: u.name, start: local(u.start), end: local(u.end), approx: u.approx, live: u.live, label: `${dm(u.start)} – ${dm(u.end)}` }));
   return (
     <div className="space-y-6">
       <div>
         <h1 className="page-title">Sales &amp; offers</h1>
-        <p className="mt-1 text-sm text-stone-600">Run a discount for an occasion (Eid, Pohela Boishakh, monsoon planting…). Shoppers see an animated banner explaining the sale, a badge on each card and the old price crossed out. For a fixed price on one size, use &ldquo;Sale price&rdquo; on the tree&apos;s product instead. When several discounts apply, the customer gets the lowest price.</p>
+        <p className="mt-1 text-sm text-stone-600">Run a discount for a festival or season (Eid, Puja, Pohela Boishakh, Christmas, winter…). Pick a festival style and shoppers see a decorated, animated banner explaining the sale, a badge on each card and the old price crossed out. For a fixed price on one size, use &ldquo;Sale price&rdquo; on the tree&apos;s product instead. When several discounts apply, the customer gets the lowest price.</p>
       </div>
       {saved && <p className="rounded-lg bg-mint-50 p-3 text-sm text-forest-700">Sale created.</p>}
 
       <section className="card space-y-3 p-5">
         <h2 className="font-semibold text-forest-900">New sale</h2>
-        <PromotionForm trees={trees} />
+        <PromotionForm trees={trees} upcoming={upcoming} />
       </section>
 
       <section className="space-y-3">
@@ -47,7 +50,8 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
               <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3">
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${cls}`}>{text}</span>
                 <b className="text-forest-900">{p.name}</b>
-                <span className="rounded-full bg-[#f2994a] px-2 py-0.5 text-[0.6875rem] font-bold text-white">{p.badge} -{p.percentOff}%</span>
+                <span className="rounded-full px-2 py-0.5 text-[0.6875rem] font-bold" style={{ background: festival(p.theme).bg, color: festival(p.theme).ink }}>{p.badge} -{p.percentOff}%</span>
+                <span className="text-xs text-stone-500">{festival(p.theme).label} style</span>
                 <span className="text-xs text-stone-500">{p.allTrees ? "All trees" : `${p.trees.length} tree${p.trees.length === 1 ? "" : "s"}`}</span>
                 <span className="text-xs text-stone-500">{p.startsAt ? when(p.startsAt) : "Now"} → {p.endsAt ? when(p.endsAt) : "no end date"}</span>
                 <span className="ml-auto flex gap-2">
@@ -58,7 +62,7 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
               <div className="mt-4 border-t border-stone-100 pt-4">
                 <PromotionForm
                   trees={trees}
-                  p={{ id: p.id, name: p.name, badge: p.badge, message: p.message, theme: p.theme, percentOff: p.percentOff, allTrees: p.allTrees, active: p.active, showBanner: p.showBanner, startsAt: local(p.startsAt), endsAt: local(p.endsAt), treeIds: p.trees.map((t) => t.id) }}
+                  p={{ id: p.id, name: p.name, badge: p.badge, message: p.message, theme: p.theme, percentOff: p.percentOff, allTrees: p.allTrees, active: p.active, showBanner: p.showBanner, heroBanner: p.heroBanner, imageUrl: p.imageUrl, imageOnly: p.imageOnly, startsAt: local(p.startsAt), endsAt: local(p.endsAt), treeIds: p.trees.map((t) => t.id) }}
                 />
               </div>
             </details>

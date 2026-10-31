@@ -1,6 +1,6 @@
 // Shows the tree's photo, or a potted-sapling illustration when no photo exists.
 // The illustration is inline SVG, so it costs no image download (NFR-2.3).
-type Props = { shape: string; color: string; name: string; imageUrl?: string | null; className?: string; animate?: boolean };
+type Props = { shape: string; color: string; name: string; imageUrl?: string | null; className?: string; animate?: boolean; grown?: boolean };
 
 function shade(hex: string, amt: number) {
   const n = parseInt(hex.slice(1), 16);
@@ -8,7 +8,7 @@ function shade(hex: string, amt: number) {
   return `rgb(${c(n >> 16)}, ${c((n >> 8) & 255)}, ${c(n & 255)})`;
 }
 
-export function TreeArt({ shape, color, name, imageUrl, className = "", animate = true }: Props) {
+export function TreeArt({ shape, color, name, imageUrl, className = "", animate = true, grown = false }: Props) {
   if (imageUrl) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={imageUrl} alt={`${name} photo`} loading="lazy" decoding="async" className={`lift-img h-full w-full object-cover ${className}`} />;
@@ -18,8 +18,20 @@ export function TreeArt({ shape, color, name, imageUrl, className = "", animate 
   const stem = "#6d4c3d";
   const sway = animate ? "anim-sway" : "";
   return (
-    <svg viewBox="0 0 120 120" role="img" aria-label={`${name} illustration`} className={`lift-img h-full w-full ${className}`}>
-      <ellipse cx="60" cy="112" rx="26" ry="3.5" fill="#000" opacity="0.08" />
+    <svg viewBox="0 0 120 120" role="img" aria-label={`${name} ${grown ? "fully grown" : "illustration"}`} className={`lift-img h-full w-full ${className}`} style={grown ? { overflow: "visible" } : undefined}>
+      {grown ? (
+        <g>
+          <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#cfe8f7" /><stop offset="1" stopColor="#eef6e9" /></linearGradient></defs>
+          <rect x="-60" y="-20" width="240" height="160" fill="url(#sky)" />
+          <circle cx="98" cy="20" r="7" fill="#ffd166" opacity="0.9" />
+          <path d="M-60 104 Q 20 94 60 101 T 180 100 V140 H-60 Z" fill="#8fbf6a" />
+          <path d="M-60 110 Q 30 102 70 108 T 180 106 V140 H-60 Z" fill="#6fa64f" />
+          <path d="M60 104 L60 90" stroke="#6d4c3d" strokeWidth="3.5" strokeLinecap="round" />
+          <ellipse cx="60" cy="105" rx="22" ry="2.5" fill="#000" opacity="0.12" />
+        </g>
+      ) : (
+        <ellipse cx="60" cy="112" rx="26" ry="3.5" fill="#000" opacity="0.08" />
+      )}
       <g className={sway}>
         {shape === "palm" && (
           <g>
@@ -75,9 +87,13 @@ export function TreeArt({ shape, color, name, imageUrl, className = "", animate 
         )}
       </g>
       {/* nursery pot */}
-      <path d="M40 90 H80 L76 112 H44 Z" fill="#c9714a" />
-      <path d="M38 86 H82 V93 H38 Z" rx="2" fill="#d98760" />
-      <path d="M44 96 H76" stroke="#b5603b" strokeWidth="1.5" opacity="0.5" />
+      {!grown && (
+        <>
+          <path d="M40 90 H80 L76 112 H44 Z" fill="#c9714a" />
+          <path d="M38 86 H82 V93 H38 Z" rx="2" fill="#d98760" />
+          <path d="M44 96 H76" stroke="#b5603b" strokeWidth="1.5" opacity="0.5" />
+        </>
+      )}
     </svg>
   );
 }

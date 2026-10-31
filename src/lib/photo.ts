@@ -22,7 +22,9 @@ export function treePhotos(t: WithPhotos & { photos?: { url: string }[] }): stri
 }
 
 // Slides for a photo slider: every photo, then the potted-sapling drawing showing how it arrives
+// Trees with no photo yet get the potted sapling and the fully grown tree, so every card has arrows.
+export const GROWN = "grown";
 export function treeSlides(t: WithPhotos & { photos?: { url: string }[] }): (string | null)[] {
   const list = treePhotos(t);
-  return list.length ? [...list, null] : [null];
+  return list.length ? [...list, null] : [null, GROWN];
 }

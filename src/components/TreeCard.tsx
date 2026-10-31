@@ -96,8 +96,9 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
     <form action={addToCart} className="min-w-0 flex-1">
       <input type="hidden" name="productId" value={buyable.id} />
       <input type="hidden" name="back" value={back} />
-      <button aria-label={`Add ${tree.name} to cart`} className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#183d27] px-3 text-sm font-medium text-white transition hover:bg-[#1d5b33] active:scale-[0.97]">
-        <CartIcon /> <span className="whitespace-nowrap"><span className="sm:hidden">Add</span><span className="hidden sm:inline">Add to cart</span></span>
+      <button aria-label={`Add ${tree.name} to cart`} className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#183d27] px-2 text-sm font-medium text-white transition hover:bg-[#1d5b33] active:scale-[0.97]">
+        <span className="flex @[13rem]:hidden @[17rem]:flex"><CartIcon /></span>
+        <span className="whitespace-nowrap"><span className="@[13rem]:hidden">Add</span><span className="hidden @[13rem]:inline">Add to cart</span></span>
       </button>
     </form>
   ) : (
@@ -107,7 +108,7 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
   );
 
   return (
-    <div className={`tree-card group relative flex overflow-hidden rounded-lg bg-white shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_1.5rem_-0.9rem_rgb(28_29_26/0.25)] ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1rem_rgb(28_29_26/0.35)] ${list ? "flex-row gap-4 p-2.5" : "h-full flex-col"}`}>
+    <div className={`tree-card group @container relative flex overflow-hidden rounded-lg bg-white shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_1.5rem_-0.9rem_rgb(28_29_26/0.25)] ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1rem_rgb(28_29_26/0.35)] ${list ? "flex-row gap-4 p-2.5" : "h-full flex-col"}`}>
       <div className={`relative shrink-0 ${list ? "w-36 sm:w-44" : ""}`}>
         <CardPhotos photos={slides} href={href} name={tree.name} shape={tree.shape} color={tree.color} className={list ? "h-full min-h-36 rounded-md" : "aspect-[4/3]"} />
         {top && (

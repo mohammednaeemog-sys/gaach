@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CardPhotos } from "@/components/CardPhotos";
 import { EyeIcon, badgeSize, quickData } from "@/components/TreeCard";
 import { QuickView } from "@/components/QuickView";
+import { SaleHero } from "@/components/festival/SaleHero";
 import { livePromotions, treePrices } from "@/modules/shop/pricing";
 import { db } from "@/lib/db";
 import { Reveal } from "@/components/Reveal";
@@ -61,6 +62,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           ))}
         </nav>
       </div>
+
+      <SaleHero />
 
       {/* Featured trees */}
       <section className="grid gap-8 lg:grid-cols-[17rem_1fr] lg:items-center">

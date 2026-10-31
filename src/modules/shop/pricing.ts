@@ -12,5 +12,5 @@ export const livePromotions = cache(async (): Promise<LivePromo[]> => {
     include: { trees: { select: { id: true } } },
     orderBy: { percentOff: "desc" },
   });
-  return rows.map((r) => ({ id: r.id, name: r.name, badge: r.badge, percentOff: r.percentOff, allTrees: r.allTrees, treeIds: r.trees.map((t) => t.id), message: r.message, theme: r.theme, showBanner: r.showBanner, endsAt: r.endsAt }));
+  return rows.map((r) => ({ id: r.id, name: r.name, badge: r.badge, percentOff: r.percentOff, allTrees: r.allTrees, treeIds: r.trees.map((t) => t.id), message: r.message, theme: r.theme, showBanner: r.showBanner, heroBanner: r.heroBanner, imageUrl: r.imageUrl, imageOnly: r.imageOnly, startsAt: r.startsAt, endsAt: r.endsAt }));
 });
