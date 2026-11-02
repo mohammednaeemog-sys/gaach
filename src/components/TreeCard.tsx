@@ -54,10 +54,9 @@ export function quickData(tree: T, priced: { product: { id: string }; price: { n
   return { slides, sizes, facts };
 }
 
-// Long badge words get smaller letters so they stay inside the circle
-export function badgeSize(badge: string | null) {
-  const n = Math.max(...(badge ?? "").split(" ").map((w) => w.length));
-  return n > 7 ? { fontSize: "0.44rem" } : n > 5 ? { fontSize: "0.52rem" } : undefined;
+// Short tag for a product size: "Sapling, 2 ft" -> "Sapling · 2 ft"
+export function sizeTag(sizeLabel: string | undefined) {
+  return sizeLabel ? sizeLabel.replace(/\s*,\s*/g, " · ") : undefined;
 }
 
 export function EyeIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -76,7 +75,11 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
   const kind = KIND[splitList(tree.purposes)[0] ?? ""];
   const href = `/trees/${tree.slug}`;
   const { slides, sizes, facts } = quickData(tree, priced, kind);
-  const iconBtn = "grid h-10 w-9 sm:w-10 shrink-0 place-items-center rounded-md ring-1 transition active:scale-90";
+  const iconBtn = "grid h-11 w-10 sm:w-11 shrink-0 place-items-center rounded-[0.625rem] border transition active:scale-90";
+  const tag = sizeTag(byPrice[0]?.product.sizeLabel);
+  const quick = { slug: tree.slug, name: tree.name, banglaName: tree.banglaName, description: tree.description, shape: tree.shape, color: tree.color, facts, rating };
+  const badge = top ? { badge: top.badge ?? "SALE", percentOff: top.percentOff, occasion: top.occasion } : null;
+  const mainBtn = "flex h-11 w-full items-center justify-center gap-1.5 rounded-[0.625rem] bg-leaf-700 px-2 text-sm font-semibold text-white transition hover:bg-leaf-800 active:scale-[0.97]";
 
   const compare = (
     <form action={toggleCompare}>
@@ -85,74 +88,70 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
         aria-pressed={comparing}
         aria-label={comparing ? `Remove ${tree.name} from comparison` : `Add ${tree.name} to comparison`}
         title={comparing ? "In comparison" : "Add to comparison"}
-        className={`${iconBtn} ${comparing ? "bg-lime-500 text-white ring-lime-500" : "bg-white text-forest-700 ring-stone-200 hover:text-lime-600 hover:ring-lime-500"}`}
+        className={`${iconBtn} ${comparing ? "border-leaf-700 bg-leaf-700 text-white" : "border-stone-200 bg-white text-forest-900 hover:border-leaf-600 hover:text-leaf-700"}`}
       >
         {comparing ? "✓" : <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M7 7h12l-3-3M17 17H5l3 3" /></svg>}
       </button>
     </form>
   );
 
-  const button = buyable ? (
+  // One size: add it straight away. Several sizes: open the quick view to pick one.
+  const button = !buyable ? (
+    <Link href={href} className="flex h-11 min-w-0 flex-1 items-center justify-center rounded-[0.625rem] border border-stone-200 px-3 text-sm font-medium text-stone-600 hover:bg-mint-50">
+      {cheapest ? "Out of stock" : "View details"}
+    </Link>
+  ) : priced.filter((x) => x.product.stock > 0).length > 1 ? (
+    <div className="min-w-0 flex-1">
+      <QuickView tree={quick} photos={slides} products={sizes} badge={badge} back={back} buttonClass={mainBtn} label={`Choose a size of ${tree.name}`}>
+        <span className="whitespace-nowrap"><span className="@[13rem]:hidden">Sizes</span><span className="hidden @[13rem]:inline">Choose size</span></span>
+      </QuickView>
+    </div>
+  ) : (
     <form action={addToCart} className="min-w-0 flex-1">
       <input type="hidden" name="productId" value={buyable.id} />
       <input type="hidden" name="back" value={back} />
-      <button aria-label={`Add ${tree.name} to cart`} className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#183d27] px-2 text-sm font-medium text-white transition hover:bg-[#1d5b33] active:scale-[0.97]">
-        <span className="flex @[13rem]:hidden @[17rem]:flex"><CartIcon /></span>
+      <button aria-label={`Add ${tree.name} to cart`} className={mainBtn}>
+        <span className="hidden @[17rem]:flex"><CartIcon /></span>
         <span className="whitespace-nowrap"><span className="@[13rem]:hidden">Add</span><span className="hidden @[13rem]:inline">Add to cart</span></span>
       </button>
     </form>
-  ) : (
-    <Link href={href} className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-md border border-stone-200 px-3 text-sm font-medium text-stone-600 hover:bg-mint-50">
-      {cheapest ? "Out of stock" : "View details"}
-    </Link>
   );
 
+  const chip = "inline-flex items-center gap-1 rounded-md bg-mint-50 px-2 py-0.5 text-[0.6875rem] text-stone-700";
+
   return (
-    <div className={`tree-card group @container relative flex overflow-hidden rounded-lg bg-white shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_1.5rem_-0.9rem_rgb(28_29_26/0.25)] ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1rem_rgb(28_29_26/0.35)] ${list ? "flex-row gap-4 p-2.5" : "h-full flex-col"}`}>
+    <div className={`tree-card group @container relative flex overflow-hidden rounded-2xl border border-mint-100 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.125rem_2.5rem_-1.25rem_rgb(28_29_26/0.35)] ${list ? "flex-row gap-4 p-2.5" : "h-full flex-col"}`}>
       <div className={`relative shrink-0 ${list ? "w-36 sm:w-44" : ""}`}>
-        <CardPhotos photos={slides} href={href} name={tree.name} shape={tree.shape} color={tree.color} className={list ? "h-full min-h-36 rounded-md" : "aspect-[4/3]"} />
-        {top && (
-          <span className="sale-badge absolute left-2.5 top-2.5 z-10" title={top.occasion ?? "On sale"} style={badgeSize(top.badge)}>
-            <span>{top.badge}<br /><span className="text-[0.6875rem]">-{top.percentOff}%</span></span>
-          </span>
-        )}
-        {buyable && stockLeft <= 5 && <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-red-500 px-2 py-0.5 text-[0.625rem] font-semibold text-white shadow">Only {stockLeft} left</span>}
+        <CardPhotos photos={slides} href={href} name={tree.name} shape={tree.shape} color={tree.color} tag={tag} className={list ? "h-full min-h-36 rounded-xl" : "aspect-[4/3]"} />
+        {top && <span className="sale-badge absolute left-3 top-3 z-10" title={top.occasion ?? "On sale"}>{top.badge} −{top.percentOff}%</span>}
       </div>
-      <div className={`flex flex-1 flex-col ${list ? "py-1 pr-2" : "px-2.5 pb-2.5 pt-2.5"}`}>
+      <div className={`flex flex-1 flex-col ${list ? "py-1 pr-2" : "p-3 sm:p-4"}`}>
         <Link href={href} className="block">
-          <h3 className="text-[0.9375rem] font-semibold leading-snug text-forest-900 group-hover:text-[#2f6b3f]">{tree.name}</h3>
-          <p className="text-xs text-stone-500">{tree.banglaName}</p>
+          <h3 className="font-display text-[1.0625rem] font-semibold leading-snug text-forest-900 group-hover:text-leaf-700 sm:text-[1.1875rem]">{tree.name}</h3>
+          <p className="text-[0.8125rem] text-stone-500">{tree.banglaName}</p>
         </Link>
         {rating && rating.count > 0 && (
           <p className="mt-1 flex items-center gap-1 text-[0.6875rem] text-stone-500"><Stars value={rating.avg} size="h-3 w-3" /> <b className="text-forest-900">{rating.avg.toFixed(1)}</b> ({rating.count})</p>
         )}
-        <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-2">
-          <p className="flex flex-wrap items-baseline gap-x-1.5 text-base font-bold text-forest-900">
-            {cheapest ? (
-              <>
-                {priced.length > 1 && <span className="text-xs font-normal text-stone-500">from</span>}
-                <span className={cheapest.price.was ? "text-[#c2410c]" : ""}>{taka(cheapest.price.now)}</span>
-                {cheapest.price.was && <s className="text-xs font-normal text-stone-400">{taka(cheapest.price.was)}</s>}
-              </>
-            ) : <span className="text-sm font-normal text-stone-500">Not on sale yet</span>}
-          </p>
-          {kind && <span className="inline-flex items-center gap-1 text-[0.6875rem] text-stone-500"><LeafIcon />{kind}</span>}
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {sun && <span className={chip}><span className="text-amber-600"><SunIcon className="h-3 w-3" /></span>{label(sun)}</span>}
+          {kind && <span className={chip}><LeafIcon />{kind}</span>}
+          <span className={`${chip} ${list ? "" : "hidden @[15rem]:inline-flex"}`}><HomeIcon className="h-3 w-3" />{spaceTag(tree.canopySpreadM)}</span>
+          {list && <span className={chip}>{tree.matureHeightM} m tall</span>}
         </div>
-        <div className="mt-1 flex flex-col items-start gap-1 text-[0.6875rem] text-stone-600">
-          {sun && <span className="inline-flex items-center gap-1 text-stone-600"><span className="text-amber-600"><SunIcon /></span>{label(sun)}</span>}
-          <span className="inline-flex items-center gap-1 rounded bg-[#eef0e6] px-1.5 py-0.5 text-forest-800"><HomeIcon className="h-3 w-3" />{spaceTag(tree.canopySpreadM)}</span>
-          {list && <span className="inline-flex items-center rounded bg-stone-100 px-1.5 py-0.5">{tree.matureHeightM} m tall</span>}
-        </div>
+        <p className="mt-2.5 flex flex-wrap items-baseline gap-x-2 font-bold text-forest-900">
+          {cheapest ? (
+            <>
+              {priced.length > 1 && <span className="text-xs font-normal text-stone-500">from</span>}
+              <span className={`text-lg sm:text-xl ${cheapest.price.was ? "text-[#b42318]" : ""}`}>{taka(cheapest.price.now)}</span>
+              {cheapest.price.was && <s className="text-sm font-normal text-stone-400">{taka(cheapest.price.was)}</s>}
+              {buyable && stockLeft <= 5 && <span className="text-xs font-semibold text-[#a15c07]">Only {stockLeft} left</span>}
+            </>
+          ) : <span className="text-sm font-normal text-stone-500">Not on sale yet</span>}
+        </p>
         <div className={`mt-auto flex items-center gap-1.5 pt-3 ${list ? "max-w-sm" : ""}`}>
           {button}
-          <QuickView
-            tree={{ slug: tree.slug, name: tree.name, banglaName: tree.banglaName, description: tree.description, shape: tree.shape, color: tree.color, facts, rating }}
-            photos={slides}
-            products={sizes}
-            badge={top ? { badge: top.badge ?? "SALE", percentOff: top.percentOff, occasion: top.occasion, style: badgeSize(top.badge) } : null}
-            back={back}
-            buttonClass={`${iconBtn} bg-white text-forest-700 ring-stone-200 hover:text-lime-600 hover:ring-lime-500`}
-          >
+          <QuickView tree={quick} photos={slides} products={sizes} badge={badge} back={back} buttonClass={`${iconBtn} border-stone-200 bg-white text-forest-900 hover:border-leaf-600 hover:text-leaf-700`}>
             <EyeIcon />
           </QuickView>
           {compare}

@@ -37,6 +37,7 @@ type Props = {
   variant?: "page" | "widget"; // the widget is the floating chat panel
   onConversation?: (id: string) => void;
   firstName?: string | null;
+  chatKey?: string; // the page's key for this chat, kept in the URL so the chat survives a refresh
 };
 
 const QUICK = [
@@ -108,6 +109,14 @@ export function Chat(p: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const widget = p.variant === "widget";
   const asked = useRef(false);
+  const alive = useRef(true);
+  useEffect(() => () => { alive.current = false; }, []);
+
+  // Starts a fresh chat. A new key in the URL makes the page mount a clean chat,
+  // even when the address was already /assistant.
+  function newChat() {
+    router.push(`/assistant?k=${Date.now().toString(36)}`);
+  }
 
   // Scroll only the message list, never the page behind it
   useEffect(() => {
@@ -161,18 +170,30 @@ export function Chat(p: Props) {
             body: JSON.stringify({ message, conversationId, treeSlug: p.treeSlug, ownedId: p.ownedId }),
           });
       const data = await res.json();
+      if (!alive.current) return; // the person started a new chat while this one was loading
       if (!res.ok) throw new Error(data.error ?? "The assistant could not answer.");
       setConversationId(data.conversationId);
-      if (!conversationId && !widget) router.refresh(); // shows the new chat in the sidebar
+      if (!conversationId && !widget) {
+        // Put the chat in the address so a refresh or the back button keeps it,
+        // then refresh so it appears (and is highlighted) in the sidebar
+        const url = new URL(window.location.href);
+        url.searchParams.set("c", data.conversationId);
+        if (p.chatKey) url.searchParams.set("k", p.chatKey);
+        url.searchParams.delete("q");
+        window.history.replaceState(null, "", url.pathname + url.search);
+        router.refresh();
+      }
       p.onConversation?.(data.conversationId);
       setNotice(data.mode === "offline" ? data.notice : null);
       setMessages((m) => [...m, { role: "assistant", content: data.reply, refused: data.refused, sources: data.sources ?? [] }]);
     } catch (e) {
+      if (!alive.current) return;
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setMessages((m) => m.slice(0, -1));
       setInput(message);
       setPhoto(image);
     } finally {
+      if (!alive.current) return;
       setBusy(false);
       setPhotoBusy(false);
     }
@@ -202,7 +223,7 @@ export function Chat(p: Props) {
           <p className="font-display text-base text-forest-900">Gaach Tree Advisor <span className="ml-1.5 inline-flex items-center gap-1 align-middle font-sans text-[0.6875rem] font-medium text-forest-700"><span className="h-1.5 w-1.5 rounded-full bg-forest-700" />Online</span></p>
           <p className="truncate text-xs text-stone-500">{p.treeName ? `Talking about ${p.treeName}. ` : ""}Uses Gaach&apos;s catalogue, care guides and your own sites and trees. It cannot place orders.</p>
         </div>
-        {messages.length > 0 && <Link href="/assistant" className="hidden rounded-full border border-stone-200 px-3 py-1.5 text-xs font-medium text-forest-700 hover:bg-mint-50 sm:block">+ New chat</Link>}
+        {(messages.length > 0 || busy) && <button type="button" onClick={newChat} className="shrink-0 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-forest-700 hover:bg-mint-50">+ New chat</button>}
       </div>
       {notice && <p className="bg-amber-50 px-4 py-2 text-xs text-amber-900">{notice}</p>}
       <div ref={listRef} className={`relative z-10 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain ${widget ? "p-4" : "p-4 sm:px-6"}`} aria-live="polite">

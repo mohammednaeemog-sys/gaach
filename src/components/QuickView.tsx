@@ -15,7 +15,7 @@ export type QuickProduct = { id: string; sizeLabel: string; ageMonths: number; p
 type Badge = { badge: string; percentOff: number; occasion: string | null; style?: React.CSSProperties } | null;
 
 // Eye button that opens a side panel with the tree's photos, price, sizes and Add to cart
-export function QuickView({ tree, photos, products, badge, back, buttonClass, children }: { tree: QuickTree; photos: (string | null)[]; products: QuickProduct[]; badge: Badge; back: string; buttonClass: string; children: React.ReactNode }) {
+export function QuickView({ tree, photos, products, badge, back, buttonClass, label, children }: { tree: QuickTree; photos: (string | null)[]; products: QuickProduct[]; badge: Badge; back: string; buttonClass: string; label?: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!open) return;
@@ -31,7 +31,7 @@ export function QuickView({ tree, photos, products, badge, back, buttonClass, ch
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} aria-label={`Quick view of ${tree.name}`} title="Quick view" className={buttonClass}>{children}</button>
+      <button type="button" onClick={() => setOpen(true)} aria-label={label ?? `Quick view of ${tree.name}`} title={label ? undefined : "Quick view"} className={buttonClass}>{children}</button>
       {open && createPortal(
         <div className="fixed inset-0 z-[80] flex justify-end" role="dialog" aria-modal="true" aria-label={`${tree.name} quick view`}>
           <button type="button" aria-label="Close quick view" className="qv-back absolute inset-0 cursor-default bg-[#1c1d1a]/45 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
@@ -39,9 +39,7 @@ export function QuickView({ tree, photos, products, badge, back, buttonClass, ch
             <div className="relative shrink-0">
               <PhotoSlider photos={photos} name={tree.name} shape={tree.shape} color={tree.color} big className="aspect-[5/4] sm:aspect-[4/3.4]" />
               {badge && (
-                <span className="sale-badge absolute left-5 top-5 z-10 !h-14 !w-14" style={badge.style} title={badge.occasion ?? "On sale"}>
-                  <span>{badge.badge}<br /><span className="text-[0.75rem]">-{badge.percentOff}%</span></span>
-                </span>
+                <span className="sale-badge absolute left-5 top-5 z-10 !text-sm" title={badge.occasion ?? "On sale"}>{badge.badge} −{badge.percentOff}%</span>
               )}
               <button type="button" onClick={() => setOpen(false)} autoFocus className="absolute right-4 top-4 z-10 flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 text-sm font-medium text-[#1c1d1a] shadow hover:bg-white">
                 Close

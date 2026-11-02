@@ -8,6 +8,7 @@ import { readCompare } from "@/modules/catalogue/compare-list";
 import { CompareButton } from "@/components/CompareButton";
 import { BuyBox } from "@/components/BuyBox";
 import { Gallery } from "@/components/Gallery";
+import { CarePlanTabs } from "@/components/CarePlanTabs";
 import { TreeCard, spaceTag } from "@/components/TreeCard";
 import { Reveal } from "@/components/Reveal";
 import { Icon } from "@/components/icons";
@@ -72,42 +73,85 @@ export default async function TreePage({ params, searchParams }: { params: Promi
   ];
   if (!images.length) images.push({ key: "tree", src: tree.imageUrl, label: tree.name });
 
+  const kindWord: Record<string, [string, string]> = { FRUIT: ["Fruit trees", "FRUIT"], SHADE: ["Shade trees", "SHADE"], ORNAMENTAL: ["Flowering trees", "ORNAMENTAL"], PRIVACY: ["Hedges and screens", "PRIVACY"], TIMBER: ["Timber trees", "TIMBER"] };
+  const crumb = kindWord[firstPurpose];
+  const buy = tree.products.map((p) => { const pr = priceFor(p, tree.id, promos); return { id: p.id, sizeLabel: p.sizeLabel, ageMonths: p.ageMonths, priceBdt: pr.now, wasBdt: pr.was, percentOff: pr.percentOff, occasion: pr.occasion, stock: p.stock }; });
+  const sale = buy.find((p) => p.wasBdt);
+  const plainName = tree.name.split(" (")[0];
+
   return (
-    <div className="space-y-14">
+    <div className="space-y-16">
       <div>
-        <nav className="mb-5 text-sm text-stone-500"><Link href="/trees" className="hover:text-lime-600">Browse</Link> <span aria-hidden>/</span> {tree.name}</nav>
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:gap-12">
-          {/* Details and buying */}
-          <div className="anim-rise order-2 lg:order-1">
-            <h1 className="font-display text-4xl font-semibold uppercase tracking-tight text-forest-900 sm:text-[2.6rem]">{tree.name}</h1>
-            <p className="mt-1 text-stone-500">{tree.banglaName} · <i>{tree.scientificName}</i></p>
-            <a href="#reviews" className="mt-2 inline-flex items-center gap-2 text-sm text-stone-600 hover:text-forest-900">
-              {rv.count ? <><Stars value={rv.avg} /> <b className="text-forest-900">{rv.avg.toFixed(1)}</b> ({rv.count} review{rv.count > 1 ? "s" : ""})</> : <><Stars value={0} /> No reviews yet</>}
-            </a>
-            <div className="mt-5">
-              {cart === "missing" && <p className="field-error mb-2">That size is no longer available.</p>}
-              {tree.products.length ? (
-                <BuyBox products={tree.products.map((p) => { const pr = priceFor(p, tree.id, promos); return { id: p.id, sizeLabel: p.sizeLabel, ageMonths: p.ageMonths, priceBdt: pr.now, wasBdt: pr.was, percentOff: pr.percentOff, occasion: pr.occasion, stock: p.stock }; })} back={`/trees/${tree.slug}`} />
-              ) : (
-                <p className="rounded-2xl bg-white p-4 text-sm text-stone-600 ring-1 ring-stone-100">This tree is not on sale right now. You can still read about it and ask the Tree Advisor.</p>
-              )}
-            </div>
-            <h2 className="mt-8 text-xs font-semibold uppercase tracking-wider text-forest-900">About this tree</h2>
-            <p className="mt-2 text-sm leading-relaxed text-stone-600">{tree.description}</p>
-            {tree.cautions && tree.cautions !== "None significant." && (
-              <p className="mt-3 flex gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><Icon.warn className="h-5 w-5 shrink-0" /><span><b>Caution:</b> {tree.cautions}</span></p>
-            )}
-            <div className="mt-5 flex flex-wrap gap-2">
-              <CompareButton slug={tree.slug} active={compare.includes(tree.slug)} />
-              {compare.length >= 2 && <Link href="/compare" className="btn-ghost">Open comparison ({compare.length})</Link>}
-              <Link href={`/recommend`} className="btn-ghost">Will it suit my place?</Link>
+        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-stone-500">
+          <Link href="/trees" className="underline-offset-2 hover:text-leaf-700 hover:underline">Shop</Link> <span aria-hidden>/</span>{" "}
+          {crumb && <><Link href={`/trees?purpose=${crumb[1]}`} className="underline-offset-2 hover:text-leaf-700 hover:underline">{crumb[0]}</Link> <span aria-hidden>/</span>{" "}</>}
+          <span className="text-forest-900">{tree.name}</span>
+        </nav>
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
+          {/* Pictures, then the quick care notes */}
+          <div className="anim-rise min-w-0 space-y-5">
+            <Gallery images={images} shape={tree.shape} color={tree.color} name={tree.name} badge={sale ? `${sale.occasion ?? "Sale"} −${sale.percentOff}%` : null} />
+            <div className="hidden divide-y divide-stone-100 rounded-2xl bg-white px-4 ring-1 ring-stone-100 lg:block">
+              {care.map((c, i) => (
+                <details key={c.title} className="care-item group py-1" open={i === 0}>
+                  <summary className="flex cursor-pointer list-none items-center gap-3 py-2.5 text-sm font-medium text-forest-900">
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-mint-50 text-forest-700">{c.icon}</span>
+                    <span className="flex-1">{c.title}</span>
+                    <span className="care-chevron text-stone-400 transition" aria-hidden>⌄</span>
+                  </summary>
+                  <p className="care-body pb-3 pl-10 text-sm leading-relaxed text-stone-600">{c.body}</p>
+                </details>
+              ))}
             </div>
           </div>
 
-          {/* Pictures and care */}
-          <div className="anim-rise order-1 space-y-5 lg:order-2" style={{ animationDelay: "120ms" }}>
-            <Gallery images={images} shape={tree.shape} color={tree.color} name={tree.name} />
-            <div className="divide-y divide-stone-100 rounded-2xl bg-white px-4 shadow-[0_0.625rem_1.875rem_-1.25rem_rgb(13_43_35/0.4)] ring-1 ring-stone-100">
+          {/* Name, price and buying */}
+          <div className="anim-rise min-w-0 space-y-6" style={{ animationDelay: "120ms" }}>
+            <div>
+              <h1 className="font-display text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-forest-900 sm:text-[2.9rem]">{tree.name}</h1>
+              <p className="mt-2 text-[0.9375rem] text-stone-500">{tree.banglaName} · <i>{tree.scientificName}</i></p>
+              <p className="mt-1.5 text-sm text-stone-500">
+                {rv.count
+                  ? <a href="#reviews" className="inline-flex items-center gap-2 hover:text-forest-900"><Stars value={rv.avg} /> <b className="text-forest-900">{rv.avg.toFixed(1)}</b> ({rv.count} review{rv.count > 1 ? "s" : ""})</a>
+                  : <>No reviews yet · <a href="#reviews" className="text-leaf-700 underline underline-offset-2 hover:text-leaf-800">Be the first to review</a></>}
+              </p>
+            </div>
+
+            {cart === "missing" && <p className="field-error">That size is no longer available.</p>}
+            {buy.length ? (
+              <BuyBox products={buy} back={`/trees/${tree.slug}`} />
+            ) : (
+              <p className="rounded-2xl bg-white p-4 text-sm text-stone-600 ring-1 ring-stone-100">This tree is not on sale right now. You can still read about it and ask the Tree Advisor.</p>
+            )}
+
+            <dl className="space-y-2.5 rounded-2xl bg-white p-5 text-sm ring-1 ring-stone-100">
+              <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Delivery</dt><dd className="text-stone-600">All 64 districts. The fee for your area is shown at checkout.</dd></div>
+              <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Payment</dt><dd className="text-stone-600">Cash on delivery</dd></div>
+              <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Returns</dt><dd className="text-stone-600"><Link href="/refund-policy" className="text-leaf-700 underline underline-offset-2">Refund and return policy</Link></dd></div>
+            </dl>
+
+            <Link href="/recommend" className="group flex items-center justify-between gap-4 rounded-2xl bg-forest-900 px-5 py-4 text-[#f6f2ea] transition hover:bg-forest-800">
+              <span>
+                <b className="block text-[0.9375rem]">Will {/^[aeiou]/i.test(plainName) ? "an" : "a"} {plainName.toLowerCase()} grow at my place?</b>
+                <span className="block text-[0.8125rem] text-mint-200">Check your district, sunlight and space in 30 seconds</span>
+              </span>
+              <span className="text-xl transition group-hover:translate-x-1" aria-hidden>→</span>
+            </Link>
+
+            <div>
+              <h2 className="text-sm font-semibold text-forest-900">About this tree</h2>
+              <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-stone-600">{tree.description}</p>
+              {tree.cautions && tree.cautions !== "None significant." && (
+                <p className="mt-3 flex gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><Icon.warn className="h-5 w-5 shrink-0" /><span><b>Caution:</b> {tree.cautions}</span></p>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <CompareButton slug={tree.slug} active={compare.includes(tree.slug)} />
+                {compare.length >= 2 && <Link href="/compare" className="btn-ghost">Open comparison ({compare.length})</Link>}
+              </div>
+            </div>
+
+            {/* Care notes on phones and tablets, under the buying area */}
+            <div className="divide-y divide-stone-100 rounded-2xl bg-white px-4 ring-1 ring-stone-100 lg:hidden">
               {care.map((c, i) => (
                 <details key={c.title} className="care-item group py-1" open={i === 0}>
                   <summary className="flex cursor-pointer list-none items-center gap-3 py-2.5 text-sm font-medium text-forest-900">
@@ -139,19 +183,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
         <Reveal as="section">
           <h2 className="font-display text-2xl font-semibold text-forest-900">Care plan</h2>
           <p className="mt-1 text-sm text-stone-600">After you buy, this plan appears under My trees and shows which stage your tree is in.</p>
-          <ol className="care-timeline mt-5 grid gap-4 md:grid-cols-4">
-            {stages.map((s, i) => (
-              <li key={s!.stage} className="relative rounded-2xl bg-white p-4 ring-1 ring-stone-100">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-lime-500 text-sm font-bold text-white">{i + 1}</span>
-                <p className="mt-2 font-semibold text-forest-900">{label(s!.stage)}</p>
-                <dl className="mt-2 space-y-1.5 text-xs text-stone-600">
-                  {(["planting", "watering", "fertilizing", "protection"] as const).filter((k) => s![k]).map((k) => (
-                    <div key={k}><dt className="inline font-semibold capitalize text-stone-700">{k}: </dt><dd className="inline">{s![k]}</dd></div>
-                  ))}
-                </dl>
-              </li>
-            ))}
-          </ol>
+          <CarePlanTabs stages={stages.map((x) => ({ stage: x!.stage, title: label(x!.stage), planting: x!.planting, watering: x!.watering, fertilizing: x!.fertilizing, protection: x!.protection }))} />
         </Reveal>
       )}
 
@@ -159,7 +191,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
         <h2 className="font-display text-2xl font-semibold text-forest-900">Ratings and reviews</h2>
         <div className="mt-5 grid gap-6 lg:grid-cols-[18.75rem_1fr]">
           <div className="space-y-5">
-            <div className="rounded-3xl bg-white p-5 ring-1 ring-stone-100">
+            {rv.count > 0 && <div className="rounded-3xl bg-white p-5 ring-1 ring-stone-100">
               <p className="font-display text-5xl text-forest-900">{rv.count ? rv.avg.toFixed(1) : "–"}<span className="text-lg text-stone-400"> / 5</span></p>
               <Stars value={rv.avg} size="h-5 w-5" className="mt-1" />
               <p className="mt-1 text-sm text-stone-500">{rv.count ? `Based on ${rv.count} review${rv.count > 1 ? "s" : ""}` : "Be the first to review this tree"}</p>
@@ -172,7 +204,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
                   </li>
                 ))}
               </ul>
-            </div>
+            </div>}
             <div className="rounded-3xl bg-white p-5 ring-1 ring-stone-100">
               <p className="mb-3 font-semibold text-forest-900">{mine ? "Your review" : "Write a review"}</p>
               {user ? (
@@ -193,7 +225,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
           </div>
           <div>
             {rv.reviews.length === 0 ? (
-              <p className="rounded-3xl border border-dashed border-stone-200 p-8 text-center text-sm text-stone-500">No reviews yet. Bought this tree? Tell others how it is doing.</p>
+              <p className="rounded-3xl border border-dashed border-stone-200 p-8 text-center text-sm text-stone-500">No reviews yet. Bought this tree? Be the first to tell others how it is doing.</p>
             ) : (
               <ul className="space-y-3">
                 {rv.reviews.map((r) => (
@@ -216,10 +248,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
 
       {related.length > 0 && (
         <section>
-          <div className="relative">
-            <p className="font-display pointer-events-none absolute -top-6 left-0 select-none text-5xl font-semibold uppercase text-stone-200/70 sm:text-7xl" aria-hidden>Related trees</p>
-            <h2 className="font-display relative text-2xl font-semibold uppercase text-forest-900 sm:text-3xl">Related trees</h2>
-          </div>
+          <h2 className="font-display text-2xl font-semibold text-forest-900 sm:text-3xl">You may also like</h2>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {related.map((t, i) => (
               <Reveal key={t.id} delay={i * 70} className="h-full">

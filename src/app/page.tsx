@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { CardPhotos } from "@/components/CardPhotos";
-import { EyeIcon, badgeSize, quickData } from "@/components/TreeCard";
-import { QuickView } from "@/components/QuickView";
+import { TreeCard } from "@/components/TreeCard";
 import { SaleHero } from "@/components/festival/SaleHero";
-import { livePromotions, treePrices } from "@/modules/shop/pricing";
+import { livePromotions } from "@/modules/shop/pricing";
 import { db } from "@/lib/db";
 import { Reveal } from "@/components/Reveal";
 import { HeroSlider } from "@/components/HeroSlider";
 import { Icon } from "@/components/icons";
-import { addToCart } from "@/modules/shop/cart";
-import { label, splitList } from "@/lib/constants";
-import { taka } from "@/lib/format";
 
 
 // The five picture tiles under the hero
@@ -21,18 +16,17 @@ const STRIP = [
   { title: "Hedges & Screens", text: "Privacy and green boundaries", img: "/categories/hedges.jpg", href: "/trees?purpose=PRIVACY" },
   { title: "Rooftop & Balcony", text: "Compact trees for smaller spaces", img: "/categories/rooftop.jpg", href: "/trees?size=small" },
 ];
-const TYPE_WORD: Record<string, string> = { FRUIT: "Fruit tree", SHADE: "Shade tree", ORNAMENTAL: "Flowering tree", PRIVACY: "Hedge/screen", TIMBER: "Timber tree" };
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
   const { denied } = await searchParams;
   // The film ships in public/film. Hosts like Vercel do not keep public/ on the server disk, so no file check here.
   const filmReady = true;
-  const [all, promos] = await Promise.all([
+  const [all] = await Promise.all([
     db.tree.findMany({ where: { published: true }, include: { products: { where: { active: true } }, photos: { orderBy: { sort: "asc" }, select: { url: true } } }, orderBy: { name: "asc" } }),
     livePromotions(),
   ]);
   const bySlug = (s: string) => all.find((t) => t.slug === s);
-  const featured = ["mango-himsagar", "neem", "krishnachura", "guava", "bamboo-borak"]
+  const featured = ["mango-himsagar", "neem", "krishnachura", "guava"]
     .map(bySlug)
     .filter((t): t is (typeof all)[number] => !!t);
   return (
@@ -72,56 +66,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           <h2 className="font-display mt-3 text-4xl font-medium leading-[1.05] text-[#1c1d1a] sm:text-5xl">Popular trees in Bangladesh</h2>
           <Link href="/trees" className="group mt-6 inline-flex items-center gap-3 border-b border-[#1c1d1a] pb-1 text-[0.9375rem] text-[#1c1d1a]">View all trees <span className="transition group-hover:translate-x-1" aria-hidden>→</span></Link>
         </Reveal>
-        <div className="feat-row -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
-          {featured.map((t, n) => {
-            const { priced, cheapest, top } = treePrices(t.products, t.id, promos);
-            const buyable = [...priced].sort((x, y) => x.price.now - y.price.now).find((x) => x.product.stock > 0)?.product;
-            const q = quickData(t, priced);
-            const type = splitList(t.purposes)[0];
-            return (
-              <Reveal key={t.id} delay={n * 90} className="w-[72%] shrink-0 snap-start sm:w-auto">
-                <article className="feat-card group flex h-full flex-col border border-stone-200/80 bg-white">
-                  <div className="relative">
-                    <CardPhotos photos={q.slides} href={`/trees/${t.slug}`} name={t.name} shape={t.shape} color={t.color} className="aspect-[4/3] !bg-[#eee8dc] !bg-none" />
-                    {top && <span className="sale-badge absolute left-2 top-2 z-10" title={top.occasion ?? "On sale"} style={badgeSize(top.badge)}><span>{top.badge}<br /><span className="text-[0.6875rem]">-{top.percentOff}%</span></span></span>}
-                  </div>
-                  <div className="flex flex-1 flex-col p-4">
-                    <h3 className="text-[0.9375rem] text-[#1c1d1a]"><Link href={`/trees/${t.slug}`} className="hover:text-[#4a7339]">{t.name.split(" (")[0]}</Link></h3>
-                    <p className="text-sm text-stone-500">{t.banglaName.split(" (")[0]}</p>
-                    <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500">
-                      <span className="inline-flex items-center gap-1"><Icon.sun className="h-3.5 w-3.5" /> {label(splitList(t.sunlight)[0])}</span>
-                      {type && <span className="inline-flex items-center gap-1"><Icon.leaf className="h-3.5 w-3.5" /> {TYPE_WORD[type] ?? label(type)}</span>}
-                    </p>
-                    <p className="mt-3 flex flex-wrap items-baseline gap-x-2 font-semibold text-[#1c1d1a]">{cheapest && <><span className={cheapest.price.was ? "text-[#c2410c]" : ""}>{taka(cheapest.price.now)}</span>{cheapest.price.was && <s className="text-xs font-normal text-stone-400">{taka(cheapest.price.was)}</s>}</>}</p>
-                    <div className="mt-auto flex gap-1.5 pt-3">
-                      {buyable ? (
-                        <form action={addToCart} className="min-w-0 flex-1">
-                          <input type="hidden" name="productId" value={buyable.id} />
-                          <input type="hidden" name="back" value="/" />
-                          <button className="feat-btn flex w-full items-center justify-center gap-2 whitespace-nowrap bg-[#1c1d1a] px-2 py-2.5 text-sm text-[#f6f2ea] transition hover:bg-[#2f5a3a]" aria-label={`Add ${t.name} to cart`}>
-                            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 4h2.5l2.2 11h10.6L20 8H7" /><circle cx="9" cy="19" r="1.4" /><circle cx="17" cy="19" r="1.4" /></svg>
-                            Add to cart
-                          </button>
-                        </form>
-                      ) : (
-                        <Link href={`/trees/${t.slug}`} className="flex min-w-0 flex-1 items-center justify-center border border-stone-300 px-4 py-2.5 text-sm text-stone-600 hover:bg-[#f6f2ea]">View details</Link>
-                      )}
-                      <QuickView
-                        tree={{ slug: t.slug, name: t.name, banglaName: t.banglaName, description: t.description, shape: t.shape, color: t.color, facts: q.facts }}
-                        photos={q.slides}
-                        products={q.sizes}
-                        badge={top ? { badge: top.badge ?? "SALE", percentOff: top.percentOff, occasion: top.occasion, style: badgeSize(top.badge) } : null}
-                        back="/"
-                        buttonClass="grid w-10 shrink-0 place-items-center border border-stone-300 text-[#1c1d1a] transition hover:bg-[#f6f2ea]"
-                      >
-                        <EyeIcon />
-                      </QuickView>
-                    </div>
-                  </div>
-                </article>
-              </Reveal>
-            );
-          })}
+        <div className="feat-row -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-4">
+          {featured.map((t, n) => (
+            <Reveal key={t.id} delay={n * 90} className="w-[72%] shrink-0 snap-start sm:w-auto">
+              <TreeCard tree={t} back="/" />
+            </Reveal>
+          ))}
         </div>
       </section>
 

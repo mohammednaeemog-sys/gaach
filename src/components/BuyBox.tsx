@@ -8,7 +8,7 @@ type Product = { id: string; sizeLabel: string; ageMonths: number; priceBdt: num
 
 const taka = (n: number) => `৳${n.toLocaleString("en-IN")}`;
 
-// Size picker, quantity and the two buy buttons on a tree page
+// Price, size cards, quantity and the two buy buttons on a tree page and in the quick view
 export function BuyBox({ products, back, onSelect }: { products: Product[]; back: string; onSelect?: (id: string) => void }) {
   const first = products.find((p) => p.stock > 0) ?? products[0];
   const [id, setId] = useState(first?.id);
@@ -17,54 +17,58 @@ export function BuyBox({ products, back, onSelect }: { products: Product[]; back
   if (!p) return null;
   const max = Math.max(1, Math.min(p.stock, 50));
   const out = p.stock === 0;
+  const pick = (x: Product) => { setId(x.id); setQty(1); onSelect?.(x.id); window.dispatchEvent(new CustomEvent("gaach:size", { detail: x.id })); };
 
   return (
-    <div>
-      {p.wasBdt && (
-        <p className="mb-1.5 inline-flex items-center gap-2 rounded-full bg-[#f2994a]/15 px-3 py-1 text-xs font-semibold text-[#b8561a]">
-          <span className="rounded-full bg-[#f2994a] px-2 py-0.5 text-[0.625rem] uppercase tracking-wide text-white">{p.percentOff}% off</span>
-          {p.occasion ?? "On sale"}
-        </p>
-      )}
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <p key={p.id} className="price-pop text-3xl font-bold text-lime-700">{taka(p.priceBdt)}</p>
-        {p.wasBdt && <s className="text-lg text-stone-400">{taka(p.wasBdt)}</s>}
-        <p className="text-sm text-stone-500">{p.sizeLabel} · about {p.ageMonths} months old</p>
+    <div className="space-y-5">
+      <div>
+        {p.wasBdt && (
+          <p className="mb-2 inline-flex items-center gap-2 text-xs font-semibold text-[#912018]">
+            <span className="rounded-full bg-[#b42318] px-2.5 py-0.5 text-white">−{p.percentOff}%</span>
+            {p.occasion ?? "On sale"}
+          </p>
+        )}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <p key={p.id} className={`price-pop text-[2rem] font-bold leading-none ${p.wasBdt ? "text-[#b42318]" : "text-forest-900"}`}>{taka(p.priceBdt)}</p>
+          {p.wasBdt && <s className="text-lg text-stone-400">{taka(p.wasBdt)}</s>}
+          <p className={`text-sm font-semibold ${out ? "text-red-700" : p.stock <= 5 ? "text-[#a15c07]" : "text-leaf-700"}`}>{out ? "Out of stock" : p.stock <= 5 ? `Only ${p.stock} left` : "In stock"}</p>
+        </div>
+        {products.length === 1 && <p className="mt-1.5 text-sm text-stone-500">{p.sizeLabel} · about {p.ageMonths} months old</p>}
       </div>
-      <p className={`mt-1 text-xs font-medium ${out ? "text-red-700" : p.stock <= 5 ? "text-amber-700" : "text-lime-700"}`}>{out ? "Out of stock" : p.stock <= 5 ? `Only ${p.stock} left` : "In stock"}</p>
 
       {products.length > 1 && (
-        <fieldset className="mt-5">
-          <legend className="text-xs font-semibold uppercase tracking-wider text-forest-900">Select size</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {products.map((x) => (
-              <button
-                key={x.id}
-                type="button"
-                onClick={() => { setId(x.id); setQty(1); onSelect?.(x.id); window.dispatchEvent(new CustomEvent("gaach:size", { detail: x.id })); }}
-                aria-pressed={x.id === p.id}
-                className={`rounded-full px-4 py-1.5 text-sm transition ${x.id === p.id ? "bg-forest-900 text-white shadow" : "bg-white text-stone-700 ring-1 ring-stone-200 hover:ring-lime-500"} ${x.stock === 0 ? "line-through opacity-60" : ""}`}
-              >
-                {x.sizeLabel}
-              </button>
-            ))}
+        <fieldset>
+          <legend className="mb-2 text-sm font-semibold text-forest-900">Choose a size</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {products.map((x) => {
+              const on = x.id === p.id;
+              return (
+                <label key={x.id} className={`flex cursor-pointer gap-3 rounded-xl p-3.5 transition ${on ? "bg-leaf-50 ring-2 ring-leaf-700" : "bg-white ring-1 ring-stone-200 hover:ring-leaf-500"} ${x.stock === 0 ? "opacity-60" : ""}`}>
+                  <input type="radio" name="size-pick" checked={on} onChange={() => pick(x)} className="mt-1 accent-[#23632a]" />
+                  <span className="min-w-0">
+                    <b className="block text-sm text-forest-900">{x.sizeLabel}</b>
+                    <span className="block text-[0.8125rem] text-stone-500">About {x.ageMonths} months · {taka(x.priceBdt)}{x.stock === 0 ? " · sold out" : ""}</span>
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </fieldset>
       )}
 
-      <form action={addToCart} className="mt-6 space-y-3">
+      <form action={addToCart} className="space-y-2.5">
         <input type="hidden" name="productId" value={p.id} />
         <input type="hidden" name="back" value={back} />
         <input type="hidden" name="quantity" value={qty} />
-        <div className="flex items-center gap-3">
-          <button disabled={out} className="flex-1 rounded-full border border-forest-900/80 bg-white px-6 py-3 text-sm font-semibold uppercase tracking-wide text-forest-900 transition hover:bg-mint-50 disabled:opacity-50">Add to cart</button>
-          <div className="flex items-center gap-1 rounded-full bg-white p-1 ring-1 ring-stone-200" aria-label="Quantity">
-            <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-8 w-8 place-items-center rounded-full bg-stone-100 text-lg leading-none hover:bg-mint-100" aria-label="One less">−</button>
-            <span className="w-8 text-center text-sm font-semibold tabular-nums" aria-live="polite">{String(qty).padStart(2, "0")}</span>
-            <button type="button" onClick={() => setQty((q) => Math.min(max, q + 1))} className="grid h-8 w-8 place-items-center rounded-full bg-stone-100 text-lg leading-none hover:bg-mint-100" aria-label="One more">+</button>
+        <div className="flex gap-2.5">
+          <div className="flex shrink-0 items-center rounded-xl bg-white ring-1 ring-stone-200" aria-label="Quantity">
+            <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-12 w-11 place-items-center text-lg leading-none hover:text-leaf-700" aria-label="One less">−</button>
+            <span className="w-7 text-center text-sm font-semibold tabular-nums" aria-live="polite">{qty}</span>
+            <button type="button" onClick={() => setQty((q) => Math.min(max, q + 1))} className="grid h-12 w-11 place-items-center text-lg leading-none hover:text-leaf-700" aria-label="One more">+</button>
           </div>
+          <button disabled={out} className="h-12 flex-1 rounded-xl bg-leaf-700 px-6 text-[0.9375rem] font-semibold text-white transition hover:bg-leaf-800 active:scale-[0.98] disabled:opacity-50">Add to cart</button>
         </div>
-        <button formAction={buyNow} disabled={out} className="btn-shine w-full rounded-full bg-forest-900 px-6 py-3.5 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-forest-800 disabled:opacity-50">Buy now</button>
+        <button formAction={buyNow} disabled={out} className="h-12 w-full rounded-xl border border-leaf-700 bg-white px-6 text-[0.9375rem] font-semibold text-leaf-700 transition hover:bg-leaf-50 disabled:opacity-50">Buy now</button>
       </form>
     </div>
   );

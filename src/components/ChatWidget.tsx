@@ -79,7 +79,7 @@ export function ChatWidget({ loggedIn, firstName, offline }: { loggedIn: boolean
             <span className="block truncate text-[0.6875rem] text-mint-200/75">{treeSlug ? `Ask me about the ${treeName}` : offline ? "Answers from Gaach's tree and care data" : "Online · answers in a few seconds"}</span>
           </span>
           {loggedIn && (
-            <button type="button" onClick={() => { setConversationId(null); setChatKey((k) => k + 1); }} className="rounded-full px-2 py-1 text-[0.6875rem] text-mint-100 hover:bg-white/10" title="Start a new chat">New</button>
+            <button type="button" onClick={() => { setConversationId(null); setChatKey((k) => k + 1); }} className="rounded-full px-2 py-1 text-[0.6875rem] text-mint-100 hover:bg-white/10" title="Start a new chat">+ New chat</button>
           )}
           <Link href={conversationId ? `/assistant?c=${conversationId}` : "/assistant"} onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10" title="Open the full chat page" aria-label="Open the full chat page">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 4h6v6M20 4l-8 8M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>

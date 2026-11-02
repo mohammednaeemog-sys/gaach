@@ -5,6 +5,7 @@ import { aiConfigured } from "@/modules/assistant/ai";
 import { Chat } from "@/components/Chat";
 import { dateText } from "@/lib/format";
 import { Icon } from "@/components/icons";
+import { NewChatButton } from "@/components/NewChatButton";
 
 export const metadata = { title: "Tree Advisor" };
 
@@ -17,7 +18,7 @@ function parseSources(json: string) {
   }
 }
 
-type SP = { tree?: string; owned?: string; q?: string; c?: string };
+type SP = { tree?: string; owned?: string; q?: string; c?: string; k?: string };
 
 export default async function AssistantPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
@@ -32,6 +33,9 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
     ? await db.tree.findFirst({ where: { slug: sp.tree, published: true } })
     : treeId ? await db.tree.findUnique({ where: { id: treeId } }) : null;
 
+  // Each chat on this page has its own key. "New chat" makes a new one, and the
+  // key stays in the address after the first answer so the chat is not remounted.
+  const chatKey = sp.k ?? convo?.id ?? ([sp.tree, sp.owned, sp.q].filter(Boolean).join("-") || "new");
   const refusal = "Sorry, I can only assist";
   const suggestions = tree
     ? [`How do I plant a ${tree.name.split(" (")[0].toLowerCase()}?`, `How often should I water it?`, `What fertilizer does it need?`, `Is it in stock and how much is it?`]
@@ -47,7 +51,7 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
             <img src="/brand/gaach-badge.svg" alt="" className="h-12 w-12" />
             <span className="leading-tight"><span className="font-display block text-xl font-semibold tracking-wide text-forest-900">GAACH</span><span className="block text-[0.625rem] font-medium uppercase tracking-[0.14em] text-stone-600">Trees for Bangladesh</span></span>
           </Link>
-          <Link href="/assistant" className="advisor-new"><Icon.plus className="h-4 w-4" /> New chat</Link>
+          <NewChatButton className="advisor-new"><Icon.plus className="h-4 w-4" /> New chat</NewChatButton>
           <div className="min-h-0 flex-1">
             <p className="px-2 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-stone-500">Your chats</p>
             {conversations.length === 0 ? (
@@ -80,7 +84,8 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
         </aside>
         <div className="order-1 min-w-0 lg:order-2">
           <Chat
-            key={convo?.id ?? `${sp.tree ?? ""}-${sp.owned ?? ""}-${sp.q ?? ""}`}
+            key={chatKey}
+            chatKey={chatKey}
             initialMessages={(convo?.messages ?? []).map((m) => ({ role: m.role as "user" | "assistant", content: m.content, refused: m.role === "assistant" && m.content.startsWith(refusal), sources: parseSources(m.sources) }))}
             conversationId={convo?.id ?? null}
             treeSlug={tree?.slug ?? null}

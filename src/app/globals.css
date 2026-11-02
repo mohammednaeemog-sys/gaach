@@ -802,24 +802,31 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
 .foot-leaf-l { animation: leaves-sway 11s ease-in-out infinite alternate; transform-origin: 0 0; }
 @media (prefers-reduced-motion: reduce) { .journey-leaf, .foot-leaf-l { animation: none; } .journey-num { opacity: 1; scale: 1; animation: none !important; } .journey-line { transform: none; animation: none !important; } .journey-rule { transform: none; } }
 
-/* Photo slider arrow tabs (always visible) and sale badge */
+/* Photo slider: round arrows (shown on hover where there is a mouse), corner tag, sale pill */
 .slide-arrow {
   position: absolute; top: 50%; z-index: 10; display: grid; place-items: center;
-  width: 1.9rem; height: 2.75rem; margin-top: -1.375rem;
-  background: rgb(255 255 255 / 0.94); color: #1c1d1a; box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
-  transition: background .2s, width .2s, color .2s;
+  width: 2.25rem; height: 2.25rem; margin-top: -1.125rem; border-radius: 9999px;
+  background: rgb(255 255 255 / 0.94); color: #1c1d1a; box-shadow: 0 2px 10px rgb(0 0 0 / 0.14);
+  transition: background .2s, opacity .25s, transform .2s;
 }
-.slide-arrow:hover { background: #fff; width: 2.2rem; color: #183d27; }
-.slide-arrow:active { background: #eef0e6; }
-.slide-arrow:not(.slide-arrow-big) { top: 58%; width: 1.6rem; height: 2.3rem; margin-top: -1.15rem; }
-.slide-arrow:not(.slide-arrow-big):hover { width: 1.85rem; }
-.slide-arrow-big { width: 2.4rem; height: 3.2rem; margin-top: -1.6rem; }
-.slide-arrow-big:hover { width: 2.7rem; }
+.slide-arrow:hover { background: #fff; color: #23632a; transform: scale(1.06); }
+.slide-arrow:active { background: #eef0e6; transform: scale(.94); }
+.slide-arrow-big { width: 2.75rem; height: 2.75rem; margin-top: -1.375rem; }
+@media (hover: hover) {
+  .slider .slide-arrow:not(.slide-arrow-big) { opacity: 0; }
+  .slider:hover .slide-arrow, .tree-card:hover .slide-arrow, .slider .slide-arrow:focus-visible { opacity: 1; }
+}
+.slide-tag {
+  position: absolute; left: .75rem; bottom: .75rem; max-width: calc(100% - 3.6rem);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border-radius: 9999px; background: rgb(255 255 255 / 0.93); padding: .2rem .6rem;
+  font-size: .6875rem; font-weight: 500; color: #1c1d1a; box-shadow: 0 1px 4px rgb(0 0 0 / 0.08);
+}
+.slide-tag-big { left: 1.25rem; bottom: 1.1rem; font-size: .8125rem; padding: .3rem .8rem; }
 .sale-badge {
-  display: grid; place-items: center; width: 3.1rem; height: 3.1rem; border-radius: 9999px;
-  background: #f2994a; color: #fff; font-weight: 800; font-size: 0.625rem; line-height: 1.05;
-  letter-spacing: .04em; text-align: center; text-transform: uppercase; box-shadow: 0 4px 12px rgb(242 153 74 / 0.45);
-  padding: 0.25rem;
+  max-width: calc(100% - 1.5rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border-radius: 9999px; background: #b42318; color: #fff; padding: .25rem .65rem;
+  font-size: .6875rem; font-weight: 700; letter-spacing: .02em; box-shadow: 0 4px 12px rgb(180 35 24 / 0.3);
 }
 
 /* Occasion sale banner */
@@ -838,9 +845,8 @@ dl > div:nth-child(3) .stat-icon { animation-delay: 1.4s; }
 @keyframes sale-in { from { opacity: 0; transform: translateY(0.6rem); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 .sale-pulse { animation: sale-pulse 2.2s ease-in-out infinite; }
 @keyframes sale-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0.45); } 50% { box-shadow: 0 0 0 0.4rem rgb(255 255 255 / 0); } }
-.sale-badge { animation: sale-pop .5s cubic-bezier(.3,1.6,.5,1) both, sale-wiggle 4s ease-in-out 1s infinite; }
-@keyframes sale-pop { from { transform: scale(0) rotate(-30deg); } to { transform: none; } }
-@keyframes sale-wiggle { 0%, 88%, 100% { transform: rotate(0); } 92% { transform: rotate(-10deg) scale(1.06); } 96% { transform: rotate(8deg) scale(1.06); } }
+.sale-badge { animation: sale-pop .45s cubic-bezier(.3,1.5,.5,1) both; }
+@keyframes sale-pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .sale-banner, .sale-float, .sale-shine, .sale-in, .sale-pulse, .sale-badge { animation: none !important; }
   .sale-float, .sale-shine { display: none; }
