@@ -95,25 +95,29 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
     </form>
   );
 
-  // One size: add it straight away. Several sizes: open the quick view to pick one.
+  // Every card says "Add to cart". One size: it goes straight in the cart.
+  // Several sizes: the quick view opens so the shopper picks one first.
+  const addLabel = (
+    <>
+      <span className="hidden @[15rem]:flex"><CartIcon /></span>
+      <span className="whitespace-nowrap">Add to cart</span>
+    </>
+  );
   const button = !buyable ? (
     <Link href={href} className="flex h-11 min-w-0 flex-1 items-center justify-center rounded-[0.625rem] border border-stone-200 px-3 text-sm font-medium text-stone-600 hover:bg-mint-50">
       {cheapest ? "Out of stock" : "View details"}
     </Link>
   ) : priced.filter((x) => x.product.stock > 0).length > 1 ? (
     <div className="min-w-0 flex-1">
-      <QuickView tree={quick} photos={slides} products={sizes} badge={badge} back={back} buttonClass={mainBtn} label={`Choose a size of ${tree.name}`}>
-        <span className="whitespace-nowrap"><span className="@[13rem]:hidden">Sizes</span><span className="hidden @[13rem]:inline">Choose size</span></span>
+      <QuickView tree={quick} photos={slides} products={sizes} badge={badge} back={back} buttonClass={mainBtn} label={`Add ${tree.name} to cart (choose a size)`}>
+        {addLabel}
       </QuickView>
     </div>
   ) : (
     <form action={addToCart} className="min-w-0 flex-1">
       <input type="hidden" name="productId" value={buyable.id} />
       <input type="hidden" name="back" value={back} />
-      <button aria-label={`Add ${tree.name} to cart`} className={mainBtn}>
-        <span className="hidden @[17rem]:flex"><CartIcon /></span>
-        <span className="whitespace-nowrap"><span className="@[13rem]:hidden">Add</span><span className="hidden @[13rem]:inline">Add to cart</span></span>
-      </button>
+      <button aria-label={`Add ${tree.name} to cart`} className={mainBtn}>{addLabel}</button>
     </form>
   );
 
@@ -124,6 +128,11 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
       <div className={`relative shrink-0 ${list ? "w-36 sm:w-44" : ""}`}>
         <CardPhotos photos={slides} href={href} name={tree.name} shape={tree.shape} color={tree.color} tag={tag} className={list ? "h-full min-h-36 rounded-xl" : "aspect-[4/3]"} />
         {top && <span className="sale-badge absolute left-3 top-3 z-10" title={top.occasion ?? "On sale"}>{top.badge} −{top.percentOff}%</span>}
+        <div className="absolute right-2.5 top-2.5 z-10">
+          <QuickView tree={quick} photos={slides} products={sizes} badge={badge} back={back} buttonClass="grid h-9 w-9 place-items-center rounded-full bg-white/95 text-forest-900 shadow-[0_2px_8px_rgb(0_0_0/0.15)] transition hover:scale-105 hover:text-leaf-700 active:scale-95">
+            <EyeIcon />
+          </QuickView>
+        </div>
       </div>
       <div className={`flex flex-1 flex-col ${list ? "py-1 pr-2" : "p-3 sm:p-4"}`}>
         <Link href={href} className="block">
@@ -151,10 +160,7 @@ export async function TreeCard({ tree, comparing = false, back = "/trees", layou
         </p>
         <div className={`mt-auto flex items-center gap-1.5 pt-3 ${list ? "max-w-sm" : ""}`}>
           {button}
-          <QuickView tree={quick} photos={slides} products={sizes} badge={badge} back={back} buttonClass={`${iconBtn} border-stone-200 bg-white text-forest-900 hover:border-leaf-600 hover:text-leaf-700`}>
-            <EyeIcon />
-          </QuickView>
-          {compare}
+          <div className="hidden @[13.5rem]:block">{compare}</div>
         </div>
       </div>
     </div>

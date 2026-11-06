@@ -115,6 +115,18 @@ export async function togglePromotion(fd: FormData) {
   revalidatePath("/", "layout");
 }
 
+// Starts a scheduled sale straight away (and switches it on)
+export async function startPromotionNow(fd: FormData) {
+  await requireAdmin();
+  const id = String(fd.get("id") ?? "");
+  const p = await db.promotion.findUnique({ where: { id } });
+  if (p) {
+    const now = new Date();
+    await db.promotion.update({ where: { id }, data: { active: true, startsAt: now, endsAt: p.endsAt && p.endsAt <= now ? null : p.endsAt } });
+  }
+  revalidatePath("/", "layout");
+}
+
 export async function deletePromotion(fd: FormData) {
   await requireAdmin();
   await db.promotion.deleteMany({ where: { id: String(fd.get("id") ?? "") } });

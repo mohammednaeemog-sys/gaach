@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { PromotionForm } from "@/components/admin/PromotionForm";
-import { deletePromotion, togglePromotion } from "@/modules/admin/sales-actions";
+import { deletePromotion, startPromotionNow, togglePromotion } from "@/modules/admin/sales-actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { isLive } from "@/modules/shop/pricing";
 import { festival, upcomingFestivals } from "@/lib/festivals";
@@ -15,7 +15,10 @@ function status(p: { active: boolean; startsAt: Date | null; endsAt: Date | null
   const now = new Date();
   if (!p.active) return ["Off", "bg-stone-100 text-stone-600"];
   if (p.endsAt && p.endsAt < now) return ["Ended", "bg-stone-100 text-stone-500"];
-  if (p.startsAt && p.startsAt > now) return ["Scheduled", "bg-sky-50 text-sky-800"];
+  if (p.startsAt && p.startsAt > now) {
+    const days = Math.ceil((p.startsAt.getTime() - now.getTime()) / 86_400_000);
+    return [days <= 1 ? "Starts within a day" : `Starts in ${days} days`, "bg-sky-50 text-sky-800"];
+  }
   return isLive(p, now) ? ["Live", "bg-lime-100 text-lime-800"] : ["Off", "bg-stone-100 text-stone-600"];
 }
 
@@ -55,10 +58,14 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
                 <span className="text-xs text-stone-500">{p.allTrees ? "All trees" : `${p.trees.length} tree${p.trees.length === 1 ? "" : "s"}`}</span>
                 <span className="text-xs text-stone-500">{p.startsAt ? when(p.startsAt) : "Now"} → {p.endsAt ? when(p.endsAt) : "no end date"}</span>
                 <span className="ml-auto flex gap-2">
+                  {p.active && p.startsAt && p.startsAt > new Date() && <form action={startPromotionNow}><input type="hidden" name="id" value={p.id} /><button className="btn-ghost text-xs font-semibold text-leaf-700">Start now</button></form>}
                   <form action={togglePromotion}><input type="hidden" name="id" value={p.id} /><button className="btn-ghost text-xs">{p.active ? "Switch off" : "Switch on"}</button></form>
                   <form action={deletePromotion}><input type="hidden" name="id" value={p.id} /><ConfirmButton message={`Delete the sale "${p.name}"?`} className="btn-ghost text-xs text-red-700">Delete</ConfirmButton></form>
                 </span>
               </summary>
+              {p.active && p.startsAt && p.startsAt > new Date() && (
+                <p className="mt-3 rounded-lg bg-sky-50 p-3 text-sm text-sky-900">Not live yet. Shoppers see the discount, badges and banners from {when(p.startsAt)}. Press &ldquo;Start now&rdquo; to begin it today.</p>
+              )}
               <div className="mt-4 border-t border-stone-100 pt-4">
                 <PromotionForm
                   trees={trees}

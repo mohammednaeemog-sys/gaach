@@ -137,7 +137,7 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 
 | Product cards with photo arrows and sale badges | Quick view from the eye button |
 |---|---|
-| <img src="docs/screenshots/product-cards.jpg" alt="Product cards with left and right photo arrows, a round Diwali sale badge, sale prices with the old price crossed out, and add to cart, quick view and compare buttons" /> | <img src="docs/screenshots/quick-view.jpg" alt="Quick-view panel sliding in from the right with a large photo slider, the sale badge, price, sizes and buy buttons" /> |
+| <img src="docs/screenshots/product-cards.jpg" alt="Product cards with photo arrows, a sale label, sale prices with the old price crossed out, and add to cart, quick view and compare buttons" /> | <img src="docs/screenshots/quick-view.jpg" alt="Quick-view panel sliding in from the right with a large photo slider, the sale badge, price, sizes and buy buttons" /> |
 | **Tree page with sizes and sale price** | **From your rooftop to a growing tree** |
 | <img src="docs/screenshots/tree-page.jpg" alt="Tree page for Mango (Himsagar) with the sale price, size buttons, quantity and photo gallery" /> | <img src="docs/screenshots/journey.jpg" alt="Home page section showing the four steps from picking a district to buying and growing" /> |
 
@@ -167,13 +167,13 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 |---|---|
 | 🌳 **Tree finder** | Recommends trees for a district and spot. Photo cards show the match score, the reasons and Buy and Compare buttons. Condition chips on the page update with the user's choices. |
 | 🔎 **Browse and search** | Every tree, with filters for type, sunlight, soil, mature size, price and "On sale only". Search works in English, in Bangla and by scientific name. Grid and list views, sorting and star ratings are included. |
-| 🖼️ **Product cards** | Left and right arrows (or a swipe) flip through each tree's photos, then the potted sapling it arrives as. A round sale badge, the sale price with the old price crossed out, and Add to cart, quick view and compare buttons. |
-| 👁️ **Quick view** | The eye button opens a side panel (a bottom sheet on phones) with a large photo slider, sizes, quantity, Add to cart, Buy now and a short description. |
+| 🖼️ **Product cards** | One card design on the home, Browse and tree pages. Round arrows (shown on hover, always on phones) or a swipe flip through the photos and the potted sapling it arrives as. A size tag on the photo, a red sale label, the sale price with the old price crossed out, and the same green **Add to cart** button on every card. For a tree with several sizes, Add to cart opens the quick view so the shopper picks a size first. |
+| 👁️ **Quick view** | The eye button on the photo opens a side panel (a bottom sheet on phones) with a large photo slider, sizes, quantity, Add to cart, Buy now and a short description. |
 | ⚖️ **Compare** | Put 2 or 3 trees side by side: size, growth rate, sunlight, soil, water, season, flood, drought and salt tolerance, and cautions. |
 | 🎉 **Festival sales** | A decorated, animated banner on the home and shop pages and a strip with a countdown on every page, explaining the occasion and why prices are lower. |
 | 🛒 **Cart and checkout** | Several sizes per tree, quantity steppers, "Sale savings" in the summary, a stock-safe checkout, cash on delivery and a flat delivery fee. |
 | 📦 **Orders and My trees** | Order history, plus a "My trees" page that shows each tree's current growth stage and what to do next. |
-| 🤖 **Tree Advisor** | An AI chat that answers tree questions using Gaach's data and the user's own trees and saved sites. It is on every page and as a full page at `/assistant`. |
+| 🤖 **Tree Advisor** | An AI chat that answers tree questions using Gaach's data and the user's own trees and saved sites. It is on every page and as a full page at `/assistant` with chat history. **New chat** always starts a clean chat, and a refresh keeps the current one. |
 | 📷 **Photo check** | Send a photo of a sick plant and get the likely problem, safe next steps and links to care guides. |
 | 📚 **Care guides** | 28 practical guides grouped into planting and care, pests, problems and diseases, site and weather, safety, and specific trees. |
 | ⭐ **Ratings and reviews** | 1 to 5 stars with comments, and a "Bought from Gaach" badge for verified buyers. |
@@ -187,7 +187,7 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 | Area | Capabilities |
 |---|---|
 | **Trees and products** | Add, edit and publish trees. Upload several photos per tree at once and reorder or delete them. Manage sizes, prices, sale prices, stock and care stages. |
-| **Sales and offers** | A Bangladesh festival calendar fills in a sale in one tap. Pick one of 18 festival styles (with a live preview) or upload your own banner picture, then set the headline, badge, percent off, the reason shown to shoppers, dates, and all trees or chosen trees. Each sale shows as Live, Scheduled, Ended or Off. |
+| **Sales and offers** | A Bangladesh festival calendar fills in a sale in one tap. Pick one of 18 festival styles (with a live preview) or upload your own banner picture, then set the headline, badge, percent off, the reason shown to shoppers, dates, and all trees or chosen trees. Each sale shows as Live, Starts in N days, Ended or Off, and a scheduled sale has a **Start now** button. |
 | **Orders** | View all orders and update their status. Cancelling an order returns its stock. |
 | **Users and email** | View accounts, send a test email, email a reset link to a user, and see the last emails the site tried to send, with the result of each. |
 | **Reviews** | Hide, show or delete reviews. |
@@ -412,7 +412,8 @@ Admins create sales in **Admin → Sales & offers**. Each sale has a headline, a
 
 - **Festival calendar.** The admin page lists the festivals coming up in Bangladesh. One tap fills in the style, wording, discount and dates. Dates for Eid, Puja and Buddha Purnima depend on the moon and are marked so.
 - **Your own picture.** Instead of a drawn style, the admin can upload a banner picture, with or without Gaach's text on top.
-- **Where shoppers see it.** A big banner on the home and Browse pages, a strip with a live countdown at the top of every page, round badges on product cards and the sale name next to the price.
+- **Where shoppers see it.** A big banner on the home and Browse pages, a strip with a live countdown at the top of every page, a red sale label on product cards and the sale name next to the price.
+- **Scheduled sales.** A sale with a future start date changes nothing until that moment. The admin list says how many days are left, and **Start now** begins it straight away. Leave the start date empty to begin immediately.
 
 <p align="right"><sub><a href="#top">↑ Back to top</a></sub></p>
 
@@ -644,7 +645,7 @@ gaach/
 
 ## Responsive layout and accessibility
 
-- **Mobile first.** Layouts are checked at 360, 390, 768, 1024, 1100, 1280, 1440 and 1920 px wide. Card buttons adapt to the card's own width, photo sliders swipe on touch, and the quick view becomes a bottom sheet.
+- **Mobile first.** Layouts are checked at 360, 390, 768, 1024, 1100, 1280, 1440 and 1920 px wide. Cards adapt to their own width (the compare button hides on very narrow cards), photo sliders swipe on touch, and the quick view becomes a bottom sheet.
 - **Wide and zoomed-out screens.** From 1536 px up, the root font size grows with the screen width (`font-size: calc(100vw / 96)`), and every size is set in `rem`, so the whole layout scales together up to a 4K monitor.
 - **Accessibility.** Semantic HTML, a label on every form field and visible focus states. Photo arrows and the quick view have screen-reader labels, the quick view closes with Esc, the film has captions, and live regions announce Advisor replies.
 
@@ -658,7 +659,7 @@ gaach/
 | Reset emails don't arrive | Use a Gmail **App password** (not the account password) in `SMTP_PASS`, redeploy, then check **Admin → Users → Recent emails** for the exact error. |
 | The Advisor answers without AI | Set `GEMINI_API_KEY`. **Admin → AI status & review** shows whether the key works and which model answered. |
 | Photo or banner uploads fail online | Connect a public **Blob store** in Vercel → Storage, then redeploy. |
-| A sale doesn't show | Check it is **Switched on**, inside its dates, and has a banner option ticked. Its status should read **Live** in Admin → Sales & offers. |
+| A sale doesn't show | Its status in Admin → Sales & offers must read **Live**. "Starts in N days" means the start date is in the future: press **Start now** or clear the start date. Also check it is **Switched on** and, for "Only these trees", that the right trees are ticked. |
 | New environment variables have no effect | Redeploy. Vercel applies variables only to new deployments. |
 | `git commit` opens a Vim screen | Press `Esc`, type `:q!` and press Enter, then commit with `git commit -m "your message"`. To use Notepad instead, run `git config --global core.editor notepad`. |
 
