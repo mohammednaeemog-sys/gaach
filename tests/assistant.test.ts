@@ -92,7 +92,7 @@ test("there is no tool that writes", async () => {
 test("product prices come from the database", async () => {
   const ctx = newToolContext((await demoUser()).id);
   const r = (await runTool("get_product_details", { tree: "amrapali" }, ctx)) as unknown as { products: { price_bdt: number }[] };
-  assert.deepEqual(r.products.map((p) => p.price_bdt), [400, 800]);
+  assert.deepEqual(r.products.map((p) => p.price_bdt), [400, 800, 2400]); // the large plant added by scripts/data-updates.ts
   assert.ok(ctx.prices.has(400));
 });
 

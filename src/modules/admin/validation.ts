@@ -29,6 +29,7 @@ export const treeSchema = z.object({
   droughtTolerance: optLevel,
   salinityTolerance: optLevel,
   fruitingSeason: z.string().trim().max(200),
+  plantMonths: z.string().regex(/^(\d{1,2}(,\d{1,2})*)?$/, "Pick months from the list.").max(40),
   cautions: z.string().trim().max(500),
   imageCredit: z.string().trim().max(200),
   imageSourceUrl: z.union([z.literal(""), z.string().trim().url("Enter a full link starting with https://").max(500)]),

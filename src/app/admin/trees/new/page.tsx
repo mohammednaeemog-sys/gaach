@@ -10,7 +10,7 @@ export default function NewTree() {
         t={{
           name: "", slug: "", banglaName: "", scientificName: "", description: "", shape: "round", color: "#2e7d32",
           matureHeightM: 0, canopySpreadM: 0, growthRate: "", sunlight: "", soils: "", purposes: "", waterNeed: "",
-          rainfall: "", floodTolerance: "", droughtTolerance: "", salinityTolerance: "", fruitingSeason: "", cautions: "",
+          rainfall: "", floodTolerance: "", droughtTolerance: "", salinityTolerance: "", fruitingSeason: "", plantMonths: "", cautions: "",
           published: false, imageUrl: null, imageCredit: "", imageSourceUrl: "",
         }}
       />

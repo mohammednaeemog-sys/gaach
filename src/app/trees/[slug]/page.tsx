@@ -18,6 +18,7 @@ import { getCurrentUser } from "@/modules/accounts/session";
 import { reviewsForTree, ratingsFor, shortName } from "@/modules/reviews/queries";
 import { deleteMyReview } from "@/modules/reviews/actions";
 import { dateText } from "@/lib/format";
+import { plantingAdvice } from "@/lib/planting";
 import { CARE_STAGES, SOIL_HINTS, SUNLIGHT_HINTS, label, splitList, type Soil, type Sunlight } from "@/lib/constants";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -41,6 +42,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
   const [user, rv, relatedRatings, promos] = await Promise.all([getCurrentUser(), reviewsForTree(tree.id), ratingsFor(related.map((t) => t.id)), livePromotions()]);
   const mine = user ? await db.review.findUnique({ where: { treeId_userId: { treeId: tree.id, userId: user.id } } }) : null;
 
+  const plant = plantingAdvice(tree);
   const list = (v: string) => splitList(v).map(label).join(", ");
   const stage = (s: string) => tree.careStages.find((c) => c.stage === s);
   const ongoing = stage("ONGOING") ?? stage("FIRST_SEASON");
@@ -52,6 +54,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
     { icon: <Icon.sun className="h-4 w-4" />, title: `Needs ${list(tree.sunlight).toLowerCase()}`, body: sun.map((s) => `${label(s)}: ${SUNLIGHT_HINTS[s]}.`).join(" ") },
     { icon: <Icon.soil className="h-4 w-4" />, title: `Grows in ${list(tree.soils).toLowerCase()} soil`, body: soils.map((s) => `${label(s)}: ${SOIL_HINTS[s]}`).join(" ") },
     { icon: <Icon.ruler className="h-4 w-4" />, title: `${spaceTag(tree.canopySpreadM)} · ${tree.matureHeightM} m tall`, body: `When grown it reaches about ${tree.matureHeightM} m tall and ${tree.canopySpreadM} m wide, growing at a ${label(tree.growthRate).toLowerCase()} rate. Keep at least ${Math.ceil(tree.canopySpreadM / 2)} m from walls.` },
+    { icon: <Icon.calendar className="h-4 w-4" />, title: `Best planted ${plant.range}`, body: plant.text },
     { icon: <Icon.calendar className="h-4 w-4" />, title: "Fruiting or flowering season", body: tree.fruitingSeason || "Not recorded." },
   ];
 
@@ -72,6 +75,11 @@ export default async function TreePage({ params, searchParams }: { params: Promi
     ...tree.photos.map((ph, i) => ({ key: ph.id, src: ph.url, label: `Photo ${i + 1}` })),
   ];
   if (!images.length) images.push({ key: "tree", src: tree.imageUrl, label: tree.name });
+  // The same photo is often used for several sizes: show it once
+  const seen = new Set<string>();
+  const gallery = images.filter((im) => (im.src ? (seen.has(im.src) ? false : (seen.add(im.src), true)) : true));
+  // Finish with a drawing of the tree when fully grown, so shoppers see how big it gets
+  gallery.push({ key: "grown", src: "grown", label: `When fully grown (about ${tree.matureHeightM} m tall)` });
 
   const kindWord: Record<string, [string, string]> = { FRUIT: ["Fruit trees", "FRUIT"], SHADE: ["Shade trees", "SHADE"], ORNAMENTAL: ["Flowering trees", "ORNAMENTAL"], PRIVACY: ["Hedges and screens", "PRIVACY"], TIMBER: ["Timber trees", "TIMBER"] };
   const crumb = kindWord[firstPurpose];
@@ -90,7 +98,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
         <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
           {/* Pictures, then the quick care notes */}
           <div className="anim-rise min-w-0 space-y-5">
-            <Gallery images={images} shape={tree.shape} color={tree.color} name={tree.name} badge={sale ? `${sale.occasion ?? "Sale"} −${sale.percentOff}%` : null} />
+            <Gallery images={gallery} shape={tree.shape} color={tree.color} name={tree.name} badge={sale ? `${sale.occasion ?? "Sale"} −${sale.percentOff}%` : null} />
             <div className="hidden divide-y divide-stone-100 rounded-2xl bg-white px-4 ring-1 ring-stone-100 lg:block">
               {care.map((c, i) => (
                 <details key={c.title} className="care-item group py-1" open={i === 0}>
@@ -125,6 +133,7 @@ export default async function TreePage({ params, searchParams }: { params: Promi
             )}
 
             <dl className="space-y-2.5 rounded-2xl bg-white p-5 text-sm ring-1 ring-stone-100">
+              <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Planting</dt><dd className="text-stone-600">{plant.good && <b className="mr-1 rounded-full bg-leaf-50 px-2 py-0.5 text-xs text-leaf-800">Good time now</b>}{plant.text}</dd></div>
               <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Delivery</dt><dd className="text-stone-600">All 64 districts. The fee for your area is shown at checkout.</dd></div>
               <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Payment</dt><dd className="text-stone-600">Cash on delivery</dd></div>
               <div className="flex gap-3"><dt className="w-24 shrink-0 font-semibold text-forest-900">Returns</dt><dd className="text-stone-600"><Link href="/refund-policy" className="text-leaf-700 underline underline-offset-2">Refund and return policy</Link></dd></div>

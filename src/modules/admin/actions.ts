@@ -35,6 +35,7 @@ function treeFromForm(fd: FormData) {
     droughtTolerance: String(fd.get("droughtTolerance") ?? ""),
     salinityTolerance: String(fd.get("salinityTolerance") ?? ""),
     fruitingSeason: String(fd.get("fruitingSeason") ?? ""),
+    plantMonths: fd.getAll("plantMonths").map(String).join(","),
     cautions: String(fd.get("cautions") ?? ""),
     imageCredit: String(fd.get("imageCredit") ?? ""),
     imageSourceUrl: String(fd.get("imageSourceUrl") ?? "").trim(),

@@ -2,6 +2,7 @@
 // identical catalogue data always give the same ranking (NFR-4.1).
 import { label, splitList, type Purpose, type Soil, type Sunlight } from "@/lib/constants";
 import { MATCH_LEVELS, WEIGHTS } from "./weights";
+import { monthRange } from "@/lib/planting";
 
 export type RegionProfile = {
   name: string;
@@ -23,6 +24,7 @@ export type TreeFacts = {
   floodTolerance: string;
   droughtTolerance: string;
   salinityTolerance: string;
+  plantingMonths?: number[]; // best planting months (1 to 12)
 };
 
 export type SiteConditions = {
@@ -32,6 +34,7 @@ export type SiteConditions = {
   sunlight: Sunlight;
   soil: Soil;
   purpose: Purpose;
+  planting?: { months: number[]; label: string }; // when the user will plant, e.g. "now (Nov)"
 };
 
 export type Recommendation<T extends TreeFacts> = {
@@ -96,7 +99,8 @@ function score<T extends TreeFacts>(t: T, site: SiteConditions): Recommendation<
   const W = WEIGHTS;
   const max =
     W.soilMatch + W.purposePrimary + W.spaceFit + W.sunPreferred +
-    W.regionStrength * [site.region.floodProne, site.region.droughtProne, site.region.saline].filter(Boolean).length;
+    W.regionStrength * [site.region.floodProne, site.region.droughtProne, site.region.saline].filter(Boolean).length +
+    (site.planting && t.plantingMonths?.length ? W.seasonMatch : 0);
   let points = 0;
   const reasons: string[] = [];
   const notes: string[] = [];
@@ -135,6 +139,15 @@ function score<T extends TreeFacts>(t: T, site: SiteConditions): Recommendation<
   points += strengths.length * W.regionStrength;
   if (strengths.length) reasons.push(`handles the ${strengths.join(" and ")} common in ${site.districtName}`);
   else reasons.push(`survives the conditions in ${site.districtName}`);
+
+  if (site.planting && t.plantingMonths?.length) {
+    if (t.plantingMonths.some((m) => site.planting!.months.includes(m))) {
+      points += W.seasonMatch;
+      reasons.push(`a good tree to plant ${site.planting.label}`);
+    } else {
+      notes.push(`Best planted in ${monthRange(t.plantingMonths)}. It can go in ${site.planting.label} with regular watering, but settles fastest in those months.`);
+    }
+  }
 
   const scoreOut = Math.round((points / max) * 100);
   const matchLevel = MATCH_LEVELS.find((m) => scoreOut >= m.min)!.level;

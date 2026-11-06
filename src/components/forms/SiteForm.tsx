@@ -5,7 +5,7 @@ import { PURPOSES, SOILS, SOIL_HINTS, SUNLIGHT, SUNLIGHT_HINTS, label } from "@/
 
 export type DivisionOption = { id: number; name: string; districts: { id: number; name: string }[] };
 export type SavedSite = { id: string; name: string; districtId: number; divisionId: number; spaceM: number; sunlight: string; soil: string; purpose: string };
-export type SiteValues = { divisionId?: string; districtId?: string; spaceM?: string; sunlight?: string; soil?: string; purpose?: string };
+export type SiteValues = { divisionId?: string; districtId?: string; spaceM?: string; sunlight?: string; soil?: string; purpose?: string; plantWhen?: string };
 
 type Props = {
   divisions: DivisionOption[];
@@ -51,7 +51,7 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
   function useSaved(id: string) {
     const s = savedSites.find((x) => x.id === id);
     if (!s) return;
-    setV({ divisionId: String(s.divisionId), districtId: String(s.districtId), spaceM: String(s.spaceM), sunlight: s.sunlight, soil: s.soil, purpose: s.purpose });
+    setV({ plantWhen: v.plantWhen, divisionId: String(s.divisionId), districtId: String(s.districtId), spaceM: String(s.spaceM), sunlight: s.sunlight, soil: s.soil, purpose: s.purpose });
   }
 
   const err = (k: string) => (errors[k] ? <p className="field-error" role="alert">{errors[k]}</p> : null);
@@ -139,6 +139,18 @@ export function SiteForm({ divisions, savedSites, initial, errors, compact }: Pr
             ))}
           </div>
           {err("purpose")}
+        </div>
+      </fieldset>
+
+      <fieldset className="space-y-3 border-t border-stone-100 pt-5">
+        <Step n={4} title="When will you plant?" text="Most trees settle best early in the monsoon." />
+        <div className="flex flex-wrap gap-2">
+          {[["NOW", "Now"], ["MONSOON", "Next monsoon (Jun–Sep)"]].map(([x, t]) => (
+            <label key={x} className={`pill-radio ${(v.plantWhen ?? "NOW") === x ? "is-on" : ""}`}>
+              <input type="radio" name="plantWhen" value={x} checked={(v.plantWhen ?? "NOW") === x} onChange={set("plantWhen")} className="sr-only" />
+              {t}
+            </label>
+          ))}
         </div>
       </fieldset>
 

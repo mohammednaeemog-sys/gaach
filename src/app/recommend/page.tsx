@@ -52,7 +52,7 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
   const submitted = sp.districtId !== undefined || sp.spaceM !== undefined;
   const initial: SiteValues = {
     divisionId: sp.divisionId, districtId: sp.districtId, spaceM: sp.spaceM,
-    sunlight: sp.sunlight, soil: sp.soil, purpose: sp.purpose,
+    sunlight: sp.sunlight, soil: sp.soil, purpose: sp.purpose, plantWhen: sp.plantWhen,
   };
   let errors: Record<string, string> = {};
   let outcome: Awaited<ReturnType<typeof runRecommendation>> = null;
@@ -61,7 +61,7 @@ export default async function RecommendPage({ searchParams }: { searchParams: Pr
     const parsed = siteSchema.safeParse(sp);
     if (!parsed.success) errors = fieldErrors(parsed.error);
     else {
-      outcome = await runRecommendation(parsed.data);
+      outcome = await runRecommendation(parsed.data, sp.plantWhen === "MONSOON" ? "MONSOON" : "NOW");
       if (!outcome) errors = { districtId: "That district was not found. Choose it again from the list." };
       else if (!initial.divisionId) initial.divisionId = String(outcome.district.divisionId);
     }

@@ -2,10 +2,12 @@
 // but never touches a database that already has trees (so admin edits are kept).
 // It also makes sure the private admin from ADMIN_EMAIL / ADMIN_PASSWORD exists with that password,
 // and locks the public demo admin once a private admin is set.
+// Then it applies one-time data updates (scripts/data-updates.ts), such as new sizes.
 import { execSync } from "child_process";
 import { randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import { runDataUpdates } from "./data-updates";
 
 const db = new PrismaClient();
 const DEMO_ADMIN = "admin@gaach.test";
@@ -54,6 +56,7 @@ async function ensureOwnAdmin() {
     console.log("Empty database: adding Gaach's starting data (trees, districts, guides, demo accounts)...");
     execSync("tsx prisma/seed.ts", { stdio: "inherit" });
   }
+  await runDataUpdates(db);
   await ensureOwnAdmin();
   await db.$disconnect();
 })().catch(async (e) => {

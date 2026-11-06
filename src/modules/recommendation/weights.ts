@@ -14,6 +14,8 @@ export const WEIGHTS = {
   comfortableShare: 0.8,
   // Points when the user's sunlight is the tree's first listed (preferred) level
   sunPreferred: 5,
+  // Points when the tree's best planting months include when the user will plant
+  seasonMatch: 8,
 };
 
 // Score bands (out of 100) that become the match level shown to the user

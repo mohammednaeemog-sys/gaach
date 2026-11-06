@@ -121,6 +121,19 @@ async function recommendAnswer(i: Input): Promise<string> {
   return `For ${where}:\n\n${listResults(r)}\n\n${r.caveat}`;
 }
 
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+// "Which tree for summer?" -> SUMMER; Bangla season names too
+const SEASON_WORDS: Record<string, string> = { NOW: "now", SUMMER: "in summer (April and May, before the rains)", MONSOON: "in the monsoon (June to September)", AUTUMN: "in autumn (September to November)", WINTER: "in winter (December to February)", SPRING: "in spring (February to April)" };
+function seasonFromText(m: string): string | undefined {
+  if (/\bsummer\b|গ্রীষ্ম|গরমে|গরমের/.test(m)) return "SUMMER";
+  if (/\bmonsoon\b|\brain(y)? season\b|\bthe rains\b|বর্ষা/.test(m)) return "MONSOON";
+  if (/\bwinter\b|শীত/.test(m)) return "WINTER";
+  if (/\bspring\b|বসন্ত/.test(m)) return "SPRING";
+  if (/\bautumn\b|\bfall season\b|শরৎ|হেমন্ত/.test(m)) return "AUTUMN";
+  if (/\b(plant|grow)\w* (right )?now\b|\bthis (month|season)\b|এখন/.test(m)) return "NOW";
+  return undefined;
+}
+
 async function attributeSearch(i: Input, parsed: ReturnType<typeof parseConditions>): Promise<string | null> {
   const m = i.message.toLowerCase();
   const input: any = {};
@@ -133,12 +146,27 @@ async function attributeSearch(i: Input, parsed: ReturnType<typeof parseConditio
   if (/flood|waterlog|low land/.test(m)) input.tolerates = "FLOOD";
   else if (/salt|saline|coastal|coast/.test(m)) input.tolerates = "SALT";
   else if (/drought|dry area|dry region|little water/.test(m)) input.tolerates = "DROUGHT";
+  const season = seasonFromText(m);
+  if (season) input.season = season;
   if (!Object.keys(input).length) return null;
   const r: any = await runTool("search_tree_catalogue", input, i.ctx);
   if (!r.ok) return null;
+  if (!r.trees.length && season && Object.keys(input).length === 1) {
+    // Nothing is best planted then: point to the next good months instead
+    const start = season === "NOW" ? new Date(Date.now() + 6 * 3600_000).getUTCMonth() + 1 : ({ SUMMER: 4, MONSOON: 6, AUTUMN: 9, WINTER: 12, SPRING: 2 } as Record<string, number>)[season];
+    for (let k = 1; k <= 12; k++) {
+      const month = ((start - 1 + k) % 12) + 1;
+      const next: any = await runTool("search_tree_catalogue", { plant_month: month }, i.ctx);
+      if (next.ok && next.trees.length) {
+        const names = next.trees.slice(0, 6).map((t: any) => `- ${t.name}: best planted ${t.best_planting_months}`);
+        return `None of Gaach's trees is at its best for planting ${SEASON_WORDS[season]}. The next good time starts in ${MONTH_NAMES[month - 1]}:\n${names.join("\n")}\n\nYou can still plant now if you water regularly; the tree just settles more slowly. Most trees do best early in the monsoon, June to September.`;
+      }
+    }
+  }
   if (!r.trees.length) return "No tree in the Gaach catalogue matches all of that. Could you tell me more about the spot (district, space, sunlight, soil) so I can run the full recommendation?";
-  const lines = r.trees.slice(0, 6).map((t: any) => `- ${t.name}: about ${t.mature_height_m} m tall, ${t.canopy_spread_m} m wide; ${t.sunlight.join(" or ")}; for ${t.purposes.join(", ")}`);
-  return `Trees in the Gaach catalogue that match (${r.count} in all):\n${lines.join("\n")}\n\nFor a ranked recommendation for your exact spot, tell me the district, space, sunlight and soil, or ask about one of your saved sites.`;
+  const lines = r.trees.slice(0, 6).map((t: any) => `- ${t.name}: about ${t.mature_height_m} m tall, ${t.canopy_spread_m} m wide; ${t.sunlight.join(" or ")}; for ${t.purposes.join(", ")}${season ? `; best planted ${t.best_planting_months}` : ""}`);
+  const intro = season ? `Trees in the Gaach catalogue that are good to plant ${SEASON_WORDS[season]} (${r.count} in all). Most trees in Bangladesh settle best when planted early in the monsoon, June to September:` : `Trees in the Gaach catalogue that match (${r.count} in all):`;
+  return `${intro}\n${lines.join("\n")}\n\nFor a ranked recommendation for your exact spot, tell me the district, space, sunlight and soil, or ask about one of your saved sites.`;
 }
 
 async function explainAnswer(i: Input): Promise<string> {
@@ -365,4 +393,4 @@ async function troubleAnswer(i: Input): Promise<string> {
   return out.join("\n\n");
 }
 
-export const _test = { parseConditions, likelyCauses, stageFromText };
+export const _test = { parseConditions, likelyCauses, stageFromText, seasonFromText };

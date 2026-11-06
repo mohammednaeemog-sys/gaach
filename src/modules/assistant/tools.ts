@@ -7,6 +7,7 @@
 // - Input is validated with zod before anything runs.
 // - Missing data comes back as "unknown" or a clear error, never a guess.
 import { z } from "zod";
+import { SEASONS, dhakaMonth, monthRange, plantMonths, plantingAdvice } from "@/lib/planting";
 import { db } from "@/lib/db";
 import { CARE_STAGES, PURPOSES, SOILS, SUNLIGHT, DEFAULT_DELIVERY_FEE, DELIVERY_FEE_KEY, label, splitList, type CareStageKey } from "@/lib/constants";
 import { currentStage } from "@/modules/care/stage";
@@ -50,8 +51,16 @@ async function findTree(name: string): Promise<{ tree: TreeRow } | { error: stri
   return { error: `No tree called "${name}" is in the Gaach catalogue. Do not describe it from general knowledge as if Gaach sells it.` };
 }
 
+const SEASON_KEYS = ["NOW", "SUMMER", "MONSOON", "AUTUMN", "WINTER", "SPRING"] as const;
+function seasonMonths(season?: (typeof SEASON_KEYS)[number], month?: number): number[] | null {
+  if (month) return [month];
+  if (!season) return null;
+  return season === "NOW" ? [dhakaMonth()] : SEASONS[season].months;
+}
+
 function treeSummary(t: TreeRow) {
   return {
+    best_planting_months: monthRange(plantMonths(t), true),
     slug: t.slug,
     name: t.name,
     bangla_name: unknown(t.banglaName),
@@ -91,6 +100,8 @@ const searchCatalogue = tool({
     max_spread_m: z.number().positive().max(100).optional(),
     max_height_m: z.number().positive().max(100).optional(),
     tolerates: z.enum(["FLOOD", "DROUGHT", "SALT"]).optional(),
+    season: z.enum(SEASON_KEYS).optional(),
+    plant_month: z.number().int().min(1).max(12).optional(),
   }),
   jsonSchema: obj({
     query: str("Tree name or words to match, e.g. 'mango' or 'jarul'"),
@@ -99,6 +110,8 @@ const searchCatalogue = tool({
     max_spread_m: { type: "number", description: "Largest canopy spread that fits, in metres" },
     max_height_m: { type: "number", description: "Largest mature height that fits, in metres" },
     tolerates: str("Trees with HIGH tolerance of this condition", { enum: ["FLOOD", "DROUGHT", "SALT"] }),
+    season: str("Only trees whose best planting months fall in this Bangladesh season. NOW means the current month. SUMMER = Apr-May, MONSOON = Jun-Sep, AUTUMN = Sep-Nov, WINTER = Dec-Feb, SPRING = Feb-Apr.", { enum: [...SEASON_KEYS] }),
+    plant_month: { type: "integer", minimum: 1, maximum: 12, description: "Only trees best planted in this month (1 = January)" },
   }),
   async run(i, ctx) {
     let trees = await publishedTrees();
@@ -115,9 +128,12 @@ const searchCatalogue = tool({
       const key = { FLOOD: "floodTolerance", DROUGHT: "droughtTolerance", SALT: "salinityTolerance" }[i.tolerates] as "floodTolerance" | "droughtTolerance" | "salinityTolerance";
       trees = trees.filter((t) => t[key] === "HIGH");
     }
+    const months = seasonMonths(i.season, i.plant_month);
+    if (months) trees = trees.filter((t) => plantMonths(t).some((m) => months.includes(m)));
     const found = trees.slice(0, 10);
     found.slice(0, 5).forEach((t) => addSource(ctx, { kind: "tree", title: t.name, href: `/trees/${t.slug}` }));
-    return { ok: true, count: trees.length, trees: found.map(treeSummary), note: trees.length > 10 ? "Showing the first 10 matches." : undefined };
+    const seasonNote = months ? `Filtered to trees best planted in ${monthRange(months, true)}. Most Bangladesh trees are best planted early in the monsoon (June to September).` : undefined;
+    return { ok: true, count: trees.length, trees: found.map(treeSummary), note: [trees.length > 10 ? "Showing the first 10 matches." : "", seasonNote ?? ""].filter(Boolean).join(" ") || undefined };
   },
 });
 
@@ -146,6 +162,8 @@ const treeDetails = tool({
         drought_tolerance: unknown(label(t.droughtTolerance)),
         salt_tolerance: unknown(label(t.salinityTolerance)),
         season: unknown(t.fruitingSeason),
+        best_planting_months: monthRange(plantMonths(t), true),
+        planting_now: plantingAdvice(t).text,
         cautions: unknown(t.cautions),
         provenance: {
           source: t.sourceTitle || "not recorded",
@@ -220,6 +238,8 @@ const compareTrees = tool({
         salt_tolerance: unknown(label(t.salinityTolerance)),
         purposes: words(t.purposes),
         season: unknown(t.fruitingSeason),
+        best_planting_months: monthRange(plantMonths(t), true),
+        planting_now: plantingAdvice(t).text,
         price_from_bdt: cheapest?.now ?? "not on sale",
       });
     }

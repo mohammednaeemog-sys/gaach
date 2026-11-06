@@ -123,6 +123,7 @@ model Tree {
   droughtTolerance  String   @default("")
   salinityTolerance String   @default("")
   fruitingSeason    String   @default("")
+  plantMonths       String   @default("") // best planting months, e.g. "6,7,8,9"; empty = Gaach default
   cautions          String   @default("")
   published         Boolean  @default(false)
   // Provenance of the tree facts (where they come from and whether a competent person checked them)

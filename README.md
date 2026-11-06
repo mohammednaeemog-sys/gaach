@@ -171,6 +171,8 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 | 👁️ **Quick view** | The eye button on the photo opens a side panel (a bottom sheet on phones) with a large photo slider, sizes, quantity, Add to cart, Buy now and a short description. |
 | ⚖️ **Compare** | Put 2 or 3 trees side by side: size, growth rate, sunlight, soil, water, season, flood, drought and salt tolerance, and cautions. |
 | 🎉 **Festival sales** | A decorated, animated banner on the home and shop pages and a strip with a countdown on every page, explaining the occasion and why prices are lower. |
+| 📅 **Planting season** | Every tree has its best planting months for Bangladesh (most trees: June to September, early in the monsoon). Cards show "Plant now" or the best months, and the tree page explains what to do if you buy outside them. |
+| 🌲 **Sizes up to a large plant** | Each tree comes in its sapling sizes plus a **Large plant, 6-8 ft** (about 3 years old). The tree page also shows a drawing of the tree when fully grown, with its mature height. |
 | 🛒 **Cart and checkout** | Several sizes per tree, quantity steppers, "Sale savings" in the summary, a stock-safe checkout, cash on delivery and a flat delivery fee. |
 | 📦 **Orders and My trees** | Order history, plus a "My trees" page that shows each tree's current growth stage and what to do next. |
 | 🤖 **Tree Advisor** | An AI chat that answers tree questions using Gaach's data and the user's own trees and saved sites. It is on every page and as a full page at `/assistant` with chat history. **New chat** always starts a clean chat, and a refresh keeps the current one. |
@@ -186,7 +188,7 @@ Gaach was built for **CSE412 (Software Engineering) at East West University, Dha
 
 | Area | Capabilities |
 |---|---|
-| **Trees and products** | Add, edit and publish trees. Upload several photos per tree at once and reorder or delete them. Manage sizes, prices, sale prices, stock and care stages. |
+| **Trees and products** | Add, edit and publish trees. Upload several photos per tree at once and reorder or delete them. Manage sizes, prices, sale prices, stock, care stages and each tree's best planting months. |
 | **Sales and offers** | A Bangladesh festival calendar fills in a sale in one tap. Pick one of 18 festival styles (with a live preview) or upload your own banner picture, then set the headline, badge, percent off, the reason shown to shoppers, dates, and all trees or chosen trees. Each sale shows as Live, Starts in N days, Ended or Off, and a scheduled sale has a **Start now** button. |
 | **Orders** | View all orders and update their status. Cancelling an order returns its stock. |
 | **Users and email** | View accounts, send a test email, email a reset link to a user, and see the last emails the site tried to send, with the result of each. |
@@ -330,7 +332,7 @@ Code: `src/modules/recommendation/`
 
 1. **Region.** The district maps to a regional profile: rainfall, flooding, drought and salty soil. Admins can edit these profiles.
 2. **Filter.** Trees are removed if they can't survive the region, are wider than the space available, or don't tolerate the sunlight.
-3. **Score.** The remaining trees are scored on soil, purpose, regional strengths, room to spare and preferred sunlight. The weights are in `weights.ts`, so they're easy to tune.
+3. **Score.** The remaining trees are scored on soil, purpose, regional strengths, room to spare, preferred sunlight and planting season. The finder asks "When will you plant? Now / Next monsoon" and favours trees whose best planting months match; the rest get a note on when to plant. The weights are in `weights.ts`, so they're easy to tune.
 4. **Explain.** Each result gets a match level and a plain-language reason. If nothing qualifies, the page names the condition that removed the most trees and suggests how to relax it.
 
 Ties are broken by name and id, so the same inputs always give the same ranking.
@@ -343,7 +345,7 @@ Code: `src/modules/assistant/`
 
 The Advisor is the round button in the bottom-right corner of every page. The full chat with history is at `/assistant`. On a tree page, it already knows which tree you mean.
 
-It answers **tree questions only**: why a tree was recommended, planting and care, plant problems, comparisons, products and prices (including live sale prices), and help with the trees the user bought. It never places orders, changes accounts or invents trees.
+It answers **tree questions only**: what to plant in a season ("which tree for summer?", "what can I plant now?", answered straight from each tree's planting months, no site details needed), why a tree was recommended, planting and care, plant problems, comparisons, products and prices (including live sale prices), and help with the trees the user bought. It never places orders, changes accounts or invents trees.
 
 ```mermaid
 flowchart LR
@@ -508,7 +510,8 @@ The admin login is **never stored in the code or the repository**. It is set pri
 On every build, `scripts/seed-if-empty.ts`:
 
 1. creates the admin account from those variables if it doesn't exist, or makes sure it is an admin with that password;
-2. locks the public demo admin (`admin@gaach.test`) by turning it into a normal user with a random password.
+2. locks the public demo admin (`admin@gaach.test`) by turning it into a normal user with a random password;
+3. applies one-time data updates from `scripts/data-updates.ts`, such as adding the Large plant size to every tree. Each update runs once per database, so later admin edits are kept.
 
 To change the admin password, edit `ADMIN_PASSWORD` in Vercel and redeploy.
 
@@ -558,6 +561,7 @@ gaach/
 ├── public/                    logo, photos, icons
 ├── scripts/
 │   ├── seed-if-empty.ts       runs on every build: first-time data and admin setup
+│   ├── data-updates.ts        one-time data changes, applied once per database
 │   ├── eval-assistant.ts      Tree Advisor evaluation
 │   ├── fetch-tree-photos.ts   downloads openly licensed tree photos
 │   └── make-logo.mjs          draws the logo

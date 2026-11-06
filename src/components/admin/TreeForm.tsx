@@ -3,13 +3,14 @@
 import { useActionState } from "react";
 import { saveTree } from "@/modules/admin/actions";
 import type { FormState } from "@/lib/forms";
+import { MONTHS, plantMonths } from "@/lib/planting";
 import { GROWTH, LEVELS, PURPOSES, SHAPES, SOILS, SUNLIGHT, label, splitList } from "@/lib/constants";
 
 export type TreeDefaults = {
   id?: string; name: string; slug: string; banglaName: string; scientificName: string; description: string;
   shape: string; color: string; matureHeightM: number; canopySpreadM: number; growthRate: string;
   sunlight: string; soils: string; purposes: string; waterNeed: string; rainfall: string;
-  floodTolerance: string; droughtTolerance: string; salinityTolerance: string; fruitingSeason: string;
+  floodTolerance: string; droughtTolerance: string; salinityTolerance: string; fruitingSeason: string; plantMonths?: string;
   cautions: string; published: boolean; imageUrl: string | null; imageCredit: string; imageSourceUrl: string;
 };
 
@@ -86,6 +87,18 @@ export function TreeForm({ t: initial }: { t: TreeDefaults }) {
         {select("droughtTolerance", "Drought tolerance", LEVELS)}
         {select("salinityTolerance", "Salt tolerance", LEVELS)}
       </div>
+      <fieldset>
+        <legend className="field-label">Best planting months</legend>
+        <div className="flex flex-wrap gap-x-3 gap-y-2">
+          {MONTHS.map((m, i) => (
+            <label key={m} className="flex items-center gap-1.5 text-sm">
+              <input type="checkbox" name="plantMonths" value={i + 1} defaultChecked={plantMonths({ slug: t.slug, plantMonths: t.plantMonths }).includes(i + 1)} className="accent-lime-600" /> {m}
+            </label>
+          ))}
+        </div>
+        <p className="hint">Shoppers see &ldquo;Plant now&rdquo; in these months, and the tree finder and Tree Advisor use them. Untick all to use Gaach&apos;s default for this tree.</p>
+        {err("plantMonths")}
+      </fieldset>
       <div className="grid gap-4 sm:grid-cols-2">
         {text("fruitingSeason", "Fruiting or flowering season")}
         {text("cautions", "Cautions", "Invasive roots, toxicity, thorns. Write \"None significant.\" if none.")}
