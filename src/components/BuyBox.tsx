@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { addToCart, buyNow } from "@/modules/shop/cart";
 
 // priceBdt is what the customer pays now; wasBdt is the normal price when on sale
@@ -13,6 +13,15 @@ export function BuyBox({ products, back, onSelect }: { products: Product[]; back
   const first = products.find((p) => p.stock > 0) ?? products[0];
   const [id, setId] = useState(first?.id);
   const [qty, setQty] = useState(1);
+  // A click on a size's photo in the gallery picks that size here
+  useEffect(() => {
+    const on = (e: Event) => {
+      const x = products.find((q) => q.id === (e as CustomEvent<string>).detail);
+      if (x) { setId(x.id); setQty(1); onSelect?.(x.id); }
+    };
+    window.addEventListener("gaach:pick", on);
+    return () => window.removeEventListener("gaach:pick", on);
+  }, [products, onSelect]);
   const p = products.find((x) => x.id === id) ?? first;
   if (!p) return null;
   const max = Math.max(1, Math.min(p.stock, 50));

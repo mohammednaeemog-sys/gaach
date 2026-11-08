@@ -69,8 +69,8 @@ export default async function TreePage({ params, searchParams }: { params: Promi
     [<Icon.pot key="p" />, "Good for", list(tree.purposes)],
   ];
   const stages = CARE_STAGES.map((s) => stage(s)).filter(Boolean);
-  const images = [
-    ...tree.products.map((p) => ({ key: p.id, src: p.imageUrl ?? treePhoto(tree), label: p.sizeLabel })),
+  const images: { key: string; src: string | null; label: string; product?: string }[] = [
+    ...tree.products.map((p) => ({ key: p.id, src: p.imageUrl ?? treePhoto(tree), label: p.sizeLabel, product: p.id })),
     ...(tree.imageUrl ? [{ key: "tree", src: tree.imageUrl, label: "Grown tree" }] : []),
     ...tree.photos.map((ph, i) => ({ key: ph.id, src: ph.url, label: `Photo ${i + 1}` })),
   ];
@@ -79,7 +79,9 @@ export default async function TreePage({ params, searchParams }: { params: Promi
   const seen = new Set<string>();
   const gallery = images.filter((im) => (im.src ? (seen.has(im.src) ? false : (seen.add(im.src), true)) : true));
   // Finish with a drawing of the tree when fully grown, so shoppers see how big it gets
-  gallery.push({ key: "grown", src: "grown", label: `When fully grown (about ${tree.matureHeightM} m tall)` });
+  // Clicking it picks the biggest size on sale
+  const biggest = [...tree.products].sort((a, b) => (b.stock > 0 ? 1 : 0) - (a.stock > 0 ? 1 : 0) || b.ageMonths - a.ageMonths || b.priceBdt - a.priceBdt)[0];
+  gallery.push({ key: "grown", src: "grown", label: `When fully grown (about ${tree.matureHeightM} m tall)`, product: biggest?.id });
 
   const kindWord: Record<string, [string, string]> = { FRUIT: ["Fruit trees", "FRUIT"], SHADE: ["Shade trees", "SHADE"], ORNAMENTAL: ["Flowering trees", "ORNAMENTAL"], PRIVACY: ["Hedges and screens", "PRIVACY"], TIMBER: ["Timber trees", "TIMBER"] };
   const crumb = kindWord[firstPurpose];

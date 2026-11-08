@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { TreeArt } from "./TreeArt";
 
-type Img = { key: string; src: string | null; label: string };
+type Img = { key: string; src: string | null; label: string; product?: string };
 
-// Big picture with a row of thumbnails under it; follows the size picked in the buy box
+// Big picture with a row of thumbnails under it. It follows the size picked in the
+// buy box, and clicking a size's photo picks that size in the buy box.
 export function Gallery({ images, shape, color, name, badge }: { images: Img[]; shape: string; color: string; name: string; badge?: string | null }) {
   const [cur, setCur] = useState(images[0]?.key);
   useEffect(() => {
@@ -16,6 +17,10 @@ export function Gallery({ images, shape, color, name, badge }: { images: Img[]; 
     window.addEventListener("gaach:size", on);
     return () => window.removeEventListener("gaach:size", on);
   }, [images]);
+  const show = (i: Img) => {
+    setCur(i.key);
+    if (i.product) window.dispatchEvent(new CustomEvent("gaach:pick", { detail: i.product }));
+  };
   const main = images.find((i) => i.key === cur) ?? images[0];
   return (
     <div className="space-y-3">
@@ -27,7 +32,7 @@ export function Gallery({ images, shape, color, name, badge }: { images: Img[]; 
       {images.length > 1 && (
         <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-5">
           {images.map((i) => (
-            <button key={i.key} type="button" onClick={() => setCur(i.key)} aria-label={`Show ${i.label}`} aria-pressed={i.key === main?.key} className={`aspect-square overflow-hidden rounded-xl bg-mint-50 transition ${i.key === main?.key ? "ring-2 ring-leaf-700 ring-offset-2 ring-offset-[#faf7f1]" : "opacity-80 ring-1 ring-stone-200 hover:opacity-100"}`}>
+            <button key={i.key} type="button" onClick={() => show(i)} aria-label={`Show ${i.label}`} aria-pressed={i.key === main?.key} className={`aspect-square overflow-hidden rounded-xl bg-mint-50 transition ${i.key === main?.key ? "ring-2 ring-leaf-700 ring-offset-2 ring-offset-[#faf7f1]" : "opacity-80 ring-1 ring-stone-200 hover:opacity-100"}`}>
               <TreeArt shape={shape} color={color} name={i.label} imageUrl={i.src === "grown" ? null : i.src} grown={i.src === "grown"} animate={false} />
             </button>
           ))}

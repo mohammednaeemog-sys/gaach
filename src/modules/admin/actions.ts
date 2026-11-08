@@ -130,6 +130,11 @@ export async function saveProduct(_: FormState, fd: FormData): Promise<FormState
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
   const tree = await db.tree.findUnique({ where: { id: treeId } });
   if (!tree) return { message: "Tree not found." };
+  // Two sizes with the same name confuse shoppers, so each name is used once per tree
+  const name = parsed.data.sizeLabel.toLowerCase().replace(/\s+/g, " ");
+  const others = await db.product.findMany({ where: { treeId, ...(id ? { NOT: { id } } : {}) }, select: { sizeLabel: true } });
+  if (others.some((o) => o.sizeLabel.trim().toLowerCase().replace(/\s+/g, " ") === name))
+    return { errors: { sizeLabel: `This tree already has a size called "${parsed.data.sizeLabel}". Use another name, or edit that size instead.` }, values };
   const image = await saveImage(fd.get("image") as File | null, `${tree.slug}-size`);
   if (image.error) return { errors: { image: image.error }, values };
   const data = {
