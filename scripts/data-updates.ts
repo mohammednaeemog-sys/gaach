@@ -3,7 +3,11 @@
 // such as changing a price or deleting a size, are never undone.
 import type { PrismaClient } from "@prisma/client";
 
-const LARGE = "Large plant, 6-8 ft";
+export const LARGE_PLANT = "Large plant, 6-8 ft";
+const LARGE = LARGE_PLANT;
+
+// About three times the biggest size, rounded to the nearest ৳50 (at least ৳300)
+export const largePlantPrice = (top: number) => Math.max(300, Math.round((top * 3) / 50) * 50);
 
 // Nov 2026: every tree gets a bigger, older "Large plant" size, priced at about
 // three times its biggest existing size (rounded to the nearest ৳50).
@@ -13,7 +17,7 @@ async function addLargePlants(db: PrismaClient) {
   for (const t of trees) {
     if (!t.products.length || t.products.some((p) => p.sizeLabel.startsWith("Large plant"))) continue;
     const top = Math.max(...t.products.map((p) => p.priceBdt));
-    const priceBdt = Math.max(300, Math.round((top * 3) / 50) * 50);
+    const priceBdt = largePlantPrice(top);
     await db.product.create({
       data: { treeId: t.id, title: `${t.name.split(" (")[0]} - ${LARGE}`, sizeLabel: LARGE, ageMonths: 36, priceBdt, stock: 5 },
     });

@@ -78,10 +78,11 @@ export default async function TreePage({ params, searchParams }: { params: Promi
   // The same photo is often used for several sizes: show it once
   const seen = new Set<string>();
   const gallery = images.filter((im) => (im.src ? (seen.has(im.src) ? false : (seen.add(im.src), true)) : true));
-  // Finish with a drawing of the tree when fully grown, so shoppers see how big it gets
-  // Clicking it picks the biggest size on sale
+  // When the biggest size has no photo of its own, a drawing of the fully grown
+  // tree stands in for it (clicking it picks that size). Otherwise the gallery
+  // shows only the photos the admin uploaded.
   const biggest = [...tree.products].sort((a, b) => (b.stock > 0 ? 1 : 0) - (a.stock > 0 ? 1 : 0) || b.ageMonths - a.ageMonths || b.priceBdt - a.priceBdt)[0];
-  gallery.push({ key: "grown", src: "grown", label: `When fully grown (about ${tree.matureHeightM} m tall)`, product: biggest?.id });
+  if (!biggest?.imageUrl) gallery.push({ key: "grown", src: "grown", label: `When fully grown (about ${tree.matureHeightM} m tall)`, product: biggest?.id });
 
   const kindWord: Record<string, [string, string]> = { FRUIT: ["Fruit trees", "FRUIT"], SHADE: ["Shade trees", "SHADE"], ORNAMENTAL: ["Flowering trees", "ORNAMENTAL"], PRIVACY: ["Hedges and screens", "PRIVACY"], TIMBER: ["Timber trees", "TIMBER"] };
   const crumb = kindWord[firstPurpose];

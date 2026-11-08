@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { deleteTree } from "@/modules/admin/actions";
+import { deleteTree, resetTree } from "@/modules/admin/actions";
 import { TreeForm } from "@/components/admin/TreeForm";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { TreePhotos } from "@/components/admin/TreePhotos";
@@ -24,6 +24,8 @@ export default async function EditTree({ params, searchParams }: { params: Promi
       </div>
       {sp.created && <p className="rounded-lg bg-mint-50 p-3 text-sm text-forest-700">Tree created. Add products and care instructions below.</p>}
       {sp.incomplete && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Fill in every attribute before publishing this tree.</p>}
+      {sp.reset === "1" && <p className="rounded-lg bg-mint-50 p-3 text-sm text-forest-800">This tree is back to Gaach&apos;s original facts, sizes, prices and care plan, with no uploaded photos.</p>}
+      {sp.reset === "none" && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">This tree was added in admin, so there is no original version to go back to.</p>}
       {sp.cannotDelete && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">This tree has been sold before, so it cannot be deleted without losing order history. Unpublish it instead.</p>}
 
       <section className="card p-5"><TreeForm t={tree} /></section>
@@ -47,6 +49,15 @@ export default async function EditTree({ params, searchParams }: { params: Promi
         {CARE_STAGES.map((s) => (
           <CareStageForm key={s} treeId={tree.id} stage={s} stageLabel={label(s)} s={tree.careStages.find((c) => c.stage === s)} />
         ))}
+      </section>
+
+      <section className="card border-amber-200 p-5">
+        <h2 className="font-semibold text-amber-900">Reset tree</h2>
+        <p className="mb-3 text-sm text-stone-600">Removes every change made to this tree: uploaded photos, edited facts, sizes, prices and care steps. It goes back to how Gaach first set it up. Sizes that are in past orders are hidden, not deleted. Sales are not changed.</p>
+        <form action={resetTree}>
+          <input type="hidden" name="id" value={tree.id} />
+          <ConfirmButton className="rounded-full border border-amber-300 px-5 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-50" message={`Reset ${tree.name} to the original? All photos and changes to this tree will be removed.`}>Reset to original</ConfirmButton>
+        </form>
       </section>
 
       <section className="card border-red-200 p-5">

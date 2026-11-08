@@ -10,6 +10,9 @@ import { fieldErrors, type FormState } from "@/lib/forms";
 import { CARE_STAGES, DELIVERY_FEE_KEY, LEVELS, ORDER_STATUSES } from "@/lib/constants";
 import { missingForPublish, treeSchema } from "./validation";
 import { saveImage } from "./uploads";
+import { TREES } from "../../../prisma/data/trees";
+import { careStagesFor } from "../../../prisma/data/care";
+import { LARGE_PLANT, largePlantPrice } from "../../../scripts/data-updates";
 
 // Every admin action checks the role on the server first (FR-1.3, NFR-3.2).
 
@@ -132,7 +135,7 @@ export async function saveProduct(_: FormState, fd: FormData): Promise<FormState
   if (!tree) return { message: "Tree not found." };
   // Two sizes with the same name confuse shoppers, so each name is used once per tree
   const name = parsed.data.sizeLabel.toLowerCase().replace(/\s+/g, " ");
-  const others = await db.product.findMany({ where: { treeId, ...(id ? { NOT: { id } } : {}) }, select: { sizeLabel: true } });
+  const others = await db.product.findMany({ where: { treeId, active: true, ...(id ? { NOT: { id } } : {}) }, select: { sizeLabel: true } });
   if (others.some((o) => o.sizeLabel.trim().toLowerCase().replace(/\s+/g, " ") === name))
     return { errors: { sizeLabel: `This tree already has a size called "${parsed.data.sizeLabel}". Use another name, or edit that size instead.` }, values };
   const image = await saveImage(fd.get("image") as File | null, `${tree.slug}-size`);
@@ -164,6 +167,47 @@ export async function deleteProduct(_: FormState, fd: FormData): Promise<FormSta
   await db.product.delete({ where: { id } });
   revalidatePath("/", "layout");
   return { ok: true, message: "Size deleted." };
+}
+
+// Puts a starter tree back the way Gaach first set it up: its facts, sizes,
+// prices and care plan, with no uploaded photos. Sizes that are in past
+// orders are hidden instead of deleted, so order history stays intact.
+export async function resetTree(fd: FormData) {
+  await requireAdmin();
+  const id = String(fd.get("id") ?? "");
+  const tree = await db.tree.findUnique({ where: { id } });
+  if (!tree) redirect("/admin/trees");
+  const t = TREES.find((x) => x.slug === tree.slug);
+  if (!t) redirect(`/admin/trees/${id}?reset=none`);
+  const short = t.name.split(" (")[0];
+  const sizes: [string, number, number, number][] = [...t.products];
+  sizes.push([LARGE_PLANT, 36, largePlantPrice(Math.max(...sizes.map((x) => x[2]))), 5]);
+  const sold = await db.product.findMany({ where: { treeId: id, orderItems: { some: {} } }, select: { id: true } });
+  await db.$transaction([
+    db.tree.update({
+      where: { id },
+      data: {
+        name: t.name, banglaName: t.banglaName, scientificName: t.scientificName, description: t.description,
+        shape: t.shape, color: t.color, matureHeightM: t.matureHeightM, canopySpreadM: t.canopySpreadM,
+        growthRate: t.growthRate, sunlight: t.sunlight.join(","), soils: t.soils.join(","), purposes: t.purposes.join(","),
+        waterNeed: t.waterNeed, rainfall: t.rainfall.join(","), floodTolerance: t.floodTolerance,
+        droughtTolerance: t.droughtTolerance, salinityTolerance: t.salinityTolerance,
+        fruitingSeason: t.fruitingSeason, cautions: t.cautions, plantMonths: "",
+        imageUrl: null, imageCredit: "", imageSourceUrl: "",
+      },
+    }),
+    db.treePhoto.deleteMany({ where: { treeId: id } }),
+    db.product.updateMany({ where: { id: { in: sold.map((x) => x.id) } }, data: { active: false, imageUrl: null } }),
+    db.product.deleteMany({ where: { treeId: id, id: { notIn: sold.map((x) => x.id) } } }),
+    ...sizes.map(([sizeLabel, ageMonths, priceBdt, stock]) =>
+      db.product.create({ data: { treeId: id, title: `${short} - ${sizeLabel}`, sizeLabel, ageMonths, priceBdt, stock } }),
+    ),
+    ...Object.entries(careStagesFor(t)).map(([stage, c]) =>
+      db.careStage.upsert({ where: { treeId_stage: { treeId: id, stage } }, update: c, create: { treeId: id, stage, ...c } }),
+    ),
+  ]);
+  revalidatePath("/", "layout");
+  redirect(`/admin/trees/${id}?reset=1`);
 }
 
 const careSchema = z.object({
