@@ -149,6 +149,23 @@ export async function saveProduct(_: FormState, fd: FormData): Promise<FormState
   return { ok: true, message: id ? "Product saved." : "Product added.", values: id ? values : undefined };
 }
 
+// Removes one size. A size that is in past orders is hidden instead, so those
+// orders keep their details.
+export async function deleteProduct(_: FormState, fd: FormData): Promise<FormState> {
+  await requireAdmin();
+  const id = String(fd.get("id") ?? "");
+  const product = await db.product.findUnique({ where: { id }, include: { _count: { select: { orderItems: true } } } });
+  if (!product) return { message: "This size was already deleted." };
+  if (product._count.orderItems > 0) {
+    await db.product.update({ where: { id }, data: { active: false } });
+    revalidatePath("/", "layout");
+    return { ok: true, message: "This size is in past orders, so it was hidden from the shop instead of deleted." };
+  }
+  await db.product.delete({ where: { id } });
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Size deleted." };
+}
+
 const careSchema = z.object({
   planting: z.string().trim().min(5, "Write the planting or upkeep steps.").max(2000),
   watering: z.string().trim().min(5, "Write the watering guidance.").max(2000),
